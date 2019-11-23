@@ -1,5 +1,7 @@
 //CURRENT STATUS
-//passport is authenticating and redirecting, i want to confirm if its actually working though.
+//can login and logout.  
+//need ability to add users
+//need to edit database so we aren't storing plaintext passwords
 
 //requires
 var createError = require('http-errors');
@@ -10,7 +12,7 @@ var logger = require('morgan');
 var sassMiddleware = require('node-sass-middleware');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var loginRouter = require('./routes/logins');
+var loginRouter = require('./routes/login');
 const passport = require('passport');
 var session = require('express-session');
 const flash = require('connect-flash');
@@ -45,8 +47,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //passport config
 require('./passport.js')(passport);
+//Warning The default server-side session storage, MemoryStore, 
+//is purposely not designed for a production environment. It will 
+//leak memory under most conditions, does not scale past a single process, and is meant for debugging and developing.
 app.use(session({
-    secret: 'abcdefg',
+    secret: 'stick lick the pick',
     resave: true,
     saveUninitialized: false
 }));
@@ -56,8 +61,10 @@ app.use(passport.session());
 
 //routes
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/login', loginRouter);
+
+//users just used for debugging, remove later
+app.use('/users', usersRouter);
 
 //logout route
 app.get('/logout',
@@ -81,10 +88,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-app.use(function(err, req, res, next) {
-    console.log(err);
-});
-
 
 module.exports = app;

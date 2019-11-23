@@ -1,41 +1,41 @@
-var Accounts = require('../db/models/accounts.js');
+var Accounts = require('../db/models/account.js');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
-
+const passport = require('passport');
 
 //Display all accounts
-exports.accounts_list = async (req, res) => {
-    const person = await Accounts.query();
-    res.json(person);
-};
+//exports.accounts_list = async (req, res) => {
+//    const person = await Accounts.query();
+//    res.json(person);
+//};
+
+exports.account_create = (req, res) => {
+    res.send('respond with a resource');
+}
 
 //Post login info
 exports.account_login = [
     //Validate
-    body('username').isLength({ min: 2 }).trim().withMessage('Username required'),
-    body('password').isLength({ min: 2 }).trim().withMessage('Password required'),
+    body('username').isLength({ min: 6 }).trim().withMessage('Username too short'),
+    body('password').isLength({ min: 2 }).trim().withMessage('Password too short'),
 
     //Sanitize
     sanitizeBody('username').escape(),
     sanitizeBody('password').escape(),
 
     (req, res, next) => {
-        // Extract the validation errors from a request.
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
-            res.render('login', { errors: errors.array() });
+            res.render('login', { errors: errors.array(), message: undefined });
             return;
         }
         else {
-            // Data from form is valid.
-            // Create an Author object with escaped and trimmed data.
-	    console.log(req.body.username);
-	    console.log(req.body.password);
-	}
-        
+        passport.authenticate('local', {
+        successRedirect:'/',
+        failureRedirect:'/login/',
+        failureFlash: true
+        })(req, res, next);
+        }   
     }
 ];
-
-//Post login info
-//exports.account_login 

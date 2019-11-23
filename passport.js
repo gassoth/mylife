@@ -1,6 +1,6 @@
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
-var Accounts = require('./db/models/accounts.js');
+var Accounts = require('./db/models/account.js');
 
 //What i did
 //added passport.js, removed the post in the route/controller and instead it posts to this file instead.
