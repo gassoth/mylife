@@ -29,12 +29,17 @@
 	    <a class="indigo lighten-3 waves-effect waves-light btn-large">Profile</a>
 	  </div>
 	  <div class="col s3">
-	    <a class="indigo lighten-3 waves-effect waves-light btn-large">Login</a>
+	    <% if (user) { %>
+	    <a href="\logout" class="indigo lighten-3 waves-effect waves-light btn-large">Logout</a>
+	    <% } else { %>
+	    <a href="\login" class="indigo lighten-3 waves-effect waves-light btn-large">Login</a>
+	    <% } %>
 	  </div>
 	</div>
       </div>
     </div>
     <hr class="line">
     <!--<p>Welcome to <%= title %></p>-->
+
   </body>
 </html>
