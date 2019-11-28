@@ -7,6 +7,7 @@
     "devstart": "nodemon ./bin/www"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "connect-ensure-login": "^0.1.1",
     "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.4",
@@ -22,7 +23,8 @@
     "objection": "^1.6.11",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "pg": "^7.12.1"
+    "pg": "^7.12.1",
+    "random-words": "^1.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.1"

@@ -1,6 +1,7 @@
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 var Accounts = require('./db/models/account.js');
+var bcrypt = require('bcryptjs');
 
 //What i did
 //added passport.js, removed the post in the route/controller and instead it posts to this file instead.
@@ -20,12 +21,14 @@ module.exports = function(passport) {
 	async function(username, password, done) {
 	    const user = await Accounts.query().where('email', username).first();
 	    if (!user) { return done(null, false); }
-	    console.log(password);
-	    if (user.password == password) {
-		return done(null, user);
-	    } else {
-		return done(null, false, {message: 'Incorrect login attempt'});
-	    }
+        console.log(password);
+        bcrypt.compare(password, user.password, function(err, res) {
+            if (res) {
+                return done(null, user);
+            } else {
+                return done(null, false, {message: 'Incorrect login attempt'});
+            }
+        });
 	}));
 
 

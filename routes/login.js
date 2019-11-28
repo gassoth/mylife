@@ -15,6 +15,9 @@ router.get('/', function(req, res, next) {
 //Create account route
 router.get('/create', login_controller.account_create);
 
+//create account post
+router.post('/create', login_controller.account_create_post);
+
 //Login post
 router.post('/', login_controller.account_login);
 
