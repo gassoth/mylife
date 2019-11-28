@@ -1,0 +1,13 @@
+const { Model } = require("objection");
+
+class Accounts extends Model {
+  static get tableName() {
+    return 'accounts';
+  }
+
+    static get jsonSchema() {
+	return {
+	    type: "object",
+
+	    properties: {
+		id: { type: "
