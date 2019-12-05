@@ -1,4 +1,3 @@
-
 exports.up = function(knex) {
     let createQuery = `CREATE TABLE account (
 	id serial PRIMARY KEY,

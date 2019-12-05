@@ -1,4 +1,3 @@
-
 exports.up = function(knex) {
     let createQuery = `ALTER TABLE account ALTER COLUMN password TYPE varchar (100);`
     return knex.raw(createQuery);

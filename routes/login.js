@@ -2,8 +2,6 @@
 var express = require('express');
 var router = express.Router();
 
-//idk why this next line is here might need to look into it, i don't think it's needed
-//var accounts = require('../db/models/accounts.js');
 //Require controller modules
 var login_controller = require('../controllers/loginController.js');
 

@@ -6,7 +6,8 @@ const passport = require('passport');
 var bcrypt = require('bcryptjs');
 var randomWords = require('random-words');
 
-//login and logout working, but needs to be tested.  also need to add error messages and try catches or something along with some comments
+//28-nov login and logout working, but needs to be tested.  also need to add error messages and try catches or something along with some comments
+
 
 //Display all accounts
 //exports.accounts_list = async (req, res) => {
