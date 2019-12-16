@@ -13,9 +13,13 @@ module.exports = function(passport) {
     // will be set at `req.user` in route handlers after authentication.
     passport.use(new Strategy(
 	async function(username, password, done) {
-	    const user = await Accounts.query().where('email', username).first();
+        const user = await Accounts.query().where('email', username).first();
 	    if (!user) { return done(null, false); }
         console.log(password);
+        let time = new Date().toISOString();
+        const updated = await Accounts.query().where('email', username).patch({
+            last_logged: time
+        });
         bcrypt.compare(password, user.password, function(err, res) {
             if (res) {
                 return done(null, user);

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>User</title>
+  <%- include('styles'); -%>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body>
+    <div class="section"></div>
+    <main>
+        <center>
+            <div class="container" style="padding: 10vh 0vh 0vh 0vh;">
+                <div class="z-depth-2 row" style="display: inline-block; min-width: 70vw; min-height: 70vh; position: relative; right: 20px; padding: 32px 48px 0px 48px; border: 1px solid #EEE; background-color: #f3e5f5">
+                    <div class="col s3">
+                        <div class="row" style="padding: 5vh 0vh 0vh 0vh;"><img src="/images/test.jpg" style="width:160px;height:160px;"></div>
+                        <div class="row" style="position: relative; bottom: 20px;">
+                            <h1>about</h1>
+                        </div>
+                        <div class="row bio">
+                            <%=account.about %> 
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="col s9">
+                        <div class="row bio-header">
+                            <div class="container" style="width: 90%;">
+                                <h3><%=account.generated_username %></h3>
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="row bio-left">
+                            <div class="row">
+                                <h6>Joined: <%=account.date_created %></h6>
+                            </div>
+                            <div class="row">
+                                <h6>Last seen: <%=account.last_logged %></h6>
+                            </div>
+                            <div class="row">
+                                <h6>Posts made:</h6>
+                            </div>
+                            <div class="row">
+                                <h6>Comments made:</h6>
+                            </div>
+                        </div>
+                        <div class="section"></div>
+                        <div class="section"></div>
+                        <div class="row bio-right">
+                            <div class="row">
+                                <h6>View <%=account.generated_username %>'s posts</h6>
+                            </div>
+                            <div class="row">
+                                <h6>View <%=account.generated_username %>'s comments</h6>
+                            </div>
+                            <% if (user == '' || user.id != account.id) { %>
+                            <div class="row">
+                                <h6>Subscribe to <%=account.generated_username %></h6>
+                            </div>
+                            <% } else { %>
+                            <div class="row">
+                                <h6>Profile settings</h6>
+                            </div>
+                            <% } %>
+                            <div class="row">
+                                <h6><a href="/">Home</a></h6>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </center>
+    </main>
+</body>

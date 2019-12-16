@@ -5,9 +5,7 @@ const { sanitizeBody } = require('express-validator/filter');
 const passport = require('passport');
 var bcrypt = require('bcryptjs');
 var randomWords = require('random-words');
-
-//28-nov login and logout working, but needs to be tested.  also need to add error messages and try catches or something along with some comments
-
+var Sentencer = require('sentencer');
 
 //Display all accounts
 //exports.accounts_list = async (req, res) => {
@@ -47,14 +45,14 @@ exports.account_create_post = [
             return;
         }
         else {
-            let username = randomWords({ min: 4, max: 6}).join('_');
+            var un = Sentencer.make("{{ adjective }} {{ noun }}");
             let time = new Date().toISOString();
             var newAccount =
                 {
                     email: req.body.username,
                     password: req.body.password,
                     permission: 0,
-                    generated_username: username,
+                    generated_username: un,
                     date_created: time
                 };
             bcrypt.genSalt(10, function(err, salt) {
@@ -71,6 +69,7 @@ exports.account_create_post = [
 
 //Post login info
 exports.account_login = [
+    
     //Validate
     body('username').isLength({ min: 6 }).trim().withMessage('Username too short'),
     body('password').isLength({ min: 2 }).trim().withMessage('Password too short'),

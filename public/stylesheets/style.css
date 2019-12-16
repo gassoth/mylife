@@ -12,6 +12,27 @@ h1, .home {
   font-family: Helvetica, Arial, sans-serif;
   color: #424242; }
 
+h3 {
+  font-family: Helvetica, Arial, sans-serif;
+  color: #424242; }
+
+.bio {
+  position: relative;
+  bottom: 2em; }
+
+.bio-header {
+  position: relative;
+  left: 3em;
+  bottom: 1em; }
+
+.bio-left {
+  text-align: left;
+  position: relative;
+  left: 7em; }
+
+.bio-right {
+  text-align: right; }
+
 .home {
   font-size: 2em;
   position: relative;
@@ -28,5 +49,14 @@ h1, .home {
   position: relative;
   top: 17em;
   color: #9fa8da; }
+
+.divider {
+  position: absolute;
+  left: 30%;
+  top: 5%;
+  bottom: 0%;
+  height: 90%;
+  border-left: 1px solid #f3e5f5;
+  box-shadow: 3px 0px 3px #616161; }
 
 /*# sourceMappingURL=style.css.map */

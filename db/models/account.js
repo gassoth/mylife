@@ -25,7 +25,8 @@ class Account extends Model {
         password: { type: "string" },
         permission: { type: "integer" },
         generated_username: { type: "string" },
-        date_created: { type: "string", format: "date-time" }
+        date_created: { type: "string", format: "date-time" },
+        last_logged: { type: "string", format: "date-time" }
       }
     };
   }

@@ -1,7 +1,8 @@
 //CURRENT STATUS
-//can login and logout.  
-//need ability to add users
-//need to edit database so we aren't storing plaintext passwords
+//28-nov login and logout working, but needs to be tested.  also need to add error messages and try catches or something along with some comments
+//tests for creating accounts.
+
+
 
 //requires
 var createError = require('http-errors');
@@ -13,6 +14,7 @@ var sassMiddleware = require('node-sass-middleware');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
+var profileRouter = require('./routes/profile');
 const passport = require('passport');
 var session = require('express-session');
 const flash = require('connect-flash');
@@ -44,6 +46,8 @@ app.use(sassMiddleware({
   sourceMap: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use( express.static( "public" ) );
+
 
 //passport config
 require('./passport.js')(passport);
@@ -65,6 +69,9 @@ app.use('/login', loginRouter);
 
 //users just used for debugging, remove later
 app.use('/users', usersRouter);
+
+//profile
+app.use('/profile', profileRouter);
 
 //logout route
 app.get('/logout',
