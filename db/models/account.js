@@ -23,6 +23,7 @@ class Account extends Model {
         id: { type: "integer" },
         email: { type: "string" },
         password: { type: "string" },
+        about: { type: "string" },
         permission: { type: "integer" },
         generated_username: { type: "string" },
         date_created: { type: "string", format: "date-time" },

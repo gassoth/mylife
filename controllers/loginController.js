@@ -1,10 +1,8 @@
 var Account = require('../db/models/account.js');
 const { body,validationResult } = require('express-validator/check');
-const check = require('express-validator/check')
 const { sanitizeBody } = require('express-validator/filter');
 const passport = require('passport');
 var bcrypt = require('bcryptjs');
-var randomWords = require('random-words');
 var Sentencer = require('sentencer');
 
 //Display all accounts
@@ -13,19 +11,31 @@ var Sentencer = require('sentencer');
 //    res.json(person);
 //};
 
+//Registration page route. Loads registration page, sets errors to undef since page won't load if not set to anything  Message is used if attempt failed
 exports.account_create = (req, res) => {
-    res.render('register', {'errors': false, message: req.flash('error')});
+    res.render('register', {'errors': undefined, message: req.flash('error')});
 }
 
 exports.account_create_post = [
     
     //Validate
-    body('password').isLength({ min: 8 }).trim().withMessage('Password too short'),
+    body('username').isLength({ min: 1 }).trim().withMessage('Username field empty'),
+    body('password_validate').isLength({ min: 1 }).trim().withMessage('Validation field empty'),
+    body('password').isLength({ min: 8 }).trim().withMessage('Password is too short'),
     body('password')
     .custom((value,{req, loc, path}) => {
-        if (value !== req.body.password_validate) {
+        if (value !== req.body.password_validate || req.body.password_validate == '') {
             // throw error if passwords do not match
             throw new Error("Passwords don't match");
+        } else {
+            return value;
+        }
+    }),
+    body('username')
+    .custom(async function(value, {req, loc, path}) {
+        const user = await Account.query().where('email', req.body.username);
+        if (user) {
+            throw new Error("User with that email already exists");
         } else {
             return value;
         }
@@ -41,10 +51,13 @@ exports.account_create_post = [
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
-            res.render('register', { errors: errors.array(), message: undefined });
+            console.log(errors.array());
+            res.render('register', { errors: errors.array(), message: req.flash('error') });
             return;
         }
         else {
+            //Generates username.  Username is an adjective noun pair, like crazy diamond.
+            //Permission is 0 for regular user
             var un = Sentencer.make("{{ adjective }} {{ noun }}");
             let time = new Date().toISOString();
             var newAccount =
@@ -72,7 +85,7 @@ exports.account_login = [
     
     //Validate
     body('username').isLength({ min: 6 }).trim().withMessage('Username too short'),
-    body('password').isLength({ min: 2 }).trim().withMessage('Password too short'),
+    body('password').isLength({ min: 8 }).trim().withMessage('Password too short'),
 
     //Sanitize
     sanitizeBody('username').escape(),

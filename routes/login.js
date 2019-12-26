@@ -2,10 +2,10 @@
 var express = require('express');
 var router = express.Router();
 
-//Require controller modules
+//Require login controller modules
 var login_controller = require('../controllers/loginController.js');
 
-//Login page route.
+//Login page route. Loads login page, sets errors to false since page won't load if undefined,  Message is used if login attempt failed
 router.get('/', function(req, res, next) {
     res.render('login', {'errors': false, message: req.flash('error')});
 });

@@ -25,9 +25,16 @@
 	  <div class="col s3">
 	    <a class="indigo lighten-3 waves-effect waves-light btn-large">Write</a>
 	  </div>
+	  <% if (user) { %>
+		<% let link = '/profile/' + user.id; %>
 	  <div class="col s3">
-	    <a class="indigo lighten-3 waves-effect waves-light btn-large">Profile</a>
+	    <a href="<%=link%>" class="indigo lighten-3 waves-effect waves-light btn-large">Profile</a>
 	  </div>
+	  <% } else { %>
+	  <div class="col s3">
+		<a href="/profile/1" class="indigo lighten-3 waves-effect waves-light btn-large">Profile</a>
+	  </div>
+      <% } %>
 	  <div class="col s3">
 	    <% if (user) { %>
 	    <a href="/logout" class="indigo lighten-3 waves-effect waves-light btn-large">Logout</a>

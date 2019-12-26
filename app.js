@@ -1,8 +1,4 @@
 //CURRENT STATUS
-//28-nov login and logout working, but needs to be tested.  also need to add error messages and try catches or something along with some comments
-//tests for creating accounts.
-
-
 
 //requires
 var createError = require('http-errors');
@@ -20,6 +16,7 @@ var session = require('express-session');
 const flash = require('connect-flash');
 const { Model } = require('objection');
 
+//Used for database stuff.
 const Knex = require('knex');
 const knexConfig = require('./knexfile');
 const knex = Knex(knexConfig.development);
@@ -28,13 +25,14 @@ const knex = Knex(knexConfig.development);
 // the Model.bindKnex method.
 Model.knex(knex);
 
+//init app
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-//setup
+//setup the app for logging, sass compilation
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -45,12 +43,14 @@ app.use(sassMiddleware({
   indentedSyntax: false, // true = .sass and false = .scss
   sourceMap: true
 }));
-app.use(express.static(path.join(__dirname, 'public')));
+//app.use(express.static(path.join(__dirname, 'public')));
 app.use( express.static( "public" ) );
 
 
-//passport config
+//passport config uses simple user/pass auth.  Detailed in passport.js
+//Creates session, flassh used for error messages, and then starts session for a user.
 require('./passport.js')(passport);
+
 //Warning The default server-side session storage, MemoryStore, 
 //is purposely not designed for a production environment. It will 
 //leak memory under most conditions, does not scale past a single process, and is meant for debugging and developing.
@@ -63,17 +63,17 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-//routes
+//routes for index and login page
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 
 //users just used for debugging, remove later
 app.use('/users', usersRouter);
 
-//profile
+//profile page route
 app.use('/profile', profileRouter);
 
-//logout route
+//logout route redirects home at logout
 app.get('/logout',
 	function(req, res) {
 	    req.logout();
@@ -97,3 +97,10 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
+//TODO - potential automated unit tests maybe for like jenkins or smoething
+//passwords match in authentication
+//check the various test cases in the create user form like checking if an object is returned, or if syntax is correct when getting a username, database returns a user
+//profile throws an error if you try to put a letter in the database query that checks for an id
+//maybe possible to unit test a view?  profile.ejs has logic checking if a user is logged in or if a user is the currently viewed profile
+//test logic that checks if user is logged in in general
