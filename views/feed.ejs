@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<!--Need to experiment with card tabs.  This is the initial way I will do different filters (show only subscribed, etc.) but it might look better if I use card tabs.
+        Idea is to change the color of the button when selected (if you wanna only see read, click read and it'll turn blue), and others will just be actual buttons(sort by date vs views) 
+    Consider changing color too, kinda bright.  
+    Need pagination
+    Need working search
+    Need idea for read/unread differentiator
+    Card links are slightly bigger than card-->
+<html>
+
+<head>
+    <title>User</title>
+    <%- include('styles'); -%>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body>
+    <div class="section"></div>
+    <main>
+        <center>
+            <div class="container">
+                <div class="row">
+                    <h1>Blog Posts</h1>
+                </div>
+                <div class="row">
+                    <form class="col s12">
+                        <div class="row">
+                            <div class="input-field col s10">
+                                <input id="search" type="text">
+                            </div>
+                            <button type='submit' name='btn_search'
+                                class='col s2 btn btn-large waves-effect indigo'>Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="container" style="min-width: 80%;">
+                <div class="row">
+                    <div class="feed-button">
+                        <div class="col s2">
+                            <a href="/feed" class="indigo lighten-3 waves-effect waves-light btn-large">Date</a>
+                        </div>
+                        <div class="col s2">
+                            <a class="indigo lighten-3 waves-effect waves-light btn-large">Views</a>
+                        </div>
+                        <div class="col s2">
+                            <a href="/login" class="indigo lighten-3 waves-effect waves-light btn-large">Unread</a>
+                        </div>
+                        <div class="col s2">
+                            <a href="/login" class="indigo lighten-3 waves-effect waves-light btn-large">Read</a>
+                        </div>
+                        <div class="col s2">
+                                <a href="/profile/1"
+                                    class="indigo lighten-3 waves-effect waves-light btn-large">Subscribed</a>
+                            </div>
+                        <div class="col s2">
+                            <a href="/login" class="indigo lighten-3 waves-effect waves-light btn-large">Bookmarked</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </center>
+        <center>
+            <div class="container" style="min-width: 95%;  padding: 10vh 0vh 0vh 0vh;">
+                <div class="z-depth-2 row"
+                    style="display: inline-block; min-width: 100%; padding: 2vh 2vh 0vh; border: 1px solid #EEE; background-color: #f3e5f5">
+                    <div class="row">
+                        <div class="col s12">
+                            <a href="/">
+                                <div class="card" style="background-color: #b4dc7f; padding: 10px 0px 0px 0px;">
+                                    <div class="row">
+                                        <div class="col s1">
+                                            <h3>R</h3>
+                                            <div class="divider" style="left: 8%;   border-left: 1px solid #b4dc7f;">
+                                            </div>
+                                        </div>
+                                        <div class="col s8">
+                                            <div class="card-content grey-text text-lighten-3"
+                                                style="text-align: left;">
+                                                <span class="card-title" style="font-size: 3.5em;">I play too
+                                                    much</span>
+                                                <p style="font-size: 1.5em;">Rustic pepperoni</p>
+                                            </div>
+                                        </div>
+                                        <div class="col s3">
+                                            <div class="card-content grey-text text-lighten-3"
+                                                style="text-align: right;">
+                                                <span class="card-title" style="font-size: 3em;">9 November 2019</span>
+                                                <span class="card-title" style="font-size: 3em;">19:43</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <a href="/">
+                                <div class="card" style="background-color: #b4dc7f; padding: 10px 0px 0px 0px;">
+                                    <div class="row">
+                                        <div class="col s1">
+                                            <h3>R</h3>
+                                            <div class="divider" style="left: 8%;   border-left: 1px solid #b4dc7f;">
+                                            </div>
+                                        </div>
+                                        <div class="col s8">
+                                            <div class="card-content grey-text text-lighten-3"
+                                                style="text-align: left;">
+                                                <span class="card-title" style="font-size: 3.5em;">I play too
+                                                    much</span>
+                                                <p style="font-size: 1.5em;">Rustic pepperoni</p>
+                                            </div>
+                                        </div>
+                                        <div class="col s3">
+                                            <div class="card-content grey-text text-lighten-3"
+                                                style="text-align: right;">
+                                                <span class="card-title" style="font-size: 3em;">9 November 2019</span>
+                                                <span class="card-title" style="font-size: 3em;">19:43</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <a href="/">
+                                <div class="card" style="background-color: #b4dc7f; padding: 10px 0px 0px 0px;">
+                                    <div class="row">
+                                        <div class="col s1">
+                                            <h3>R</h3>
+                                            <div class="divider" style="left: 8%;   border-left: 1px solid #b4dc7f;">
+                                            </div>
+                                        </div>
+                                        <div class="col s8">
+                                            <div class="card-content grey-text text-lighten-3"
+                                                style="text-align: left;">
+                                                <span class="card-title" style="font-size: 3.5em;">I play too
+                                                    much</span>
+                                                <p style="font-size: 1.5em;">Rustic pepperoni</p>
+                                            </div>
+                                        </div>
+                                        <div class="col s3">
+                                            <div class="card-content grey-text text-lighten-3"
+                                                style="text-align: right;">
+                                                <span class="card-title" style="font-size: 3em;">9 November 2019</span>
+                                                <span class="card-title" style="font-size: 3em;">19:43</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <a href="/">
+                                <div class="card" style="background-color: #b4dc7f; padding: 10px 0px 0px 0px;">
+                                    <div class="row">
+                                        <div class="col s1">
+                                            <h3>R</h3>
+                                            <div class="divider" style="left: 8%;   border-left: 1px solid #b4dc7f;">
+                                            </div>
+                                        </div>
+                                        <div class="col s8">
+                                            <div class="card-content grey-text text-lighten-3"
+                                                style="text-align: left;">
+                                                <span class="card-title" style="font-size: 3.5em;">I play too
+                                                    much</span>
+                                                <p style="font-size: 1.5em;">Rustic pepperoni</p>
+                                            </div>
+                                        </div>
+                                        <div class="col s3">
+                                            <div class="card-content grey-text text-lighten-3"
+                                                style="text-align: right;">
+                                                <span class="card-title" style="font-size: 3em;">9 November 2019</span>
+                                                <span class="card-title" style="font-size: 3em;">19:43</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <a href="/">
+                                <div class="card" style="background-color: #b4dc7f; padding: 10px 0px 0px 0px;">
+                                    <div class="row">
+                                        <div class="col s1">
+                                            <h3>R</h3>
+                                            <div class="divider" style="left: 8%;   border-left: 1px solid #b4dc7f;">
+                                            </div>
+                                        </div>
+                                        <div class="col s8">
+                                            <div class="card-content grey-text text-lighten-3"
+                                                style="text-align: left;">
+                                                <span class="card-title" style="font-size: 3.5em;">I play too
+                                                    much</span>
+                                                <p style="font-size: 1.5em;">Rustic pepperoni</p>
+                                            </div>
+                                        </div>
+                                        <div class="col s3">
+                                            <div class="card-content grey-text text-lighten-3"
+                                                style="text-align: right;">
+                                                <span class="card-title" style="font-size: 3em;">9 November 2019</span>
+                                                <span class="card-title" style="font-size: 3em;">19:43</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </center>
+    </main>
+</body>
