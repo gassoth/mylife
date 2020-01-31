@@ -62,4 +62,23 @@ h3 {
   border-left: 1px solid #f3e5f5;
   box-shadow: 3px 0px 3px #616161; }
 
+.ql-editor {
+  min-height: 45vh;
+  background-color: #EEEEEE; }
+
+.ql-toolbar {
+  background-color: #EEEEEE; }
+
+.ql-editor strong {
+  font-weight: bold; }
+
+/* label focus color */
+.input-field input[type=text]:focus + label {
+  color: #9e9e9e !important; }
+
+/* label underline focus color */
+.input-field input[type=text]:focus {
+  border-bottom: 1px solid #9e9e9e !important;
+  box-shadow: 0 1px 0 0 #9e9e9e !important; }
+
 /*# sourceMappingURL=style.css.map */

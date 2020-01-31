@@ -12,6 +12,7 @@ var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
 var profileRouter = require('./routes/profile');
 var feedRouter = require('./routes/feed');
+var writeRouter = require('./routes/write');
 const passport = require('passport');
 var session = require('express-session');
 const flash = require('connect-flash');
@@ -76,6 +77,9 @@ app.use('/profile', profileRouter);
 
 //feed page route
 app.use('/feed', feedRouter);
+
+//write page route
+app.use('/write', writeRouter);
 
 //logout route redirects home at logout
 app.get('/logout',
