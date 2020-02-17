@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Read</title>
+    <%- include('styles'); -%>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <!-- Include the Quill library -->
+</head>
+
+<body>
+    <div class="section"></div>
+    <main>
+        <div class="container" style="margin-bottom: -60px; min-width: 80%; margin-top: -30px">
+            <div class="row">
+                <div class="col s12">
+                    <h1><%=posts.title %></h1>
+                </div>
+            </div>
+        </div>
+        <div class="container" style="min-width: 80%;  padding: 3vh 0vh 0vh 0vh;">
+            <div class="z-depth-2 row"
+                style="display: inline-block; min-width: 100%; min-height: 70vh; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #f3e5f5">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae eleifend risus, id rutrum tortor. Duis
+                luctus suscipit leo, in egestas ante posuere sed. In hac habitasse platea dictumst. Nam augue purus,
+                fermentum non risus non, pulvinar condimentum turpis. Etiam luctus sed ipsum at suscipit. Vivamus sed
+                condimentum enim. Nullam mattis massa vulputate metus lacinia, eu mollis nunc tempor. Aliquam faucibus
+                neque sed faucibus mollis. Proin nec magna rhoncus, laoreet augue sit amet, mollis orci. Suspendisse
+                potenti.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae eleifend risus, id rutrum tortor. Duis
+                luctus suscipit leo, in egestas ante posuere sed. In hac habitasse platea dictumst. Nam augue purus,
+                fermentum non risus non, pulvinar condimentum turpis. Etiam luctus sed ipsum at suscipit. Vivamus sed
+                condimentum enim. Nullam mattis massa vulputate metus lacinia, eu mollis nunc tempor. Aliquam faucibus
+                neque sed faucibus mollis. Proin nec magna rhoncus, laoreet augue sit amet, mollis orci. Suspendisse
+                potenti.
+                <%=posts.body_html %>
+                <%=posts.body_delta %>
+                <script>
+                </script>
+                
+            </div>
+
+        </div>
+        <div class="container" style="min-width: 80%; margin-top: -45px; text-align: right;">
+            <div class="row">
+                <div class="col s12">
+                        <h1><%=posts.author %></h1>
+                        </div>
+                    </div>
+        </div>
+
+
+    </main>
+</body>
+
+<!--need a solution to lining up title and author!!!!
+afterwards
+get text from db
+format text from db
+post comment
+edit post-->

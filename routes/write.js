@@ -1,4 +1,4 @@
-//feed route
+//write route
 var express = require('express');
 var router = express.Router();
 

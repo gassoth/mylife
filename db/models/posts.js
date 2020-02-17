@@ -21,7 +21,8 @@ class Posts extends Model {
             properties: {
                 id: { type: "integer" },
                 title: { type: "string" },
-                body: { type: "string" },
+                body_delta: { type: "string" },
+                body_html: { type: "string" },
                 date_posted: { type: "string", format: "date-time" },
                 author: { type: "string" },
                 visibility: { type: "integer" },
