@@ -27,7 +27,11 @@ exports.get_read = function(req, res, next) {
             err.status = 404;
             return next(err);
         }
+        var user = '';
+        if (req.user) {
+            user = req.user;
+        }
         // Successful, so render.
-        res.render('read', { posts: results.posts} );
+        res.render('read', { posts: results.posts, user: user} );
     });
 };

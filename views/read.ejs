@@ -5,7 +5,6 @@
     <title>Read</title>
     <%- include('styles'); -%>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <!-- Include the Quill library -->
 </head>
 
 <body>
@@ -21,41 +20,95 @@
         <div class="container" style="min-width: 80%;  padding: 3vh 0vh 0vh 0vh;">
             <div class="z-depth-2 row"
                 style="display: inline-block; min-width: 100%; min-height: 70vh; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #f3e5f5">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae eleifend risus, id rutrum tortor. Duis
-                luctus suscipit leo, in egestas ante posuere sed. In hac habitasse platea dictumst. Nam augue purus,
-                fermentum non risus non, pulvinar condimentum turpis. Etiam luctus sed ipsum at suscipit. Vivamus sed
-                condimentum enim. Nullam mattis massa vulputate metus lacinia, eu mollis nunc tempor. Aliquam faucibus
-                neque sed faucibus mollis. Proin nec magna rhoncus, laoreet augue sit amet, mollis orci. Suspendisse
-                potenti.
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae eleifend risus, id rutrum tortor. Duis
-                luctus suscipit leo, in egestas ante posuere sed. In hac habitasse platea dictumst. Nam augue purus,
-                fermentum non risus non, pulvinar condimentum turpis. Etiam luctus sed ipsum at suscipit. Vivamus sed
-                condimentum enim. Nullam mattis massa vulputate metus lacinia, eu mollis nunc tempor. Aliquam faucibus
-                neque sed faucibus mollis. Proin nec magna rhoncus, laoreet augue sit amet, mollis orci. Suspendisse
-                potenti.
-                <%=posts.body_html %>
-                <%=posts.body_delta %>
-                <script>
-                </script>
-                
+                <div class="row">
+                    <%-posts.body_html %>
+                </div>
+
             </div>
+        </div>
 
         </div>
         <div class="container" style="min-width: 80%; margin-top: -45px; text-align: right;">
             <div class="row">
-                <div class="col s12">
-                        <h1><%=posts.author %></h1>
-                        </div>
-                    </div>
+                <div class="col s1" style="position: relative; top: 50px;">
+                    <% if (user.id == posts.id_account) { %>
+                    <% let link = '/write/' + posts.id; %>
+                    <a href="<%=link%>" class="indigo lighten-3 waves-effect waves-light btn-large">Edit</a>
+                    <% } %>
+                </div>
+                <div class="col s11">
+                    <h1><%=posts.author %></h1>
+                </div>
+            </div>
         </div>
+        <div class="container" style="margin-bottom: -60px; min-width: 80%; margin-top: -30px">
+            <div class="container" style="min-width: 80%;  padding: 3vh 0vh 0vh 0vh;">
+                <div class="z-depth-2 row"
+                    style="display: inline-block; min-width: 100%; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #f3e5f5">
+                    <div class="row">
+                        <form class="col s12">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <textarea id="textarea1" class="materialize-textarea"></textarea>
+                                    <label for="textarea1">Textarea</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                    <a href="" class="indigo lighten-3 waves-effect waves-light btn-large">Edit</a>
+                            </div>
+                        </form>
+                    </div>
 
+                </div>
+
+            </div>
 
     </main>
 </body>
 
-<!--need a solution to lining up title and author!!!!
+
+<!--edit post
+    stretch: referrer so that you can only get to write from the edit button.
+    stretch: edit button location
+    later: edit quill toolbaar
+-->
+<!--post comment
+
+-->
+<!--
 afterwards
-get text from db
-format text from db
-post comment
-edit post-->
+edit post
+post comment, styling for comments
+update user so that post shows up in history
+add permissions functionality
+reply to comment
+update user so comments shows up in history
+-->
+
+<!--
+user functionality
+user can delete own posts/comments
+user can view posts/comments
+ensure other users cannot see private post
+allow superuser to delete/edit post/comments
+add to subscription db
+add to read db
+update counts on profile page
+-->
+
+<!--
+feed functionality
+tags - maybe need to add it when user actually posts, and then have way to add it after
+search
+display posts
+get tabs working depending on the user
+do not display private posts
+-->
+
+<!--
+    bug
+    registration form saying email exists when i dont think it does
+    write form doesn't actually autopopulate fields when it doesn't pass db check
+    same with edit form
+    spaces between lines of letters in reading post
+-->
