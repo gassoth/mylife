@@ -41,75 +41,42 @@
                 </div>
             </div>
         </div>
+            <% for(let i = 0; i < comments.length; i++) { %>
+            <div class="container" style="margin-bottom: -60px; min-width: 80%; margin-top: -20px">
+                    <div class="container" style="min-width: 80%;  padding: 3vh 0vh 0vh 0vh;">
+                        <div class="z-depth-2 row"
+                            style="display: inline-block; min-width: 100%; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #f3e5f5">
+                            <div class="row">
+                                <form class="col s12">
+                                    <div class="row">
+                                            <h3><%= comments[i].author %></h3><%= comments[i].body %>
+                                        </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
         <div class="container" style="margin-bottom: -60px; min-width: 80%; margin-top: -30px">
             <div class="container" style="min-width: 80%;  padding: 3vh 0vh 0vh 0vh;">
                 <div class="z-depth-2 row"
                     style="display: inline-block; min-width: 100%; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #f3e5f5">
-                    <div class="row">
-                        <form class="col s12">
+                    <div class="row">       
+                        <form class="col s12" method="post">
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <textarea id="textarea1" class="materialize-textarea"></textarea>
-                                    <label for="textarea1">Textarea</label>
+                                    <textarea name="comment" id="comment" class="materialize-textarea"></textarea>
+                                    <label for="comment">Leave a comment</label>
                                 </div>
                             </div>
                             <div class="row">
-                                    <a href="" class="indigo lighten-3 waves-effect waves-light btn-large">Edit</a>
+                                <button type="submit" name="btn_comment" class="indigo lighten-3 waves-effect waves-light btn-large">Submit</button>
                             </div>
                         </form>
                     </div>
-
                 </div>
-
             </div>
+        </div>
 
     </main>
 </body>
-
-
-<!--edit post
-    stretch: referrer so that you can only get to write from the edit button.
-    stretch: edit button location
-    later: edit quill toolbaar
--->
-<!--post comment
-
--->
-<!--
-afterwards
-edit post
-post comment, styling for comments
-update user so that post shows up in history
-add permissions functionality
-reply to comment
-update user so comments shows up in history
--->
-
-<!--
-user functionality
-user can delete own posts/comments
-user can view posts/comments
-ensure other users cannot see private post
-allow superuser to delete/edit post/comments
-add to subscription db
-add to read db
-update counts on profile page
--->
-
-<!--
-feed functionality
-tags - maybe need to add it when user actually posts, and then have way to add it after
-search
-display posts
-get tabs working depending on the user
-do not display private posts
--->
-
-<!--
-    bug
-    registration form saying email exists when i dont think it does
-    write form doesn't actually autopopulate fields when it doesn't pass db check
-    same with edit form
-    spaces between lines of letters in reading post
--->
-<!---->

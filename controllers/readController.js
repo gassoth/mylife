@@ -1,6 +1,8 @@
 var Post = require('../db/models/posts.js');
+var Comment = require('../db/models/comments.js')
 var async = require('async');
-
+const { body,validationResult } = require('express-validator/check');
+const { sanitizeBody } = require('express-validator/filter');
 
 //Controller to get static page
 exports.get_debug = (req, res) => {
@@ -19,6 +21,16 @@ exports.get_read = function(req, res, next) {
                 err.status = 404;
                 return next(err);
             }
+        },
+        comments: async function(callback) {
+            try {
+                const comments = await Comment.query().select('comments.*').where('id_posts', Number(req.params.id));
+                return comments;
+            } catch (err) {
+                var err = new Error('Comment returned an error.  Please email ohthatemailaddress@gmail.com');
+                err.status = 404;
+                return next(err);
+            }
         }
     }, function(err, results) {
         if (err) { return next(err); }
@@ -32,6 +44,45 @@ exports.get_read = function(req, res, next) {
             user = req.user;
         }
         // Successful, so render.
-        res.render('read', { posts: results.posts, user: user} );
+        res.render('read', { posts: results.posts, user: user, comments: results.comments} );
     });
 };
+
+
+//Controller for when comment is posted
+exports.post_read = [
+
+    //Validate
+    body('comment').isLength({ min: 1 }).trim().withMessage('Content required'),
+
+    //sanitize
+    sanitizeBody('comment'),
+
+    //test
+    async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/errors messages.
+            res.render('/read/'+req.params.id, { errors: errors.array() });
+            return;
+        }
+        if (req.user == undefined) {
+            res.redirect('/login');
+            return;
+        }
+        let time = new Date().toISOString();
+        var newComment = {
+            author: req.user.generated_username,
+            body: req.body.comment,
+            date_posted: time,
+            id_posts: Number(req.params.id),
+            id_account: Number(req.user.id)
+        };
+        console.log(newComment);
+
+        const insertedComment = await Comment.query().insert(newComment);
+        res.redirect('/');
+    }
+
+
+]

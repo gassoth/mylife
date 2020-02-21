@@ -1,5 +1,3 @@
-//CURRENT STATUS
-
 //requires
 var createError = require('http-errors');
 var express = require('express');
@@ -116,3 +114,55 @@ module.exports = app;
 //profile throws an error if you try to put a letter in the database query that checks for an id
 //maybe possible to unit test a view?  profile.ejs has logic checking if a user is logged in or if a user is the currently viewed profile
 //test logic that checks if user is logged in in general
+
+
+//current status
+/*
+<!--
+update user so that post shows up in history
+add permissions functionality
+update user so comments shows up in history
+-->
+<!--edit post
+    stretch: referrer so that you can only get to write from the edit button.
+    stretch: edit button location
+    later: edit quill toolbaar
+-->
+<!--post comment
+later: styling for comments and post page in general
+stretch: reply to comments
+-->
+
+<!--
+user functionality
+user can delete own posts/comments
+user can view posts/comments
+ensure other users cannot see private post
+allow superuser to delete/edit post/comments
+add to subscription db
+add to read db
+update counts on profile page
+-->
+
+<!--
+feed functionality
+tags - maybe need to add it when user actually posts, and then have way to add it after
+search
+display posts
+get tabs working depending on the user
+do not display private posts
+-->
+
+<!--
+    bug
+    registration form saying email exists when i dont think it does
+    write form doesn't actually autopopulate fields when it doesn't pass db check
+    same with edit form
+    spaces between lines of letters in reading post
+-->
+<!---->
+
+<!--technical debt
+styling - maybe try to put it into style sheets
+unit testing - maybe figure out how to do that + automated testing
+-->*/

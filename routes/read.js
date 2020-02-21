@@ -11,5 +11,8 @@ router.get('/', read_controller.get_debug);
 //Read page route. Gets blog post with id match.
 router.get('/:id', read_controller.get_read);
 
+//Read page route. Gets blog post with id match.
+router.post('/:id', read_controller.post_read);
+
 
 module.exports = router;
