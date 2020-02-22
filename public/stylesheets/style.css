@@ -61,7 +61,7 @@ h3 {
   top: 17em;
   color: #9fa8da; }
 
-.divider {
+.divider, .feed-divider {
   position: absolute;
   left: 30%;
   top: 5%;
@@ -88,5 +88,32 @@ h3 {
 .input-field input[type=text]:focus {
   border-bottom: 1px solid #9e9e9e !important;
   box-shadow: 0 1px 0 0 #9e9e9e !important; }
+
+.feed-block-container {
+  min-width: 95%;
+  padding: 10vh 0vh 0vh 0vh; }
+
+.feed-block {
+  display: inline-block;
+  min-width: 100%;
+  padding: 2vh 2vh 0vh;
+  border: 1px solid #EEE;
+  background-color: #f3e5f5; }
+
+.feed-card {
+  background-color: #b4dc7f;
+  padding: 10px 0px 0px 0px; }
+
+.feed-card-title {
+  text-align: left;
+  font-size: 2.1em; }
+
+.feed-card-author {
+  text-align: left;
+  font-size: 1.5em; }
+
+.feed-divider {
+  left: 8%;
+  border-left: 1px solid #b4dc7f; }
 
 /*# sourceMappingURL=style.css.map */

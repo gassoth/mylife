@@ -119,8 +119,8 @@ module.exports = app;
 //current status
 /*
 <!--
-update user so that post shows up in history
 add permissions functionality
+update user so that post shows up in history
 update user so comments shows up in history
 -->
 <!--edit post
