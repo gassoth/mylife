@@ -11,4 +11,11 @@ router.get('/debugp', function(req, res, next) {
 //Profile page route. Gets profile with id match.
 router.get('/:id', profile_controller.get_profile);
 
+//Profile posts page route.  Gets the users posts with id match.
+router.get('/posts/:id', profile_controller.get_profile_posts);
+
+//Profile comments page route.  Gets the users comments with id match.
+router.get('/comments/:id', profile_controller.get_profile_comments);
+
+
 module.exports = router;

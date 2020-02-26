@@ -48,10 +48,10 @@
                         <div class="section"></div>
                         <div class="row bio-right">
                             <div class="row">
-                                <h6>View <%=account.generated_username %>'s posts</h6>
+                                <a href="posts/<%=account.id %>"><h6>View <%=account.generated_username %>'s posts</h6></a>
                             </div>
                             <div class="row">
-                                <h6>View <%=account.generated_username %>'s comments</h6>
+                                <a href="comments/<%=account.id %>"><h6>View <%=account.generated_username %>'s comments</h6></a>
                             </div>
                             <% if (user == '' || user.id != account.id) { %>
                             <div class="row">

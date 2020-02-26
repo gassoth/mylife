@@ -116,7 +116,6 @@ module.exports = app;
 //test logic that checks if user is logged in in general
 
 
-//current status
 /*
 <!--
 add permissions functionality
@@ -133,9 +132,11 @@ later: styling for comments and post page in general
 stretch: reply to comments
 -->
 
+//current status
 <!--
 user functionality
 user can delete own posts/comments
+  craeted feed page for individual posts.  need to fix styling (box a little too big on bottom)
 user can view posts/comments
 ensure other users cannot see private post
 allow superuser to delete/edit post/comments
