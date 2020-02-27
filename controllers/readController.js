@@ -86,3 +86,65 @@ exports.post_read = [
 
 
 ]
+
+//Controller for confirming delete post
+exports.get_delete_post = function(req, res, next) {
+    async.parallel({
+        posts: async function(callback) {
+            try {
+                const current_post = await Post.query().findById(req.params.id);
+                return current_post;
+            } catch (err) {
+                var err = new Error('Post not found');
+                err.status = 404;
+                return next(err);
+            }
+        },
+    }, async function(err, results) {
+        if (err) { return next(err); }
+        if (results.posts==null) { // No results.
+            var err = new Error('Post not found');
+            err.status = 404;
+            return next(err);
+        }
+        if (!req.user || results.posts.id_account != req.user.id) {
+            var err = new Error('Attempted to delete another users posts');
+            err.status = 403;
+            return next(err);
+        }
+        // Successful, so delete.
+        const numDeleted = await Post.query().deleteById(req.params.id);
+        res.redirect('/');
+    });
+};
+
+//Controller for confirming delete comment
+exports.get_delete_comment = function(req, res, next) {
+    async.parallel({
+        comments: async function(callback) {
+            try {
+                const current_comment = await Comment.query().findById(req.params.id);
+                return current_comment;
+            } catch (err) {
+                var err = new Error('Comment not found');
+                err.status = 404;
+                return next(err);
+            }
+        },
+    }, async function(err, results) {
+        if (err) { return next(err); }
+        if (results.comments==null) { // No results.
+            var err = new Error('Comment not found');
+            err.status = 404;
+            return next(err);
+        }
+        if (!req.user || results.comments.id_account != req.user.id) {
+            var err = new Error('Attempted to delete another users comment');
+            err.status = 403;
+            return next(err);
+        }
+        // Successful, so delete.
+        const numDeleted = await Comment.query().deleteById(req.params.id);
+        res.redirect('/');
+    });
+};

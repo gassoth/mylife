@@ -135,8 +135,7 @@ stretch: reply to comments
 //current status
 <!--
 user functionality
-user can delete own posts/comments
-  craeted feed page for individual posts.  need to fix styling (box a little too big on bottom)
+user can delete own posts/comments - untested
 user can view posts/comments
 ensure other users cannot see private post
 allow superuser to delete/edit post/comments
