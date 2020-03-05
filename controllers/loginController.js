@@ -36,7 +36,8 @@ exports.account_create_post = [
     body('username')
     .custom(async function(value, {req, loc, path}) {
         const user = await Account.query().where('email', req.body.username);
-        if (user) {
+        if (user.length != 0) {
+            console.log(user);
             throw new Error("User with that email already exists");
         } else {
             return value;

@@ -136,12 +136,16 @@ stretch: reply to comments
 <!--
 user functionality
 user can delete own posts/comments - untested
-user can view posts/comments
-ensure other users cannot see private post
-allow superuser to delete/edit post/comments
+user can view posts/comments - untested
+ensure other users cannot see private post  - untested
+update counts on profile page - untested
+allow superuser to delete/view post/comments - untested
+allow superuser to edit comments
+bug -     err http headers when loading list of comments and list of posts for a user **kinda urgent**
+bug -     write form not autopopulating edits **kinda urgent**
+
 add to subscription db
 add to read db
-update counts on profile page
 -->
 
 <!--
@@ -155,9 +159,7 @@ do not display private posts
 
 <!--
     bug
-    registration form saying email exists when i dont think it does
     write form doesn't actually autopopulate fields when it doesn't pass db check
-    same with edit form
     spaces between lines of letters in reading post
 -->
 <!---->

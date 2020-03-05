@@ -1,5 +1,6 @@
 var Post = require('../db/models/posts.js');
-var Comment = require('../db/models/comments.js')
+var Comment = require('../db/models/comments.js');
+var Account = require('../db/models/account.js');
 var async = require('async');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -12,6 +13,16 @@ exports.get_debug = (req, res) => {
 //Controller for getting a blog post
 exports.get_read = function(req, res, next) {
     async.parallel({
+        account: async function(callback) {
+            try {
+                const user_profile = await Account.query().findById(req.user.id);
+                return user_profile;
+            } catch (err) {
+                var err = new Error('Either user is not logged in or account is not found');
+                err.status = 404;
+                return next(err);
+            }
+        },
         posts: async function(callback) {
             try {
                 const current_post = await Post.query().findById(req.params.id);
@@ -42,6 +53,18 @@ exports.get_read = function(req, res, next) {
         var user = '';
         if (req.user) {
             user = req.user;
+        }
+        //user should not be able to view a private post.
+        try {
+            if (results.posts.visibility == 0 && (req.user.id != results.posts.id_account && results.account.permission < 1)) {
+                var err = new Error('Unauthorized access to private post');
+                err.status = 403;
+                return next(err);
+            }
+        } catch(err) {
+            var err = new Error('Unauthorized access to private post');
+            err.status = 403;
+            return next(err);
         }
         // Successful, so render.
         res.render('read', { posts: results.posts, user: user, comments: results.comments} );
@@ -90,6 +113,16 @@ exports.post_read = [
 //Controller for confirming delete post
 exports.get_delete_post = function(req, res, next) {
     async.parallel({
+        account: async function(callback) {
+            try {
+                const user_profile = await Account.query().findById(req.user.id);
+                return user_profile;
+            } catch (err) {
+                var err = new Error('User not logged in or account is not found');
+                err.status = 404;
+                return next(err);
+            }
+        },
         posts: async function(callback) {
             try {
                 const current_post = await Post.query().findById(req.params.id);
@@ -107,7 +140,8 @@ exports.get_delete_post = function(req, res, next) {
             err.status = 404;
             return next(err);
         }
-        if (!req.user || results.posts.id_account != req.user.id) {
+        //check permissions if user is allowed to delete posts (admins have greater than 0 permission)
+        if (!req.user || (results.posts.id_account != req.user.id && results.account.permission == 0)) {
             var err = new Error('Attempted to delete another users posts');
             err.status = 403;
             return next(err);
@@ -121,6 +155,16 @@ exports.get_delete_post = function(req, res, next) {
 //Controller for confirming delete comment
 exports.get_delete_comment = function(req, res, next) {
     async.parallel({
+        account: async function(callback) {
+            try {
+                const user_profile = await Account.query().findById(req.user.id);
+                return user_profile;
+            } catch (err) {
+                var err = new Error('User not logged in or account not found');
+                err.status = 404;
+                return next(err);
+            }
+        },
         comments: async function(callback) {
             try {
                 const current_comment = await Comment.query().findById(req.params.id);
@@ -138,7 +182,7 @@ exports.get_delete_comment = function(req, res, next) {
             err.status = 404;
             return next(err);
         }
-        if (!req.user || results.comments.id_account != req.user.id) {
+        if (!req.user || (results.comments.id_account != req.user.id && results.account.permission == 0)) {
             var err = new Error('Attempted to delete another users comment');
             err.status = 403;
             return next(err);
