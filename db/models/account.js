@@ -59,7 +59,8 @@ class Account extends Model {
           from: 'account.id',
           through: {
             from: 'subscriptions.id_subscriber',
-            to: 'subscriptions.id_subscribed'
+            to: 'subscriptions.id_subscribed',
+            extra: ['date_subscribed']
           },
           to: 'account.id'
         }

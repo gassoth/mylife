@@ -37,6 +37,19 @@ exports.get_profile = function(req, res, next) {
                 err.status = 404;
                 return next(err);
             }
+        },
+        //subscribers for a user
+        subscribers: async function(callback) {
+            try {
+                const user_profile = await Account.query().findById(req.params.id);
+                const subscriber = user_profile.$relatedQuery('subscribed');
+                return subscriber;
+            } catch (err) {
+                console.log(err);
+                var err = new Error('Subscriber error');
+                err.status = 404;
+                return next(err);
+            }
         }
     }, function(err, results) {
         if (err) { return next(err); }
@@ -44,6 +57,12 @@ exports.get_profile = function(req, res, next) {
             var err = new Error('Account not found');
             err.status = 404;
             return next(err);
+        }
+        
+        //Stores subscriberids so all subscribers isn't passed into the html page
+        let subscriberIds = [];
+        for (let i = 0; i < results.subscribers.length; i++) {
+            subscriberIds.push(results.subscribers[i].id);
         }
 
         //Checks if the count of users posts is valid and sends the correct value
@@ -57,9 +76,9 @@ exports.get_profile = function(req, res, next) {
         }
         // Successful, so render.  Either send in defined user or empty user since gives error if user not found
         if (req.user){
-            res.render('profile', { account: results.account, user: req.user, postsCount: postsCount, commentsCount: commentsCount} );
+            res.render('profile', { account: results.account, user: req.user, postsCount: postsCount, commentsCount: commentsCount, subscribers: subscriberIds} );
         } else {
-            res.render('profile', { account: results.account, user: '', postsCount: postsCount, commentsCount: commentsCount} );
+            res.render('profile', { account: results.account, user: '', postsCount: postsCount, commentsCount: commentsCount, subscribers: subscriberIds} );
         }
     });
 };
@@ -134,4 +153,33 @@ exports.get_profile_comments = function(req, res, next) {
                 res.render('profile_comments', { comments: results.comments} );
         });
     };
-    
+
+//Controller for subscribing
+exports.get_profile_subscribe = async function(req, res, next) {
+    //gets current logged in user, relates it to the profile they are subscribing to. Generic error if fail.
+    try {
+        let time = new Date().toISOString();
+        const subscriber = await Account.query().findById(req.user.id);
+        await subscriber.$relatedQuery('subscriber').relate({id: req.params.id, date_subscribed: time});
+        res.redirect('/profile/'+req.params.id);
+    } catch(err) {
+        console.log(err);
+        if (err instanceof TypeError) {
+            res.redirect('/login/');
+        } else {
+            res.redirect('/');
+        }
+    }
+};
+
+//Controller for unsubscribing
+exports.get_profile_unsubscribe = async function(req, res, next) {
+    try {
+        const subscriber = await Account.query().findById(req.user.id);
+        await subscriber.$relatedQuery('subscriber').unrelate().where({id_subscribed: req.params.id});
+        res.redirect('/profile/'+req.params.id);
+    } catch(err) {
+        console.log(err);
+        res.redirect('/');
+    }
+};

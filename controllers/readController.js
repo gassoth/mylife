@@ -43,7 +43,7 @@ exports.get_read = function(req, res, next) {
                 return next(err);
             }
         }
-    }, function(err, results) {
+    }, async function(err, results) {
         if (err) { return next(err); }
         if (results.posts==null) { // No results.
             var err = new Error('Post not found');
@@ -54,6 +54,7 @@ exports.get_read = function(req, res, next) {
         if (req.user) {
             user = req.user;
         }
+        
         //user should not be able to view a private post.
         try {
             if (results.posts.visibility == 0 && (req.user.id != results.posts.id_account && results.account.permission < 1)) {

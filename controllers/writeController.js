@@ -2,6 +2,7 @@ const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 var async = require('async');
 var Posts = require('../db/models/posts.js');
+var Comment = require('../db/models/comments.js');
 
 //Controller to get static page
 exports.get_write = (req, res) => {
@@ -24,6 +25,16 @@ exports.get_edit = function(req, res, next) {
                 err.status = 404;
                 return next(err);
             }
+        },
+        comments: async function(callback) {
+            try {
+                const comments = await Comment.query().select('comments.*').where('id_posts', Number(req.params.id));
+                return comments;
+            } catch (err) {
+                var err = new Error('Comment returned an error.  Please email ohthatemailaddress@gmail.com');
+                err.status = 404;
+                return next(err);
+            }
         }
     }, function(err, results) {
         if (err) { return next(err); }
@@ -38,10 +49,10 @@ exports.get_edit = function(req, res, next) {
         }
         console.log(results.posts.title);
         //check if user is allowed to edit post, else just redirect to the post
-        if (user != '' && user.id == results.posts.id_account) {
+        if (user != '' && (user.id == results.posts.id_account || user.permission > 0)) {
             res.render('edit', { posts: results.posts, errors: undefined } );
         } else {
-            res.render('read', { posts: results.posts, user: user} );
+            res.render('read', { posts: results.posts, user: user, comments: results.comments} );
         }
     });
 };
@@ -53,7 +64,6 @@ exports.post_edit = [
     //Validate
     //TODO
     //need validation styling and need to figure out maxlength
-    body('deltaText').isLength({ min: 4 }).trim().withMessage('Content required'),
     body('htmlText').isLength({ min: 4 }).trim().withMessage('Content required'),
     body('title').isLength({ min: 1 }).trim().withMessage('Title required'),
 
@@ -68,7 +78,8 @@ exports.post_edit = [
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
-            res.render('edit', { errors: errors.array() });
+            let post = await Posts.query().findById(req.params.id);
+            res.render('edit', { errors: errors.array(), posts: post });
             return;
         }
         var visibility = 0;

@@ -140,12 +140,12 @@ user can view posts/comments - untested
 ensure other users cannot see private post  - untested
 update counts on profile page - untested
 allow superuser to delete/view post/comments - untested
-allow superuser to edit comments
+allow superuser to edit comments - untested
+add to subscription db - untested
 bug -     err http headers when loading list of comments and list of posts for a user **kinda urgent**
-bug -     write form not autopopulating edits **kinda urgent**
 
-add to subscription db
 add to read db
+
 -->
 
 <!--
@@ -161,6 +161,8 @@ do not display private posts
     bug
     write form doesn't actually autopopulate fields when it doesn't pass db check
     spaces between lines of letters in reading post
+    bug -     write form not autopopulating edits -partially done - need solution filling (save users progress? grab old post? different errors might need different results)
+
 -->
 <!---->
 

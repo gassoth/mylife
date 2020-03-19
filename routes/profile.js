@@ -17,5 +17,10 @@ router.get('/posts/:id', profile_controller.get_profile_posts);
 //Profile comments page route.  Gets the users comments with id match.
 router.get('/comments/:id', profile_controller.get_profile_comments);
 
+//Profile attempt to subscribe route.
+router.get('/subscribe/:id', profile_controller.get_profile_subscribe);
+
+//Profile attempt to unsubscribe route.
+router.get('/unsubscribe/:id', profile_controller.get_profile_unsubscribe);
 
 module.exports = router;

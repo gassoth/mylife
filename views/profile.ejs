@@ -54,9 +54,15 @@
                                 <a href="comments/<%=account.id %>"><h6>View <%=account.generated_username %>'s comments</h6></a>
                             </div>
                             <% if (user == '' || user.id != account.id) { %>
-                            <div class="row">
-                                <h6>Subscribe to <%=account.generated_username %></h6>
-                            </div>
+                                <% if (user != '' && subscribers.includes(user.id)) { %>
+                                <div class="row">
+                                    <a href="unsubscribe/<%=account.id %>"><h6>Unsubscribe to <%=account.generated_username %></h6></a>
+                                </div>
+                                <% } else { %>
+                                <div class="row">
+                                    <a href="subscribe/<%=account.id %>"><h6>Subscribe to <%=account.generated_username %></h6></a>
+                                </div>
+                                <% } %>
                             <% } else { %>
                             <div class="row">
                                 <h6>Profile settings</h6>
