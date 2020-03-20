@@ -88,9 +88,13 @@ exports.get_profile_posts = function(req, res, next) {
     async.parallel({
         account: async function(callback) {
             try {
+                if (req.user == undefined) {
+                    return '';
+                }
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
             } catch (err) {
+                console.log(err);
                 var err = new Error('Account not found');
                 err.status = 404;
                 return next(err);
@@ -110,22 +114,24 @@ exports.get_profile_posts = function(req, res, next) {
     }, function(err, results) {
         if (err) { return next(err); }
         let userId = '';
-        try {
-            userId = req.user.id;
-        } catch (err) {
-
+        if (results.account != '') {
+            userId = results.account.id;
         }
+
         console.log(userId);
         if (results.posts[0]<1) { // No results.
             res.render('profile_none', { id: req.params.id });
+            return;
         }
         if (userId == req.params.id || results.account.permission > 0) {
             // Successful and correct user is logged in, so private and public posts displayed
             res.render('profile_posts', { posts: results.posts[0]} );
+            return;
         }
         //Post authors is not logged in, so only public posts are displayed
         if (results.posts[1]<1)  {//no public posts available 
             res.render('profile_none', { id: req.params.id } );
+            return;
         }
         res.render('profile_posts', { posts: results.posts[1]} );
     });
@@ -148,9 +154,10 @@ exports.get_profile_comments = function(req, res, next) {
             if (err) { return next(err); }
             if (results.comments<1) { // No results.
                 res.render('profile_none', { id: req.params.id });
-            }
+            } else {
             // Successful, so render.
-                res.render('profile_comments', { comments: results.comments} );
+            res.render('profile_comments', { comments: results.comments} );
+            }
         });
     };
 

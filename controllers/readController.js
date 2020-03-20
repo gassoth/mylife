@@ -20,7 +20,7 @@ exports.get_read = function(req, res, next) {
             } catch (err) {
                 var err = new Error('Either user is not logged in or account is not found');
                 err.status = 404;
-                return next(err);
+                return '';
             }
         },
         posts: async function(callback) {
@@ -54,7 +54,29 @@ exports.get_read = function(req, res, next) {
         if (req.user) {
             user = req.user;
         }
-        
+
+        //gets readers for a posts, checks if logged in user is in that list. if not, adds.
+        try {
+            if (user == '') {
+                throw 'NotLoggedIn';
+            }
+            var readers = await results.posts.$relatedQuery('read');
+            var swi = 0;
+            for (let i = 0; i < readers.length; i++) {
+                if (user.id == readers[i].id) {
+                    swi = 1;
+                    break;
+                }
+            }
+            if (swi) {
+                throw 'UserFound';
+            } else {
+                await results.account.$relatedQuery('read').relate(results.posts);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
         //user should not be able to view a private post.
         try {
             if (results.posts.visibility == 0 && (req.user.id != results.posts.id_account && results.account.permission < 1)) {
@@ -107,8 +129,6 @@ exports.post_read = [
         const insertedComment = await Comment.query().insert(newComment);
         res.redirect('/');
     }
-
-
 ]
 
 //Controller for confirming delete post

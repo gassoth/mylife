@@ -142,9 +142,11 @@ update counts on profile page - untested
 allow superuser to delete/view post/comments - untested
 allow superuser to edit comments - untested
 add to subscription db - untested
-bug -     err http headers when loading list of comments and list of posts for a user **kinda urgent**
+add to read db - untested
+bug -     err http headers when loading list of comments and list of posts for a user - fixed, untested
+bug - private posts breaks lists of posts - fixed, untested
 
-add to read db
+later - add to read db - probably a cleaner way to do this part other than throwing random exceptions.   look into it.
 
 -->
 
@@ -162,7 +164,7 @@ do not display private posts
     write form doesn't actually autopopulate fields when it doesn't pass db check
     spaces between lines of letters in reading post
     bug -     write form not autopopulating edits -partially done - need solution filling (save users progress? grab old post? different errors might need different results)
-
+      -private vs public not autopopulated
 -->
 <!---->
 
