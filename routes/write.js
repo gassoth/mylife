@@ -17,4 +17,11 @@ router.post('/:id', write_controller.post_edit);
 //post write (create blogpost)
 router.post('/', write_controller.post_write);
 
+//get edit tags page
+router.get('/tags/:id', write_controller.get_tags);
+
+//post edit tags page (add or remove tags)
+router.post('/tags/:id', write_controller.post_tags);
+
+
 module.exports = router;

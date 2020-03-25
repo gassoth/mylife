@@ -3,11 +3,12 @@ const { sanitizeBody } = require('express-validator/filter');
 var async = require('async');
 var Posts = require('../db/models/posts.js');
 var Comment = require('../db/models/comments.js');
+var Tags = require('../db/models/tags.js');
 
 //Controller to get static page
 exports.get_write = (req, res) => {
     if (req.user) {
-        res.render('write', {errors: undefined });
+        res.render('write', {errors: undefined, posts: '', title: '' });
     } else {
         res.redirect('/login');
     }
@@ -115,14 +116,12 @@ exports.post_edit = [
 
 ]
 
-
 //Controller for when form is posted
 exports.post_write = [
 
     //Validate
     //TODO
     //need validation styling and need to figure out maxlength
-    body('deltaText').isLength({ min: 4 }).trim().withMessage('Content required'),
     body('htmlText').isLength({ min: 4 }).trim().withMessage('Content required'),
     body('title').isLength({ min: 1 }).trim().withMessage('Title required'),
 
@@ -130,16 +129,17 @@ exports.post_write = [
     sanitizeBody('deltaText'),
     sanitizeBody('htmlText'),
     sanitizeBody('title'),
-
+    sanitizeBody('tags'),
 
     //test
     async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
-            res.render('write', { errors: errors.array() });
+            res.render('write', { errors: errors.array(), posts: req.body.htmlText, title: req.body.title });
             return;
         }
+
         let time = new Date().toISOString();
         var visibility = 0;
         if (req.body.visibility != undefined) {
@@ -171,9 +171,91 @@ exports.post_write = [
         console.log(time);
         console.log(req.user.id);
         console.log(req.user.generated_username);
-        const insertedAccount = await Posts.query().insert(newPost);
+        const insertedPost = await Posts.query().insert(newPost);
+
+        //creates tags for this post, removes whitespace and then duplicates, then inserts
+        let tags = '';
+        if (req.body.tags.trim().length > 0) {
+            tags = req.body.tags.split(" ");
+        }
+        const setTags = function(a) { return [...new Set(a)]};
+
+        if (tags != '') {
+            let setOfTags = setTags(tags);
+            for (let i = 0; i < setOfTags.length; i++) {
+                var newTag = {
+                    tag: setOfTags[i],
+                    id_posts: insertedPost.id
+                };
+                const insertedTag = await Tags.query().insert(newTag);
+            }
+        }
+
+        res.redirect('/');
+    }
+]
+
+//Controller to get tags page
+exports.get_tags = async (req, res) => {
+    const current_post = await Posts.query().findById(req.params.id);
+    if (req.user && (req.user.id == current_post.id_account || req.user.permission > 0)) {
+        const queried_tags = await Tags.query().select('tags.*').where('id_posts', Number(req.params.id));
+        console.log(queried_tags);
+        res.render('tags', {tags: queried_tags, errors: ''});
+    } else {
+        console.log('Cannot edit another users post')
         res.redirect('/');
     }
 
 
+}
+
+//Controller for when tag is edited
+exports.post_tags = [
+
+    //Validate
+    //TODO
+    //need validation styling and need to figure out maxlength
+    body('tags').isLength({ min: 1 }).trim().withMessage('Tags required'),
+
+    //sanitize
+    sanitizeBody('tags'),
+
+    //test
+    async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/errors messages.
+            const queried_tags = await Tags.query().select('tags.*').where('id_posts', Number(req.params.id));
+            res.render('tags', { tags: queried_tags, errors: errors.array() });
+            return;
+        }
+        //separates tags, trims it, removes duplicates
+        let tags = '';
+        if (req.body.tags.trim().length > 0) {
+            tags = req.body.tags.split(" ");
+        }
+        const setTags = function(a) { return [...new Set(a)]};
+        if (req.body.btn_submit == 'add') {
+            if (tags != '') {
+                let setOfTags = setTags(tags);
+                for (let i = 0; i < setOfTags.length; i++) {
+                    var newTag = {
+                        tag: setOfTags[i],
+                        id_posts: parseInt(req.params.id)
+                    };
+                    const insertedTag = await Tags.query().insert(newTag).catch(error => { console.log('caught', error.message); });
+                }
+            }
+        } else {
+            if (tags != '') {
+                let setOfTags = setTags(tags);
+                for (let i = 0; i < setOfTags.length; i++) {
+                    const deletedTag = await Tags.query().delete().where('tag', setOfTags[i]).where('id_posts', req.params.id);
+                }
+            }
+        }
+        
+        res.redirect('/read/'+req.params.id);
+    }
 ]

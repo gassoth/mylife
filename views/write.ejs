@@ -25,8 +25,13 @@
                 method="post">
                 <div class='row' style="margin-bottom: 5px;">
                     <div class='input-field col s12'>
+                        <% if (title != '') { %>
+                            <input class='validate' type='text' name='title' id='title' value='<%= title%>' />
+                            <label for='title'>Create a title</label>
+                            <% } else { %>
                         <input class='validate' type='text' name='title' id='title' />
                         <label for='title'>Create a title</label>
+                        <% } %>
                     </div>
                 </div>
                 <!-- Create the editor container -->
@@ -36,11 +41,21 @@
                     <div class='editor-wrapper'>
                         <div class="z-depth-2">
                             <div id="editor">
+                                <% if (posts != '') { %>
+                                <%- posts%>
+                                <% } else { %>
                                 <p>Hello World!</p>
                                 <p>Some initial <strong>bold</strong> text</p>
                                 <p><br></p>
+                                <% } %>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class='row' style="margin-bottom: 5px;">
+                    <div class='input-field col s12'>
+                        <input class='validate' type='text' name='tags' id='tags' />
+                        <label for='tags'>Tags (separate by space)</label>
                     </div>
                 </div>
                 <div class='row'>

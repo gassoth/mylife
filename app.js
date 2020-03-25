@@ -152,16 +152,17 @@ later - add to read db - probably a cleaner way to do this part other than throw
 
 <!--
 feed functionality
-tags - maybe need to add it when user actually posts, and then have way to add it after
+tags - maybe need to add it when user actually posts, and then have way to add it after - done but not tested
+
+display posts 
+  -do not display private posts
+  -get tabs working depending on the user
 search
-display posts
-get tabs working depending on the user
-do not display private posts
 -->
 
 <!--
     bug
-    write form doesn't actually autopopulate fields when it doesn't pass db check
+    write form doesn't actually autopopulate fields when it doesn't pass db check - untested
     spaces between lines of letters in reading post
     bug -     write form not autopopulating edits -partially done - need solution filling (save users progress? grab old post? different errors might need different results)
       -private vs public not autopopulated

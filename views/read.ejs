@@ -36,7 +36,13 @@
                     <a href="<%=link%>" class="indigo waves-effect waves-light btn-large">Edit</a>
                     <% } %>
                 </div>
-                <div class="col s1 offset-s1" style="position:  relative; top: 50px;">
+                <div class="col s1" style="position: relative; top: 50px;">
+                        <% if (user.id == posts.id_account || user.permission > 0) { %>
+                        <% let link = '/write/tags/' + posts.id; %>
+                        <a href="<%=link%>" class="indigo waves-effect waves-light btn-large">Tags</a>
+                        <% } %>
+                </div>
+                <div class="col s1" style="position:  relative; top: 50px;">
                         <% if (user.id == posts.id_account || user.permission > 0) { %>
                         <% let delLink = 'delete/' + posts.id; %>
                         <a href="<%=delLink%>" class="indigo waves-effect waves-light btn-large" onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
