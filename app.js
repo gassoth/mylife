@@ -147,17 +147,37 @@ bug -     err http headers when loading list of comments and list of posts for a
 bug - private posts breaks lists of posts - fixed, untested
 
 later - add to read db - probably a cleaner way to do this part other than throwing random exceptions.   look into it.
-
+profile options
 -->
 
 <!--
 feed functionality
 tags - maybe need to add it when user actually posts, and then have way to add it after - done but not tested
 
-display posts 
-  -do not display private posts
-  -get tabs working depending on the user
+display all posts  - done, untested
+  -pagination - done, but not sure if this is best way to implement.  we'll see once we start working on tabs.
+    implemented server side i think - done, not tested
+    next page and previous page - done, not tested
+
+implement bookmarking
+
+  tabs
+  -comments
+  -views
+  -date
+  -subs
+  -bookmarked
+
+filters
+  -read/unread
+
 search
+
+later
+  -do not display private posts/ maybe display your own posts?
+  -stretch is have page numbers.  difficult bc i dont know how many pages ill have/how to template it.
+
+
 -->
 
 <!--

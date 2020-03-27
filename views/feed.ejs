@@ -64,151 +64,51 @@
         <center>
             <div class="container feed-block-container">
                 <div class="z-depth-2 row feed-block">
-                    <div class="row">
-                        <div class="col s12">
-                            <a href="/">
-                                <div class="card feed-card">
-                                    <div class="row">
-                                        <div class="col s1">
-                                            <h3>R</h3>
-                                            <div class="feed-divider"></div>
-                                        </div>
-                                        <div class="col s8">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title">
-                                                    <div class="feed-card-title">I play too much</div>
-                                                </span>
-                                                <div class="feed-card-author">Rustic pepperoni</div>
+                    <% if (posts) { %>
+                        <% for (let i = 0; i < posts.length; i++) { %>
+                            <div class="row">
+                                <div class="col s12">
+                                    <a href="/read/<%=posts[i].id%>">
+                                        <div class="card feed-card">
+                                            <div class="row">
+                                                <div class="col s1">
+                                                    <h3>R</h3>
+                                                    <div class="feed-divider"></div>
+                                                </div>
+                                                <div class="col s8">
+                                                    <div class="card-content grey-text text-lighten-3">
+                                                        <span class="card-title">
+                                                            <div class="feed-card-title"><%= posts[i].title%></div>
+                                                        </span>
+                                                        <div class="feed-card-author"><%= posts[i].author%></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col s3">
+                                                    <div class="card-content grey-text text-lighten-3">
+                                                        <span class="card-title" style="text-align: right;">
+                                                            <%= posts[i].date_posted.getDate(); %> <%= posts[i].date_posted.toLocaleString('default', { month: 'long' }); %> <%= posts[i].date_posted.getFullYear(); %> <br />
+                                                            <%= posts[i].date_posted.getHours(); %>:<%= posts[i].date_posted.getMinutes(); %>
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col s3">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title" style="text-align: right;">
-                                                    9 November 2019 <br />
-                                                    19:43
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12">
-                            <a href="/">
-                                <div class="card feed-card">
-                                    <div class="row">
-                                        <div class="col s1">
-                                            <h3>R</h3>
-                                            <div class="feed-divider"></div>
-                                        </div>
-                                        <div class="col s8">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title">
-                                                    <div class="feed-card-title">I play too much</div>
-                                                </span>
-                                                <div class="feed-card-author">Rustic pepperoni</div>
-                                            </div>
-                                        </div>
-                                        <div class="col s3">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title" style="text-align: right;">
-                                                    9 November 2019 <br />
-                                                    19:43
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12">
-                            <a href="/">
-                                <div class="card feed-card">
-                                    <div class="row">
-                                        <div class="col s1">
-                                            <h3>R</h3>
-                                            <div class="feed-divider"></div>
-                                        </div>
-                                        <div class="col s8">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title">
-                                                    <div class="feed-card-title">I play too much</div>
-                                                </span>
-                                                <div class="feed-card-author">Rustic pepperoni</div>
-                                            </div>
-                                        </div>
-                                        <div class="col s3">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title" style="text-align: right;">
-                                                    9 November 2019 <br />
-                                                    19:43
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12">
-                            <a href="/">
-                                <div class="card feed-card">
-                                    <div class="row">
-                                        <div class="col s1">
-                                            <h3>R</h3>
-                                            <div class="feed-divider"></div>
-                                        </div>
-                                        <div class="col s8">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title">
-                                                    <div class="feed-card-title">I play too much</div>
-                                                </span>
-                                                <div class="feed-card-author">Rustic pepperoni</div>
-                                            </div>
-                                        </div>
-                                        <div class="col s3">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title" style="text-align: right;">
-                                                    9 November 2019 <br />
-                                                    19:43
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12">
-                            <a href="/">
-                                <div class="card feed-card">
-                                    <div class="row">
-                                        <div class="col s1">
-                                            <h3>R</h3>
-                                            <div class="feed-divider"></div>
-                                        </div>
-                                        <div class="col s8">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title">
-                                                    <div class="feed-card-title">I play too much</div>
-                                                </span>
-                                                <div class="feed-card-author">Rustic pepperoni</div>
-                                            </div>
-                                        </div>
-                                        <div class="col s3">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title" style="text-align: right;">
-                                                    9 November 2019 <br />
-                                                    19:43
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </a>
-                        </div>
-                    </div>
+                                    </a>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% } %>
+                    <ul class="pagination">
+                        <% if (pageNum == 1) { %>
+                            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                        <% } else { let prevPage = parseInt(pageNum)-1;%>
+                            <li class="waves-effect"><a href="/feed/<%=prevPage%>"><i class="material-icons">chevron_left</i></a></li>
+                        <% } %>
+                        <% if (isNextPage) { let nextPage = parseInt(pageNum)+1; %>
+                            <li class="waves-effect"><a href="/feed/<%=nextPage%>"><i class="material-icons">chevron_right</i></a></li>
+                        <% } else { %>
+                            <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                        <% } %>
+                    </ul>
                 </div>
             </div>
             </div>

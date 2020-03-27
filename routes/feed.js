@@ -6,6 +6,6 @@ var router = express.Router();
 var feed_controller = require('../controllers/feedController.js');
 
 //Get feed route
-router.get('/', feed_controller.get_feed);
+router.get('/:pageNum', feed_controller.get_feed);
 
 module.exports = router;
