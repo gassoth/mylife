@@ -90,6 +90,20 @@ class Account extends Model {
           to: 'posts.id'
         }
 
+      },
+      bookmarks: {
+        relation: Model.ManyToManyRelation,
+        modelClass: Posts,
+        join: {
+          from: 'account.id',
+          // ManyToMany relation needs the `through` object to describe the join table.
+          through: {
+            from: 'bookmarks.id_account',
+            to: 'bookmarks.id_post'
+          },
+          to: 'posts.id'
+        }
+
       }
     };
   }

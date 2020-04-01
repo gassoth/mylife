@@ -159,7 +159,8 @@ display all posts  - done, untested
     implemented server side i think - done, not tested
     next page and previous page - done, not tested
 
-implement bookmarking
+implement bookmarking - done, untested
+  -add a page that says bookmarked already error
 
   tabs
   -comments

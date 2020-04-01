@@ -77,6 +77,24 @@ exports.get_read = function(req, res, next) {
             console.log(err);
         }
 
+        let bookmarked = 0;
+        //gets bookmarks for a posts, checks if logged in user is in that list to determine whether or not to display bookmark or unbookmark
+        try {
+            if (user == '') {
+                throw 'NotLoggedIn';
+            }
+            var bookmarks = await results.posts.$relatedQuery('bookmarks');
+            console.log(bookmarks);
+            for (let i = 0; i < bookmarks.length; i++) {
+                if (user.id == bookmarks[i].id) {
+                    bookmarked = 1;
+                    break;
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
         //user should not be able to view a private post.
         try {
             if (results.posts.visibility == 0 && (req.user.id != results.posts.id_account && results.account.permission < 1)) {
@@ -90,7 +108,7 @@ exports.get_read = function(req, res, next) {
             return next(err);
         }
         // Successful, so render.
-        res.render('read', { posts: results.posts, user: user, comments: results.comments} );
+        res.render('read', { posts: results.posts, user: user, comments: results.comments, bookmark: bookmarked } );
     });
 };
 
@@ -211,5 +229,113 @@ exports.get_delete_comment = function(req, res, next) {
         // Successful, so delete.
         const numDeleted = await Comment.query().deleteById(req.params.id);
         res.redirect('/');
+    });
+};
+
+//Controller for confirming bookmark post
+exports.get_bookmark = function(req, res, next) {
+    async.parallel({
+        account: async function(callback) {
+            try {
+                const user_profile = await Account.query().findById(req.user.id);
+                return user_profile;
+            } catch (err) {
+                var err = new Error('User not logged in or account is not found');
+                err.status = 404;
+                return next(err);
+            }
+        },
+        posts: async function(callback) {
+            try {
+                const current_post = await Post.query().findById(req.params.id);
+                return current_post;
+            } catch (err) {
+                var err = new Error('Post not found');
+                err.status = 404;
+                return next(err);
+            }
+        },
+    }, async function(err, results) {
+        if (err) { return next(err); }
+        if (results.posts==null) { // No results.
+            var err = new Error('Post not found');
+            err.status = 404;
+            return next(err);
+        }
+
+        //gets bookmarks for a posts, checks if logged in user is in that list. if they are, it ends execution.
+        try {
+            if (!req.user) {
+                throw 'NotLoggedIn';
+            }
+            var bookmarks = await results.posts.$relatedQuery('bookmarks');
+            var swi = 0;
+            for (let i = 0; i < bookmarks.length; i++) {
+                if (req.user.id == bookmarks[i].id) {
+                    swi = 1;
+                    break;
+                }
+            }
+            if (swi) {
+                throw 'UserFound';
+            } else {
+                await results.account.$relatedQuery('bookmarks').relate(results.posts);
+            }
+        } catch (err) {
+            console.log(err);
+            res.redirect('/');
+            return;
+        }
+
+        // Successful, so delete.
+        res.redirect('/read/'+results.posts.id);
+    });
+};
+
+//Controller for confirming bookmark post
+exports.get_delete_bookmark = function(req, res, next) {
+    async.parallel({
+        account: async function(callback) {
+            try {
+                const user_profile = await Account.query().findById(req.user.id);
+                return user_profile;
+            } catch (err) {
+                var err = new Error('User not logged in or account is not found');
+                err.status = 404;
+                return next(err);
+            }
+        },
+        posts: async function(callback) {
+            try {
+                const current_post = await Post.query().findById(req.params.id);
+                return current_post;
+            } catch (err) {
+                var err = new Error('Post not found');
+                err.status = 404;
+                return next(err);
+            }
+        },
+    }, async function(err, results) {
+        if (err) { return next(err); }
+        if (results.posts==null) { // No results.
+            var err = new Error('Post not found');
+            err.status = 404;
+            return next(err);
+        }
+
+        //gets bookmarks for a posts, checks if logged in, then removes bookmark
+        try {
+            if (!req.user) {
+                throw 'NotLoggedIn';
+            }
+            results.account.$relatedQuery('bookmarks').unrelate().where({id_post: results.posts.id});
+        } catch (err) {
+            console.log(err);
+            res.redirect('/');
+            return;
+        }
+
+        // Successful, so delete.
+        res.redirect('/read/'+results.posts.id);
     });
 };

@@ -64,7 +64,20 @@ class Posts extends Model {
                   },
                   to: 'account.id'
                 }
-            }        
+            },
+            bookmarks: {
+                relation: Model.ManyToManyRelation,
+                modelClass: __dirname + '/account',
+                join: {
+                  from: 'posts.id',
+                  // ManyToMany relation needs the `through` object to describe the join table.
+                  through: {
+                    from: 'bookmarks.id_post',
+                    to: 'bookmarks.id_account'
+                  },
+                  to: 'account.id'
+                }
+            }         
         };
     }
 }
