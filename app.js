@@ -160,7 +160,7 @@ display all posts  - done, untested
     next page and previous page - done, not tested
 
 implement bookmarking - done, untested
-  -add a page that says bookmarked already error
+  -todo - add a page that says bookmarked already error
 
   tabs
   -comments
