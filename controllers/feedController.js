@@ -14,7 +14,6 @@ exports.get_feed = async (req, res) => {
         //Uses user id, read (val 1 for read or 0 for all), and sb (2 for sub, 1 for bookmark, 0 for all))
         //Gets ids of posts that were read or all posts
         //returns querys posts of those ids to either return the bookmarked ones, posts by a subscribed-to user, or none.
-        //TODO - error handling, testing
         async function feedFilter(usrId, rd, sb) {
             let queryIds;
             if (rd) {
@@ -38,16 +37,80 @@ exports.get_feed = async (req, res) => {
             }
         }
 
-        let selectAllTest = await feedFilter(5, 0, 0);
-        //test select all
-        const listPostsTest = await Post.query().findByIds(selectAllTest).where('visibility', 1).orderBy('date_posted', 'desc').page(req.params.pageNum-1, 10);
-        const nextCheckTest = await Post.query().findByIds(selectAllTest).where('visibility', 1).orderBy('date_posted', 'desc').page(req.params.pageNum, 10);
-        //Sets whether there is another page.
-        if (nextCheckTest.results.length != 0) {
-            nextPage = 1;
-        }
+        let selectAll = await feedFilter(5, 0, 0);
 
-        res.render('feed', { posts: listPostsTest.results, isNextPage: nextPage, pageNum: req.params.pageNum });
+        //Function to sort feed based on views count (2), comments count(1), or date (0). Need to test it.
+        //posts is the posts that are being sorted, and pagenum is which page is needed
+        async function feedSorter(sort, posts, pageNum) {
+            if (sort == 2) {
+                let sort = await Post.query().findByIds(posts).select('posts.id', 'posts.title', 'posts.date_posted', 'posts.author', 'posts.id_account')
+                    .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
+                    .groupBy('posts.id')
+                    .count('posts.id')
+                    .where('visibility', 1)
+                    .orderBy('count', 'desc').page(pageNum-1, 10);
+                let sortNext = await Post.query().findByIds(posts).select('posts.id')
+                    .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
+                    .groupBy('posts.id')
+                    .count('posts.id')
+                    .where('visibility', 1)
+                    .orderBy('count', 'desc').page(pageNum, 10);
+
+                //checks whether or not theres a next page
+                if (sortNext.results.length != 0) {
+                    return [sort, 1];
+                } else {
+                    return [sort, 0];
+                }
+            } else if (sort == 1) {
+                let sort = await Post.query().findByIds(posts).select('posts.id')
+                    .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
+                    .groupBy('posts.id')
+                    .count('posts.id')
+                    .where('visibility', 1)
+                    .orderBy('count', 'desc').page(pageNum-1, 10);
+                let sortNext = await Post.query().findByIds(posts).select('posts.id')
+                    .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
+                    .groupBy('posts.id')
+                    .count('posts.id')
+                    .where('visibility', 1)
+                    .orderBy('count', 'desc').page(pageNum, 10);
+
+                //checks whether or not theres a next page
+                if (sortNext.results.length != 0) {
+                    return [sort, 1];
+                } else {
+                    return [sort, 0];
+                }
+            } else {
+                const sort = await Post
+                    .query()
+                    .findByIds(posts).select('posts.id')
+                    .where('visibility', 1)
+                    .orderBy('date_posted', 'desc')
+                    .page(pageNum-1, 10);
+                const sortNext = await Post
+                    .query().select('posts.id')
+                    .findByIds(selectAll)
+                    .where('visibility', 1)
+                    .orderBy('date_posted', 'desc')
+                    .page(pageNum, 10);
+
+                //checks whether or not theres a next page
+                if (sortNext.results.length != 0) {
+                    return [sort, 1];
+                } else {
+                    return [sort, 0];
+                }
+            }
+        }
+        
+        let result = await feedSorter(2, selectAll, req.params.pageNum);
+        //console.log(result[0]);
+        //console.log(result[1]);
+        //console.log(await Post.query().findByIds(selectAll).select('posts.id').where('visibility', 1).orderBy('date_posted', 'desc'));
+
+        res.render('feed', { posts: result[0].results, isNextPage: result[1], pageNum: req.params.pageNum });
     } catch(err) {
         console.log(err);
         res.redirect('/');
@@ -83,4 +146,35 @@ if (subscribed or bookmarked)
 result = db-result.query (date/function for views/function for comments).paginated
 
 send result?
+*/
+
+
+/*
+        
+        let selectAll = await feedFilter(5, 0, 0);
+        let sortTest = await Post.query().findByIds(selectAll).select('posts.id')
+            .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
+            .groupBy('posts.id')
+            .count('posts.id')
+            .where('visibility', 1)
+            .orderBy('count', 'desc');
+        console.log(sortTest); 
+        console.log(await Post.query().findByIds(selectAll).select('posts.id').where('visibility', 1).orderBy('date_posted', 'desc'))
+
+        //rn working on sorting based on comments or views or date.  none currently implemented 
+        let commentTest = await Post.query().findByIds(selectAll).select('posts.id')
+            .leftOuterJoin('comments as c', 'c.id_posts', 'posts.id')
+            .groupBy('posts.id')
+            .count('c.id')
+            .where('visibility', 1)
+            .orderBy('count', 'desc');
+        console.log(commentTest);
+
+        //test select all
+        const listPosts = await Post.query().findByIds(selectAll).where('visibility', 1).orderBy('date_posted', 'desc').page(req.params.pageNum-1, 10);
+        const nextCheck = await Post.query().findByIds(selectAll).where('visibility', 1).orderBy('date_posted', 'desc').page(req.params.pageNum, 10);
+        //Sets whether there is another page.
+        if (nextCheck.results.length != 0) {
+            nextPage = 1;
+        } 
 */

@@ -162,22 +162,25 @@ display all posts  - done, untested
 implement bookmarking - done, untested
   -todo - add a page that says bookmarked already error
 
-  tabs
+tabs - done but untested
   -comments
   -views
   -date
+
+filters - done but untested
+  -read/unread
   -subs
   -bookmarked
 
-filters
-  -read/unread
+integrate into template
+  -tabs and filters
 
 search
 
 later
   -do not display private posts/ maybe display your own posts?
   -stretch is have page numbers.  difficult bc i dont know how many pages ill have/how to template it.
-
+  TODO - feedSort and feedFilter need testing and error handling
 
 -->
 
