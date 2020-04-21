@@ -2,24 +2,42 @@ var Post = require('../db/models/posts.js');
 var Account = require('../db/models/account.js');
 var async = require('async');
 
+///currently integrating, need to check if flags is a good method.
+
 //Controller to get static page
 exports.get_feed = async (req, res) => {
     try {
         //Gets the page specified, also checks if there are more posts after that.
-        let uid,nextPage = 0;
+        let uid,sortFlag,displayedPostsFlag = 0;
+        let allFlag = 1;
+        if (req.query.sortFlag) {
+            sortFlag = parseInt(req.query.sortFlag);
+        }
+        if (req.query.allFlag) {
+            allFlag = req.query.allFlag;
+        }
+        if (req.query.displayedPostsFlag) {
+            displayedPostsFlag = req.query.displayedPostsFlag;
+        }
         if (req.user) {
             uid = req.user.id;
+        } else {
+            displayedPostsFlag = 0;
+            allFlag = 1;
         }
 
         //Uses user id, read (val 1 for read or 0 for all), and sb (2 for sub, 1 for bookmark, 0 for all))
         //Gets ids of posts that were read or all posts
         //returns querys posts of those ids to either return the bookmarked ones, posts by a subscribed-to user, or none.
-        async function feedFilter(usrId, rd, sb) {
+        async function feedFilter(usrId, all, sb) {
             let queryIds;
-            if (rd) {
+            if (all == 0) {
                 queryIds = await Post.query().select('posts.id')
-                .innerJoin('read as r', 'posts.id', 'r.id_posts')
-                .where('r.id_account', usrId).map(a => a.id);
+                .leftOuterJoin('read as r', joinBuilder => { 
+                    joinBuilder.on('posts.id', '=', 'r.id_posts')
+                    .andOn('r.id_account', usrId);
+                })
+                .whereNull('r.id_posts').map(a => a.id);
             } else {
                 queryIds = await Post.query().select('posts.id').map(a => a.id);
             }
@@ -36,8 +54,6 @@ exports.get_feed = async (req, res) => {
                 return await Post.query().findByIds(queryIds).select('posts.id').map(a => a.id);
             }
         }
-
-        let selectAll = await feedFilter(5, 0, 0);
 
         //Function to sort feed based on views count (2), comments count(1), or date (0). Need to test it.
         //posts is the posts that are being sorted, and pagenum is which page is needed
@@ -63,16 +79,16 @@ exports.get_feed = async (req, res) => {
                     return [sort, 0];
                 }
             } else if (sort == 1) {
-                let sort = await Post.query().findByIds(posts).select('posts.id')
-                    .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
+                let sort = await Post.query().findByIds(posts).select('posts.id', 'posts.title', 'posts.date_posted', 'posts.author', 'posts.id_account')
+                    .leftOuterJoin('comments as c', 'c.id_posts', 'posts.id')
                     .groupBy('posts.id')
-                    .count('posts.id')
+                    .count('c.id')
                     .where('visibility', 1)
                     .orderBy('count', 'desc').page(pageNum-1, 10);
                 let sortNext = await Post.query().findByIds(posts).select('posts.id')
-                    .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
+                    .leftOuterJoin('comments as c', 'c.id_posts', 'posts.id')
                     .groupBy('posts.id')
-                    .count('posts.id')
+                    .count('c.id')
                     .where('visibility', 1)
                     .orderBy('count', 'desc').page(pageNum, 10);
 
@@ -85,7 +101,7 @@ exports.get_feed = async (req, res) => {
             } else {
                 const sort = await Post
                     .query()
-                    .findByIds(posts).select('posts.id')
+                    .findByIds(posts).select('posts.id', 'posts.title', 'posts.date_posted', 'posts.author', 'posts.id_account')
                     .where('visibility', 1)
                     .orderBy('date_posted', 'desc')
                     .page(pageNum-1, 10);
@@ -104,13 +120,19 @@ exports.get_feed = async (req, res) => {
                 }
             }
         }
-        
-        let result = await feedSorter(2, selectAll, req.params.pageNum);
+        let selectAll = await feedFilter(uid, allFlag, displayedPostsFlag);
+        let result = await feedSorter(sortFlag, selectAll, req.params.pageNum);
         //console.log(result[0]);
         //console.log(result[1]);
         //console.log(await Post.query().findByIds(selectAll).select('posts.id').where('visibility', 1).orderBy('date_posted', 'desc'));
-
-        res.render('feed', { posts: result[0].results, isNextPage: result[1], pageNum: req.params.pageNum });
+        console.log(allFlag);
+        res.render('feed', { posts: result[0].results, 
+            isNextPage: result[1], 
+            pageNum: req.params.pageNum, 
+            sortMethod: sortFlag,
+            isAll: allFlag,
+            displayedPosts: displayedPostsFlag
+        });
     } catch(err) {
         console.log(err);
         res.redirect('/');

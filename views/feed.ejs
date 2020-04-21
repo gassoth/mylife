@@ -14,6 +14,35 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 
+<script>
+    function dateSort(o) {
+        document.getElementById('sortFlag').value = 0;
+    };
+    function readSort(o) {
+        document.getElementById('sortFlag').value = 2;
+    };
+    function commentSort(o) {
+        document.getElementById('sortFlag').value = 1;
+    };
+    function switchReadFlag(o) {
+        document.getElementById('allFlag').value = 1 - parseInt(document.getElementById('allFlag').value);
+    };
+    function switchDisplayedPostsFlagSub(o) {
+        if (parseInt(document.getElementById('displayedPostsFlag').value) == 2) {
+            document.getElementById('displayedPostsFlag').value = 0;
+        } else {
+            document.getElementById('displayedPostsFlag').value = 2;
+        }
+    };
+    function switchDisplayedPostsFlagBookmark(o) {
+        if (parseInt(document.getElementById('displayedPostsFlag').value) == 1) {
+            document.getElementById('displayedPostsFlag').value = 0;
+        } else {
+            document.getElementById('displayedPostsFlag').value = 1;
+        }
+    };
+</script>
+
 <body>
     <div class="section"></div>
     <main>
@@ -37,25 +66,77 @@
             <div class="container" style="min-width: 80%;">
                 <div class="row">
                     <div class="feed-button">
-                        <div class="col s2">
-                            <a href="/feed" class="indigo lighten-3 waves-effect waves-light btn-large">Date</a>
-                        </div>
-                        <div class="col s2">
-                            <a class="indigo lighten-3 waves-effect waves-light btn-large">Views</a>
-                        </div>
-                        <div class="col s2">
-                            <a href="/login" class="indigo lighten-3 waves-effect waves-light btn-large">Unread</a>
-                        </div>
-                        <div class="col s2">
-                            <a href="/login" class="indigo lighten-3 waves-effect waves-light btn-large">Read</a>
-                        </div>
-                        <div class="col s2">
-                            <a href="/profile/1"
-                                class="indigo lighten-3 waves-effect waves-light btn-large">Subscribed</a>
-                        </div>
-                        <div class="col s2">
-                            <a href="/login" class="indigo lighten-3 waves-effect waves-light btn-large">Bookmarked</a>
-                        </div>
+                        <form method="get">
+                            <input type="hidden" name="sortFlag" id="sortFlag" value="<%= sortMethod%>" />
+                            <input type="hidden" name="allFlag" id="allFlag" value="<%= isAll%>" />
+                            <input type="hidden" name="displayedPostsFlag" id="displayedPostsFlag" value="<%= displayedPosts%>" />
+                            <% if (sortMethod == 0) { %>
+                            <div class="col s2">
+                                <button type="submit" class="indigo waves-effect waves-light btn-large"
+                                    onclick="dateSort(this)">Date</button>
+                            </div>
+                            <% } else { %>
+                            <div class="col s2">
+                                <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                    onclick="dateSort(this)">Date</button>
+                            </div>
+                            <% } %>
+                            <% if (sortMethod == 2) { %>
+                            <div class="col s2">
+                                <button type="submit" class="indigo waves-effect waves-light btn-large"
+                                    onclick="readSort(this)">Views</button>
+                            </div>
+                            <% } else { %>
+                            <div class="col s2">
+                                <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                    onclick="readSort(this)">Views</button>
+                            </div>
+                            <% } %>
+                            <% if (sortMethod == 1) { %>
+                            <div class="col s2">
+                                <button type="submit" class="indigo waves-effect waves-light btn-large"
+                                    onclick="commentSort(this)">Comments</button>
+                            </div>
+                            <% } else { %>
+                            <div class="col s2">
+                                <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                    onclick="commentSort(this)">Comments</button>
+                            </div>
+                            <% } %>
+                            <% if (isAll == 1) { %>
+                            <div class="col s2">
+                                <button type="submit" class="indigo waves-effect waves-light btn-large"
+                                    onclick="switchReadFlag(this)">Unread</button>
+                            </div>
+                            <% } else { %> 
+                            <div class="col s2">
+                                <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                    onclick="switchReadFlag(this)">All</button>
+                            </div>
+                            <% } %>
+                            <% if (displayedPosts == 2) { %>
+                            <div class="col s2">
+                                    <button type="submit" class="indigo waves-effect waves-light btn-large"
+                                        onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
+                            </div>
+                            <% } else { %>
+                            <div class="col s2">
+                                    <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                        onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
+                            </div>                           
+                            <% } %>
+                            <% if (displayedPosts == 1) { %>
+                            <div class="col s2">
+                                    <button type="submit" class="indigo waves-effect waves-light btn-large"
+                                        onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
+                            </div>
+                            <% } else { %>
+                            <div class="col s2">
+                                    <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                        onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
+                            </div>                           
+                            <% } %>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -65,48 +146,52 @@
             <div class="container feed-block-container">
                 <div class="z-depth-2 row feed-block">
                     <% if (posts) { %>
-                        <% for (let i = 0; i < posts.length; i++) { %>
-                            <div class="row">
-                                <div class="col s12">
-                                    <a href="/read/<%=posts[i].id%>">
-                                        <div class="card feed-card">
-                                            <div class="row">
-                                                <div class="col s1">
-                                                    <h3>R</h3>
-                                                    <div class="feed-divider"></div>
-                                                </div>
-                                                <div class="col s8">
-                                                    <div class="card-content grey-text text-lighten-3">
-                                                        <span class="card-title">
-                                                            <div class="feed-card-title"><%= posts[i].title%></div>
-                                                        </span>
-                                                        <div class="feed-card-author"><%= posts[i].author%></div>
-                                                    </div>
-                                                </div>
-                                                <div class="col s3">
-                                                    <div class="card-content grey-text text-lighten-3">
-                                                        <span class="card-title" style="text-align: right;">
-                                                            <%= posts[i].date_posted.getDate(); %> <%= posts[i].date_posted.toLocaleString('default', { month: 'long' }); %> <%= posts[i].date_posted.getFullYear(); %> <br />
-                                                            <%= posts[i].date_posted.getHours(); %>:<%= posts[i].date_posted.getMinutes(); %>
-                                                        </span>
-                                                    </div>
-                                                </div>
+                    <% for (let i = 0; i < posts.length; i++) { %>
+                    <div class="row">
+                        <div class="col s12">
+                            <a href="/read/<%=posts[i].id%>">
+                                <div class="card feed-card">
+                                    <div class="row">
+                                        <div class="col s1">
+                                            <h3>R</h3>
+                                            <div class="feed-divider"></div>
+                                        </div>
+                                        <div class="col s8">
+                                            <div class="card-content grey-text text-lighten-3">
+                                                <span class="card-title">
+                                                    <div class="feed-card-title"><%= posts[i].title%></div>
+                                                </span>
+                                                <div class="feed-card-author"><%= posts[i].author%></div>
                                             </div>
-                                    </a>
-                                </div>
-                            </div>
-                        <% } %>
+                                        </div>
+                                        <div class="col s3">
+                                            <div class="card-content grey-text text-lighten-3">
+                                                <span class="card-title" style="text-align: right;">
+                                                    <%= posts[i].date_posted.getDate(); %>
+                                                    <%= posts[i].date_posted.toLocaleString('default', { month: 'long' }); %>
+                                                    <%= posts[i].date_posted.getFullYear(); %> <br />
+                                                    <%= posts[i].date_posted.getHours(); %>:<%= (posts[i].date_posted.getMinutes()<10?'0':'') + posts[i].date_posted.getMinutes(); %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </a>
+                        </div>
+                    </div>
+                    <% } %>
                     <% } %>
                     <ul class="pagination">
                         <% if (pageNum == 1) { %>
-                            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                        <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
                         <% } else { let prevPage = parseInt(pageNum)-1;%>
-                            <li class="waves-effect"><a href="/feed/<%=prevPage%>"><i class="material-icons">chevron_left</i></a></li>
+                        <li class="waves-effect"><a href="/feed/<%=prevPage%>"><i
+                                    class="material-icons">chevron_left</i></a></li>
                         <% } %>
                         <% if (isNextPage) { let nextPage = parseInt(pageNum)+1; %>
-                            <li class="waves-effect"><a href="/feed/<%=nextPage%>"><i class="material-icons">chevron_right</i></a></li>
+                        <li class="waves-effect"><a href="/feed/<%=nextPage%>"><i
+                                    class="material-icons">chevron_right</i></a></li>
                         <% } else { %>
-                            <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                        <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
                         <% } %>
                     </ul>
                 </div>
