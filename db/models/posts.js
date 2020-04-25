@@ -26,7 +26,8 @@ class Posts extends Model {
                 date_posted: { type: "string", format: "date-time" },
                 author: { type: "string" },
                 visibility: { type: "integer" },
-                id_account: { type: "integer" }
+                id_account: { type: "integer" },
+                tags: { type: "string[]"}
             }
         };
     }

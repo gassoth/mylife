@@ -172,15 +172,15 @@ filters - done but untested
   -subs
   -bookmarked
 
-integrate into template
+integrate into template - done but untested
   -tabs and filters
 
-search
-
-later
-  -do not display private posts/ maybe display your own posts?
-  -stretch is have page numbers.  difficult bc i dont know how many pages ill have/how to template it.
-  TODO - feedSort and feedFilter need testing and error handling
+search tags
+  -string parse - done but untested, 
+  -delete tags, move them into posts as an array
+    -make sure it is still possible to add and remove tags and all that
+  -bin index
+  -integrate string parse to the database.
 
 -->
 
@@ -190,6 +190,18 @@ later
     spaces between lines of letters in reading post
     bug -     write form not autopopulating edits -partially done - need solution filling (save users progress? grab old post? different errors might need different results)
       -private vs public not autopopulated
+      //yo dog a little bit dangerous that you didn't actually do anything in the down function lol.  fix thsi later.
+      
+
+later - in relation to tabs filters and sorts
+  -do not display private posts/ maybe display your own posts?
+  -stretch is have page numbers.  difficult bc i dont know how many pages ill have/how to template it.
+  -stretch is to search tags.
+  TODO - feedSort and feedFilter need testing and error handling
+
+later - search
+  -string parse - and/or case (person types in and or and it prioritizes or, but maybe give error?)
+
 -->
 <!---->
 

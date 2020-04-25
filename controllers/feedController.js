@@ -10,22 +10,27 @@ exports.get_feed = async (req, res) => {
         //Gets the page specified, also checks if there are more posts after that.
         let uid,sortFlag,displayedPostsFlag = 0;
         let allFlag = 1;
-        if (req.query.sortFlag) {
-            sortFlag = parseInt(req.query.sortFlag);
-        }
-        if (req.query.allFlag) {
-            allFlag = req.query.allFlag;
-        }
-        if (req.query.displayedPostsFlag) {
-            displayedPostsFlag = req.query.displayedPostsFlag;
-        }
-        if (req.user) {
-            uid = req.user.id;
-        } else {
-            displayedPostsFlag = 0;
-            allFlag = 1;
-        }
+        let searchValue = '';
 
+        //function used to parse search.  Creates an array of sets, each set is a query if separated by or, else it will just be one set.
+        function parseSearch(q) {
+            let searchQueries = [];
+            const query = String(q).split(' ');
+            let subquery = new Set();
+            for (let i = 0; i < query.length; i++) {
+                if (String(query[i]).toLowerCase() == "or") {
+                    searchQueries.push(subquery);
+                    subquery = new Set();
+                    continue;
+                }
+                if (String(query[i]).toLowerCase() == "and") {
+                    continue;
+                }
+                subquery.add(String(query[i]));
+            }
+            searchQueries.push(subquery);
+            return searchQueries.filter(s => s.size > 0);
+        }
         //Uses user id, read (val 1 for read or 0 for all), and sb (2 for sub, 1 for bookmark, 0 for all))
         //Gets ids of posts that were read or all posts
         //returns querys posts of those ids to either return the bookmarked ones, posts by a subscribed-to user, or none.
@@ -54,7 +59,6 @@ exports.get_feed = async (req, res) => {
                 return await Post.query().findByIds(queryIds).select('posts.id').map(a => a.id);
             }
         }
-
         //Function to sort feed based on views count (2), comments count(1), or date (0). Need to test it.
         //posts is the posts that are being sorted, and pagenum is which page is needed
         async function feedSorter(sort, posts, pageNum) {
@@ -120,18 +124,44 @@ exports.get_feed = async (req, res) => {
                 }
             }
         }
+
+        let parsedQuery = [];
+        if (req.query.input_search) {
+            searchValue = req.query.input_search;
+            if (req.query.input_search.length > 0) {
+                parsedQuery = parseSearch(searchValue);
+            }
+        }
+        if (req.query.sortFlag) {
+            sortFlag = parseInt(req.query.sortFlag);
+        }
+        if (req.query.allFlag) {
+            allFlag = req.query.allFlag;
+        }
+        if (req.query.displayedPostsFlag) {
+            displayedPostsFlag = req.query.displayedPostsFlag;
+        }
+        if (req.user) {
+            uid = req.user.id;
+        } else {
+            displayedPostsFlag = 0;
+            allFlag = 1;
+        }
+
         let selectAll = await feedFilter(uid, allFlag, displayedPostsFlag);
         let result = await feedSorter(sortFlag, selectAll, req.params.pageNum);
         //console.log(result[0]);
         //console.log(result[1]);
         //console.log(await Post.query().findByIds(selectAll).select('posts.id').where('visibility', 1).orderBy('date_posted', 'desc'));
         console.log(allFlag);
+        console.log(parsedQuery);
         res.render('feed', { posts: result[0].results, 
             isNextPage: result[1], 
             pageNum: req.params.pageNum, 
             sortMethod: sortFlag,
             isAll: allFlag,
-            displayedPosts: displayedPostsFlag
+            displayedPosts: displayedPostsFlag,
+            currentSearch: searchValue
         });
     } catch(err) {
         console.log(err);

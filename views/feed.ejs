@@ -52,21 +52,19 @@
                     <h1>Blog Posts</h1>
                 </div>
                 <div class="row">
-                    <form class="col s12">
+                    <form class="col s12" method="get">
                         <div class="row">
                             <div class="input-field col s10">
-                                <input id="search" type="text">
+                                <input id="input_search" name="input_search" type="text" value="<%= currentSearch%>">
                             </div>
-                            <button type='submit' name='btn_search'
+                            <button type='submit' id='btn_search'
                                 class='col s2 btn btn-large waves-effect indigo'>Search</button>
                         </div>
-                    </form>
                 </div>
             </div>
             <div class="container" style="min-width: 80%;">
                 <div class="row">
                     <div class="feed-button">
-                        <form method="get">
                             <input type="hidden" name="sortFlag" id="sortFlag" value="<%= sortMethod%>" />
                             <input type="hidden" name="allFlag" id="allFlag" value="<%= isAll%>" />
                             <input type="hidden" name="displayedPostsFlag" id="displayedPostsFlag" value="<%= displayedPosts%>" />
