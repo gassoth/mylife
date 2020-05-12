@@ -178,10 +178,10 @@ integrate into template - done but untested
 search tags
   -string parse - done but untested, 
   -delete tags, move them into posts as an array
-    -make sure it is still possible to add and remove tags and all that
-  -bin index
-  -integrate string parse to the database.
-
+    -make sure it is still possible to add and remove tags and all that - done but untested
+  -bin index - done but untested
+  -integrate string parse to the database. - done but untested
+ - fast search searches by tags - done but unteseted
 -->
 
 <!--
@@ -191,13 +191,15 @@ search tags
     bug -     write form not autopopulating edits -partially done - need solution filling (save users progress? grab old post? different errors might need different results)
       -private vs public not autopopulated
       //yo dog a little bit dangerous that you didn't actually do anything in the down function lol.  fix thsi later.
+    had some issues with all/unread/subs/bookmarked functionality.  wasn't working when not logged in (which is intended) but i thought it was a bug.  maybe
+      need a way to clearly mark that you gotta login for it.
       
 
 later - in relation to tabs filters and sorts
   -do not display private posts/ maybe display your own posts?
   -stretch is have page numbers.  difficult bc i dont know how many pages ill have/how to template it.
-  -stretch is to search tags.
   TODO - feedSort and feedFilter need testing and error handling
+  -stretch is full text search
 
 later - search
   -string parse - and/or case (person types in and or and it prioritizes or, but maybe give error?)

@@ -199,9 +199,9 @@ exports.post_write = [
 exports.get_tags = async (req, res) => {
     const current_post = await Posts.query().findById(req.params.id);
     if (req.user && (req.user.id == current_post.id_account || req.user.permission > 0)) {
-        const queried_tags = await Tags.query().select('tags.*').where('id_posts', Number(req.params.id));
+        const queried_tags = await Posts.query().select('tags').findById(req.params.id);
         console.log(queried_tags);
-        res.render('tags', {tags: queried_tags, errors: ''});
+        res.render('tags', {tags: queried_tags.tags, errors: ''});
     } else {
         console.log('Cannot edit another users post')
         res.redirect('/');
@@ -226,7 +226,7 @@ exports.post_tags = [
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
-            const queried_tags = await Tags.query().select('tags.*').where('id_posts', Number(req.params.id));
+            const queried_tags = await Posts.query().select('tags').findById(req.params.id);
             res.render('tags', { tags: queried_tags, errors: errors.array() });
             return;
         }
@@ -236,23 +236,35 @@ exports.post_tags = [
             tags = req.body.tags.split(" ");
         }
         const setTags = function(a) { return [...new Set(a)]};
+        const queried_tags = await Posts.query().select('tags').findById(req.params.id);
+        console.log(queried_tags.tags);
         if (req.body.btn_submit == 'add') {
             if (tags != '') {
                 let setOfTags = setTags(tags);
                 for (let i = 0; i < setOfTags.length; i++) {
-                    var newTag = {
-                        tag: setOfTags[i],
-                        id_posts: parseInt(req.params.id)
-                    };
-                    const insertedTag = await Tags.query().insert(newTag).catch(error => { console.log('caught', error.message); });
+                    var newTag = setOfTags[i];
+                    if (queried_tags.tags.includes(newTag)) {
+                        continue;
+                    } else {
+                        queried_tags.tags.push(newTag.toLowerCase());
+                    }
                 }
+                const insertedTag = await Posts.query().findById(req.params.id).patch({
+                    tags: queried_tags.tags
+                });
             }
         } else {
             if (tags != '') {
                 let setOfTags = setTags(tags);
                 for (let i = 0; i < setOfTags.length; i++) {
-                    const deletedTag = await Tags.query().delete().where('tag', setOfTags[i]).where('id_posts', req.params.id);
+                    let index = queried_tags.tags.indexOf(setOfTags[i].toLowerCase());
+                    if (index > -1) {
+                        queried_tags.tags.splice(index, 1);
+                    }
                 }
+                const insertedTag = await Posts.query().findById(req.params.id).patch({
+                    tags: queried_tags.tags
+                });
             }
         }
         

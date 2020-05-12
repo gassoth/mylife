@@ -34,29 +34,39 @@ exports.get_feed = async (req, res) => {
         //Uses user id, read (val 1 for read or 0 for all), and sb (2 for sub, 1 for bookmark, 0 for all))
         //Gets ids of posts that were read or all posts
         //returns querys posts of those ids to either return the bookmarked ones, posts by a subscribed-to user, or none.
-        async function feedFilter(usrId, all, sb) {
-            let queryIds;
-            if (all == 0) {
-                queryIds = await Post.query().select('posts.id')
-                .leftOuterJoin('read as r', joinBuilder => { 
-                    joinBuilder.on('posts.id', '=', 'r.id_posts')
-                    .andOn('r.id_account', usrId);
-                })
-                .whereNull('r.id_posts').map(a => a.id);
-            } else {
-                queryIds = await Post.query().select('posts.id').map(a => a.id);
+        async function feedFilter(usrId, all, sb, tagSearch) {
+            let searchFilteredQueryIdsSet = new Set();
+            let tagSearchQuery = tagSearch;
+            if (tagSearchQuery.length == 0) {
+                tagSearchQuery.push([]);
             }
+            for (let i = 0; i < tagSearchQuery.length; i++) {
+                let queryIds; 
+                if (all == 0) {
+                    queryIds = await Post.query().select('posts.id').where('tags', '@>', tagSearchQuery[i])
+                    .leftOuterJoin('read as r', joinBuilder => { 
+                        joinBuilder.on('posts.id', '=', 'r.id_posts')
+                        .andOn('r.id_account', usrId);
+                    })
+                    .whereNull('r.id_posts').map(a => a.id);
+                    } else {
+                        queryIds = await Post.query().where('tags', '@>', tagSearchQuery[i]).select('posts.id').map(a => a.id);
+                    }
+                queryIds.forEach(item => searchFilteredQueryIdsSet.add(item));
+            }
+            let searchFilteredQueryIds = Array.from(searchFilteredQueryIdsSet);
+            console.log(searchFilteredQueryIds);
             if (sb == 2) {
-                return await Post.query().findByIds(queryIds).select('posts.id')
+                return await Post.query().findByIds(searchFilteredQueryIds).select('posts.id')
                     .innerJoin('account as a', 'posts.id_account', 'a.id')
                     .innerJoin('subscriptions as s', 'a.id', 's.id_subscribed')
                     .where('s.id_subscriber', usrId).map(a => a.id);
             } else if (sb == 1) {
-                return await Post.query().findByIds(queryIds).select('posts.id')
+                return await Post.query().findByIds(searchFilteredQueryIds).select('posts.id')
                     .innerJoin('bookmarks as b', 'posts.id', 'b.id_post')
                     .where('b.id_account', usrId).map(a => a.id);
             } else {
-                return await Post.query().findByIds(queryIds).select('posts.id').map(a => a.id);
+                return await Post.query().findByIds(searchFilteredQueryIds).select('posts.id').map(a => a.id);
             }
         }
         //Function to sort feed based on views count (2), comments count(1), or date (0). Need to test it.
@@ -130,8 +140,10 @@ exports.get_feed = async (req, res) => {
             searchValue = req.query.input_search;
             if (req.query.input_search.length > 0) {
                 parsedQuery = parseSearch(searchValue);
+                parsedQuery = parsedQuery.map(s => Array.from(s));
             }
         }
+
         if (req.query.sortFlag) {
             sortFlag = parseInt(req.query.sortFlag);
         }
@@ -148,7 +160,7 @@ exports.get_feed = async (req, res) => {
             allFlag = 1;
         }
 
-        let selectAll = await feedFilter(uid, allFlag, displayedPostsFlag);
+        let selectAll = await feedFilter(uid, allFlag, displayedPostsFlag, parsedQuery);
         let result = await feedSorter(sortFlag, selectAll, req.params.pageNum);
         //console.log(result[0]);
         //console.log(result[1]);
@@ -229,4 +241,24 @@ send result?
         if (nextCheck.results.length != 0) {
             nextPage = 1;
         } 
+
+        async function feedFilter(usrId, all, sb, tagSearch) {
+            let searchFilteredQueryIdsSet = new Set();
+            for (let i = 0; i < tagSearch.length; i++) {
+                let queryIds; 
+                if (all == 0) {
+                    queryIds = await Post.query().select('posts.id').where('tags', '@>', tagSearch[i])
+                    .leftOuterJoin('read as r', joinBuilder => { 
+                        joinBuilder.on('posts.id', '=', 'r.id_posts')
+                        .andOn('r.id_account', usrId);
+                    })
+                    .whereNull('r.id_posts').map(a => a.id);
+                } else {
+                    queryIds = await Post.query().where('tags', '@>', tagSearch[i]).select('posts.id').map(a => a.id);
+                }
+                queryIds.forEach(item => searchFilteredQueryIds.add(item));
+            }
+            let searchFilteredQueryIds = Array.from(searchFilteredQueryIdsSet);
+
+
 */
