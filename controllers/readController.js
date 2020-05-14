@@ -145,7 +145,7 @@ exports.post_read = [
         console.log(newComment);
 
         const insertedComment = await Comment.query().insert(newComment);
-        res.redirect('/');
+        res.redirect('back');
     }
 ]
 

@@ -68,6 +68,10 @@
                             <input type="hidden" name="sortFlag" id="sortFlag" value="<%= sortMethod%>" />
                             <input type="hidden" name="allFlag" id="allFlag" value="<%= isAll%>" />
                             <input type="hidden" name="displayedPostsFlag" id="displayedPostsFlag" value="<%= displayedPosts%>" />
+                            <% if (isLoggedIn == 0) { %>
+                                <div class="col s2">
+                                </div>
+                                <% } %>
                             <% if (sortMethod == 0) { %>
                             <div class="col s2">
                                 <button type="submit" class="indigo waves-effect waves-light btn-large"
@@ -77,6 +81,10 @@
                             <div class="col s2">
                                 <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
                                     onclick="dateSort(this)">Date</button>
+                            </div>
+                            <% } %>
+                            <% if (isLoggedIn == 0) { %>
+                            <div class="col s1">
                             </div>
                             <% } %>
                             <% if (sortMethod == 2) { %>
@@ -90,6 +98,10 @@
                                     onclick="readSort(this)">Views</button>
                             </div>
                             <% } %>
+                            <% if (isLoggedIn == 0) { %>
+                                <div class="col s1">
+                                </div>
+                                <% } %>
                             <% if (sortMethod == 1) { %>
                             <div class="col s2">
                                 <button type="submit" class="indigo waves-effect waves-light btn-large"
@@ -101,38 +113,40 @@
                                     onclick="commentSort(this)">Comments</button>
                             </div>
                             <% } %>
-                            <% if (isAll == 1) { %>
-                            <div class="col s2">
-                                <button type="submit" class="indigo waves-effect waves-light btn-large"
-                                    onclick="switchReadFlag(this)">Unread</button>
-                            </div>
-                            <% } else { %> 
-                            <div class="col s2">
-                                <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
-                                    onclick="switchReadFlag(this)">All</button>
-                            </div>
-                            <% } %>
-                            <% if (displayedPosts == 2) { %>
-                            <div class="col s2">
+                            <% if (isLoggedIn != 0) { %>
+                                <% if (isAll == 1) { %>
+                                <div class="col s2">
                                     <button type="submit" class="indigo waves-effect waves-light btn-large"
-                                        onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
-                            </div>
-                            <% } else { %>
-                            <div class="col s2">
+                                        onclick="switchReadFlag(this)">Unread</button>
+                                </div>
+                                <% } else { %> 
+                                <div class="col s2">
                                     <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
-                                        onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
-                            </div>                           
-                            <% } %>
-                            <% if (displayedPosts == 1) { %>
-                            <div class="col s2">
-                                    <button type="submit" class="indigo waves-effect waves-light btn-large"
-                                        onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
-                            </div>
-                            <% } else { %>
-                            <div class="col s2">
-                                    <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
-                                        onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
-                            </div>                           
+                                        onclick="switchReadFlag(this)">All</button>
+                                </div>
+                                <% } %>
+                                <% if (displayedPosts == 2) { %>
+                                <div class="col s2">
+                                        <button type="submit" class="indigo waves-effect waves-light btn-large"
+                                            onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
+                                </div>
+                                <% } else { %>
+                                <div class="col s2">
+                                        <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                            onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
+                                </div>                           
+                                <% } %>
+                                <% if (displayedPosts == 1) { %>
+                                <div class="col s2">
+                                        <button type="submit" class="indigo waves-effect waves-light btn-large"
+                                            onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
+                                </div>
+                                <% } else { %>
+                                <div class="col s2">
+                                        <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                            onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
+                                </div>                           
+                                <% } %>
                             <% } %>
                         </form>
                     </div>

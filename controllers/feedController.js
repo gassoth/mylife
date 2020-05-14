@@ -8,7 +8,7 @@ var async = require('async');
 exports.get_feed = async (req, res) => {
     try {
         //Gets the page specified, also checks if there are more posts after that.
-        let uid,sortFlag,displayedPostsFlag = 0;
+        let uid = 0, sortFlag = 0, displayedPostsFlag = 0;
         let allFlag = 1;
         let searchValue = '';
 
@@ -153,13 +153,16 @@ exports.get_feed = async (req, res) => {
         if (req.query.displayedPostsFlag) {
             displayedPostsFlag = req.query.displayedPostsFlag;
         }
+
+        //set to 0 and 1 bc anon users don't have read history or bookmarks
         if (req.user) {
             uid = req.user.id;
         } else {
             displayedPostsFlag = 0;
             allFlag = 1;
         }
-
+        console.log('booty');
+        console.log(uid);
         let selectAll = await feedFilter(uid, allFlag, displayedPostsFlag, parsedQuery);
         let result = await feedSorter(sortFlag, selectAll, req.params.pageNum);
         //console.log(result[0]);
@@ -173,7 +176,8 @@ exports.get_feed = async (req, res) => {
             sortMethod: sortFlag,
             isAll: allFlag,
             displayedPosts: displayedPostsFlag,
-            currentSearch: searchValue
+            currentSearch: searchValue,
+            isLoggedIn: uid
         });
     } catch(err) {
         console.log(err);

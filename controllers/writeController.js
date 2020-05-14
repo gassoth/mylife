@@ -145,6 +145,18 @@ exports.post_write = [
         if (req.body.visibility != undefined) {
             visibility = 1;
         }
+        //creates tags for this post, removes whitespace and then duplicates, then inserts
+        let tags = '';
+        if (req.body.tags.trim().length > 0) {
+            tags = req.body.tags.split(" ");
+        }
+        const setTags = function(a) { return [...new Set(a)]};
+        let arrayOfTags = '{}';
+        if (tags != '') {
+            arrayOfTags = Array.from(setTags(tags));
+
+        }
+
         //var delta = req.body.editor.getContents();
         //console.log(req.body.title);
         var newPost = {
@@ -154,7 +166,8 @@ exports.post_write = [
             date_posted: time,
             author: req.user.generated_username,
             visibility: visibility,
-            id_account: req.user.id
+            id_account: req.user.id,
+            tags: arrayOfTags
         };
         console.log(newPost);
         console.log(req.body.title);
@@ -172,24 +185,6 @@ exports.post_write = [
         console.log(req.user.id);
         console.log(req.user.generated_username);
         const insertedPost = await Posts.query().insert(newPost);
-
-        //creates tags for this post, removes whitespace and then duplicates, then inserts
-        let tags = '';
-        if (req.body.tags.trim().length > 0) {
-            tags = req.body.tags.split(" ");
-        }
-        const setTags = function(a) { return [...new Set(a)]};
-
-        if (tags != '') {
-            let setOfTags = setTags(tags);
-            for (let i = 0; i < setOfTags.length; i++) {
-                var newTag = {
-                    tag: setOfTags[i],
-                    id_posts: insertedPost.id
-                };
-                const insertedTag = await Tags.query().insert(newTag);
-            }
-        }
 
         res.redirect('/');
     }
@@ -227,7 +222,8 @@ exports.post_tags = [
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
             const queried_tags = await Posts.query().select('tags').findById(req.params.id);
-            res.render('tags', { tags: queried_tags, errors: errors.array() });
+            console.log(queried_tags);
+            res.render('tags', { tags: queried_tags.tags, errors: errors.array() });
             return;
         }
         //separates tags, trims it, removes duplicates
