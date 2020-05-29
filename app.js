@@ -17,6 +17,9 @@ var session = require('express-session');
 const flash = require('connect-flash');
 const { Model } = require('objection');
 
+//Sends daily email and updates email
+const emailer = require('./emailer.js');
+
 //Used for database stuff.
 const Knex = require('knex');
 const knexConfig = require('./knexfile');
@@ -88,7 +91,11 @@ app.get('/logout',
 	function(req, res) {
 	    req.logout();
 	    res.redirect('/');
-	});
+  });
+
+app.get('/testemail', emailer.getLabels);
+app.get('/testunread', emailer.getUnread);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
