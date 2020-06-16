@@ -63,11 +63,16 @@ exports.account_create_post = [
             //Permission is 0 for regular user
             var un = Sentencer.make("{{ adjective }} {{ noun }}");
             let time = new Date().toISOString();
+            var emailEnabled = 0;
+            if (req.body.email_enabled != undefined) {
+                emailEnabled = 1;
+            }
             var newAccount =
                 {
                     email: req.body.username,
                     password: req.body.password,
                     permission: 0,
+                    email_enabled: emailEnabled,
                     generated_username: un,
                     date_created: time
                 };

@@ -161,6 +161,32 @@ exports.get_profile_comments = function(req, res, next) {
         });
     };
 
+//Controller for getting a users settings
+exports.get_profile_settings = function (req, res, next) {
+    async.parallel({
+        account: async function (callback) {
+            try {
+                const user_profile = await Account.query().findById(req.params.id);
+                return user_profile;
+            } catch (err) {
+                console.log(err);
+                var err = new Error('Account not found');
+                err.status = 404;
+                return next(err);
+            }
+        },
+    }, function (err, results) {
+        if (err) { return next(err); }
+        // Successful, so render.
+        if (req.user && req.user.id == results.account.id) {
+            res.render('profile_settings', { id: req.params.id, emailSetting: results.account.email_enabled });
+        } else {
+            res.redirect('/');
+        }
+    });
+};
+    
+
 //Controller for subscribing
 exports.get_profile_subscribe = async function(req, res, next) {
     //gets current logged in user, relates it to the profile they are subscribing to. Generic error if fail.
@@ -190,3 +216,21 @@ exports.get_profile_unsubscribe = async function(req, res, next) {
         res.redirect('/');
     }
 };
+
+//Controller for modifying user settings
+exports.post_profile_settings = [
+
+    async (req, res, next) => {
+        
+        console.log(req.body.email_enabled);
+        let switchValue = 0;
+        if (req.body.email_enabled) {
+            switchValue = 1;
+        }
+
+        const updatedAccount = await Account.query().findById(req.params.id).patch({
+            email_enabled: switchValue
+        });
+        res.redirect('/profile/'+req.params.id);
+    }
+]

@@ -78,7 +78,15 @@ class Posts extends Model {
                   },
                   to: 'account.id'
                 }
-            }         
+            },
+            tags: {
+                relation: Model.HasManyRelation,
+                modelClass: __dirname + '/tags',
+                join: {
+                    from: 'posts.id',
+                    to: 'tags.id_posts'
+                }
+            }             
         };
     }
 }

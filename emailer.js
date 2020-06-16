@@ -5,6 +5,10 @@ var base64 = require('js-base64').Base64;
 const simpleParser = require('mailparser').simpleParser;
 var Check = require('./check');
 var Posts = require('./db/models/posts.js');
+var Account = require('./db/models/account.js');
+var Tickets = require('./db/models/tickets.js');
+var replyParser = require("node-email-reply-parser");
+
 const { convertHtmlToDelta } = require('node-quill-converter');
 
 // If modifying these scopes, delete token.json.
@@ -87,30 +91,104 @@ function listLabels(auth) {
   });
 }
 
-//Function to add email to database. Not done but it does add to db which is what i wanted
-async function postMessage(emails) {
-  let delta = convertHtmlToDelta(emails[0].textAsHtml);
-  let time = new Date().toISOString();
-
+//Function to add email to database.
+async function postMessage(email, parsedEmailObject) {
+  let delta = convertHtmlToDelta(parsedEmailObject.body_html);
+  let subject = email.subject;
+  if (subject.includes("Re: ")) {
+    subject = subject.split("Re: ")[1];
+  }
   var newPost = {
-    title: emails[0].subject,
+    title: subject,
     body_delta: JSON.stringify(delta),
-    body_html: emails[0].textAsHtml,
-    date_posted: emails[0].date.toISOString(),
-    author: 'a@gmail.com',
+    body_html: parsedEmailObject.body_html,
+    date_posted: parsedEmailObject.ticket_date.toISOString(),
+    author: parsedEmailObject.from,
     visibility: 0,
-    id_account: 5,
+    id_account: parsedEmailObject.id_account,
     tags: []
   };
   const insertedPost = await Posts.query().insert(newPost);
-  console.log(insertedPost);
+  return insertedPost;
+}
+
+//Function to get the html version of reply email.  This function does not work for double replies, so improvement for the future
+//is to try to make this function work for double replies or at least check for double replies.
+function getParsedHtmlEmail(parsed, htmlEmail) {
+  //Gets the fragment that has the reply emails
+  const htmlString = parsed.getFragments()[1].getContent();
+
+  //Trims whitespace, splits based on \n, gets the first section of that (hopefully the line that say "You replied to this email on xx\yy\zz w.e")
+  //then gets the first 20 characters (which are hopefully unique enough that it'll find the correct words).  This will be used
+  //to split the html because that is the only part of the html that doesn't have html tags in it.
+  const htmlStringSplitter = htmlString.trim().split("\n")[0].substring(0,20);
+
+  //Splits the html email based on htmlStringSplitter, gets the first half, and then removes the whitespace and trims the trailing <p> tag.
+  const htmlEmailSplit = htmlEmail.split(htmlStringSplitter)[0].trimRight().slice(0, -3);
+  console.log(htmlStringSplitter);
+  //If the original htmlEmail sent in equals the split htmlEmail (which means a match was not found) we just use the original htmlEmail
+  //Means that user will need to edit it on their own once its posted.
+  if (htmlEmailSplit === htmlEmail) {
+    return htmlEmail;
+  } else {
+    return htmlEmailSplit;
+  }
 }
 
 
-//Function to check emails against tickets.  Not done.
-function checkUnreadAgainstTickets(emails) {
-  console.log(emails);  
-  //postMessage(emails);
+//Function to check emails against tickets.
+async function checkUnreadAgainstTickets(emails) {
+
+  //Parse code and email from the whole email and check that against the tickets table.  If we did delete something, we want to add the email to the 
+  //database using that information (should store the ticket id_account before deletion).  If we dont delete anything, then we just do nothing. We
+  //call the post message function to add it to the database as a post.
+  for (let i = 0; i < emails.length; i++) {
+    const email = emails[i];
+    const to = email.to;
+    const from = email.from;
+    const fromEmail = from.substring(
+      from.lastIndexOf("<")+1,
+      from.lastIndexOf(">")
+    );
+    const toEmail = to.substring(
+      from.lastIndexOf("<")+1,
+      from.lastIndexOf(">")
+    );
+    const ticketCode = to.substring(
+      to.lastIndexOf("+")+1,
+      to.lastIndexOf("@")
+    );
+
+    try {
+      const ticket = await Tickets.query().select('id','id_account', 'date_created')
+      .where('email', fromEmail)
+      .where('ticket_code', ticketCode);
+      const ticketIdAccount = ticket[0].id_account;
+      const ticketDate = ticket[0].date_created;
+
+      //found a way to more reliably strip out the original message.  Now just need to find a way to maybe get the reply line from that strip, and 
+      //parse out the original message when it comes to html.
+      const e = replyParser(email.text);
+      const f = getParsedHtmlEmail(e, email.textAsHtml.trim());
+      const message = e.getFragments()[0].getContent().trim();
+      const ticketDeleted = await Tickets.query().deleteById(ticket[0].id);
+      const parsedEmailObject = {
+        body: message,
+        body_html: f,
+        from: fromEmail,
+        ticket_date: ticketDate,
+        id_account: ticketIdAccount
+      }
+      if (ticketDeleted == 1) {
+        const postedMessage = await postMessage(email, parsedEmailObject);
+        console.log(postedMessage);
+      } else {
+        throw new Error('No ticket found');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }
 
 //Function to get unread emails and set them as read.
@@ -141,7 +219,6 @@ async function getUnreadFunction(auth) {
         'addLabelIds': [],
         'removeLabelIds': ['UNREAD']
       });
-
       const parsedEmail = {
         date: parsed.date,
         subject: parsed.subject,
@@ -158,6 +235,82 @@ async function getUnreadFunction(auth) {
     return;
   }
   checkUnreadAgainstTickets(unreadEmails);
+}
+
+//Function that creates an email in the format that gmail api can send.
+function makeBody(to, from, subject, message) {
+  var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
+      "MIME-Version: 1.0\n",
+      "Content-Transfer-Encoding: 7bit\n",
+      "to: ", to, "\n",
+      "from: ", from, "\n",
+      "subject: ", subject, "\n\n",
+      message
+  ].join('');
+
+  var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
+      return encodedMail;
+}
+
+//Function that uses the gmail api to send an email.
+async function sendEmailFunction(gmailObj, email) {
+  gmailObj.users.messages.send({
+    userId: 'me',
+    resource: {
+      raw: email
+    }
+  }, function(err, response) {
+    console.log(err || response);
+  });
+}
+
+//Function to create the subject line.  Match function parses a timestamp string and gets the day, month, and year.  It then turns that into a string
+//that can be used as the subject line.
+function createSubject(dateObject) {
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var parts = dateObject.match(/(\d+)/g);
+  const parsedTime = new Date(parts[0], parts[1]-1, parts[2]);
+  const subject = monthNames[parsedTime.getMonth()] + " " + parsedTime.getDate() + ", " + parsedTime.getFullYear();
+  return subject;
+}
+
+//Function to send emails to all users that have requested that they want emails.
+async function emailUsersFunction(auth) {
+
+  //Gets the users that have elected to receive emails.
+  const gmail = google.gmail({ version: 'v1', auth });
+  let users;
+  try {
+    users = await Account.query().select('email', 'id').where('email_enabled', 1);
+  } catch (e) {
+    console.log(e);
+  }
+
+  //Formats a message, creates a ticket with a unique ticket email+ticketCode that can be used to verify a response, and then
+  //adds that ticket to the ticket table.  It then calls sendEmailFunction to send the email.
+  const message = "How was your day today? Reply to this message with a journal entry and view your entry on the website! "
+    +"If you would like to change the title of the journal post, just change the subject of the email.  Please make sure to not change the reply address!";
+  const time = new Date().toISOString();
+  const subject = createSubject(time);
+  for (let i = 0; i < users.length; i++) {
+    const ticketCode = [...Array(10)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
+    let ticket = {
+      email: users[i].email,
+      id_account: users[i].id,
+      ticket_code: ticketCode,
+      date_created: time
+    }
+    try {
+      ticketInsert = await Tickets.query().insert(ticket);
+      let replyAddress = 'mylifejournalapp+'.concat(ticketCode).concat('@gmail.com');
+      console.log(replyAddress);
+      let email = makeBody(users[i].email, replyAddress, subject, message)
+      let sent = await sendEmailFunction(gmail, email);
+    } catch (e) {
+      console.log(e);
+    }
+    console.log(ticketInsert);
+  }
 }
 
 /**
@@ -184,12 +337,17 @@ exports.getUnread = function(req, res, next) {
       });
 }
 
+//Function used to test send emails
+exports.sendEmail = function(req, res, next) {
+    fs.readFile('credentials.json', async (err, content) => {
+        if (err) return console.log('Error loading client secret file:', err);
+        // Authorize a client with credentials, then call the Gmail API.
+        authorize(JSON.parse(content), emailUsersFunction);
+        res.redirect('/');
+      });
+}
 
-//read how to handle gmail api promises and returns stackoverflow..
-//create an async get all gmail emails..
-//create async get unread emails that also sets emails to read - done sans async
-//create function that interacts with db using the unread emails - done
-//create tickets table and also add field to users that sets to email or not email
-//implement scheduler
-//create function that sends emails once a day
-//modify add to db function with tickets 
+//Scheduler test function
+exports.scheduleTest = function(req, res, next) {
+  console.log('The answer to life, the universe, and everything!');
+}

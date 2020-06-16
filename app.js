@@ -16,6 +16,7 @@ const passport = require('passport');
 var session = require('express-session');
 const flash = require('connect-flash');
 const { Model } = require('objection');
+var schedule = require('node-schedule');
 
 //Sends daily email and updates email
 const emailer = require('./emailer.js');
@@ -93,9 +94,25 @@ app.get('/logout',
 	    res.redirect('/');
   });
 
+//scheduler to run send email function once a day, and a rule to check emails once an hour
+var ruleCheck = new schedule.RecurrenceRule();
+//ruleCheck.minute = 30;
+var ruleSend = new schedule.RecurrenceRule();
+//ruleSend.hour = 18;
+ruleSend.second = 15;
+ruleCheck.second = 45;
+
+//var rule = new schedule.RecurrenceRule();
+//rule.second = 30;
+ 
+//var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);
+//var sendEmails = schedule.scheduleJob(ruleSend, emailer.sendEmail);
+var test = schedule.scheduleJob(ruleSend, emailer.scheduleTest);
+
+//test email functions
 app.get('/testemail', emailer.getLabels);
 app.get('/testunread', emailer.getUnread);
-
+app.get('/testsend', emailer.sendEmail);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -213,7 +230,38 @@ later - search
 -->
 <!---->
 
+
+
+
 <!--technical debt
 styling - maybe try to put it into style sheets
 unit testing - maybe figure out how to do that + automated testing
 -->*/
+
+//read how to handle gmail api promises and returns stackoverflow..
+//create an async get all gmail emails..
+//create async get unread emails that also sets emails to read - done sans async
+//create function that interacts with db using the unread emails - done
+
+//create tickets table and also add field to users that sets to email or not email and ability to turn on and off - done, not tested
+  //requires a settings page - done, not tested
+//need a function that parses the first message of email thread, not the reply part. - done, not tested
+
+//create function that sends emails once a day and adds tickets - done but untested
+//modify add to db function with tickets (see the bottom part titled tickets table) - done but untested
+//implement scheduler
+//need to add strategic logging messages and clean up the code a little bit.
+
+//stretch - add function that adds "Last month today/last year today/ last week today type message to send emails."
+
+/*
+tickets table
+email of user + 8 char code
+tickets are generated every time email is sent
+  need to confirm it is possible to send an email and set reply email using code - done, it is possible
+
+user responds to email that is sent
+  get users email + the reply code, search tickets table - done, not tested
+    if found, post to db.  if not found, discard (it just logs error) - done, not tested
+      concerns are if user replies to email and it isn't found
+      */

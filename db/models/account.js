@@ -25,6 +25,7 @@ class Account extends Model {
         password: { type: "string" },
         about: { type: "string" },
         permission: { type: "integer" },
+        email_enabled: { type: "integer" },
         generated_username: { type: "string" },
         date_created: { type: "string", format: "date-time" },
         last_logged: { type: "string", format: "date-time" }
@@ -103,8 +104,15 @@ class Account extends Model {
           },
           to: 'posts.id'
         }
-
-      }
+      },
+      tickets: {
+        relation: Model.HasManyRelation,
+        modelClass: __dirname + '/tickets',
+        join: {
+            from: 'account.id',
+            to: 'tickets.id_account'
+        }
+      } 
     };
   }
 }

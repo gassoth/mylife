@@ -23,4 +23,10 @@ router.get('/subscribe/:id', profile_controller.get_profile_subscribe);
 //Profile attempt to unsubscribe route.
 router.get('/unsubscribe/:id', profile_controller.get_profile_unsubscribe);
 
+//Profile get settings page
+router.get('/settings/:id', profile_controller.get_profile_settings);
+
+//Profile post setting page
+router.post('/settings/:id', profile_controller.post_profile_settings);
+
 module.exports = router;

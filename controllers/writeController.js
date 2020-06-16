@@ -104,7 +104,7 @@ exports.post_edit = [
         //console.log(req.user.id);
         //console.log(req.user.generated_username);
         console.log(req.params.id);
-        const updatedAccount = await Posts.query().findById(req.params.id).patch({
+        const updatedPost = await Posts.query().findById(req.params.id).patch({
             title: req.body.title,
             body_delta: req.body.deltaText,
             body_html: req.body.htmlText,
