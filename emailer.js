@@ -138,7 +138,10 @@ function getParsedHtmlEmail(parsed, htmlEmail) {
 
 //Function to check emails against tickets.
 async function checkUnreadAgainstTickets(emails) {
-
+  if (emails.length == 0) {
+    console.log('There are no unread emails');
+    return;
+  }
   //Parse code and email from the whole email and check that against the tickets table.  If we did delete something, we want to add the email to the 
   //database using that information (should store the ticket id_account before deletion).  If we dont delete anything, then we just do nothing. We
   //call the post message function to add it to the database as a post.
@@ -231,6 +234,11 @@ async function getUnreadFunction(auth) {
     }
     //If fail just log
   } catch (e) {
+    if (e instanceof TypeError) {
+      console.log(e);
+      console.log('Most likely there were no unread emails, so we do not have to worry.');
+      return;
+    }
     console.log(e);
     return;
   }
@@ -333,7 +341,6 @@ exports.getUnread = function(req, res, next) {
         if (err) return console.log('Error loading client secret file:', err);
         // Authorize a client with credentials, then call the Gmail API.
         authorize(JSON.parse(content), getUnreadFunction);
-        res.redirect('/');
       });
 }
 
@@ -343,7 +350,6 @@ exports.sendEmail = function(req, res, next) {
         if (err) return console.log('Error loading client secret file:', err);
         // Authorize a client with credentials, then call the Gmail API.
         authorize(JSON.parse(content), emailUsersFunction);
-        res.redirect('/');
       });
 }
 

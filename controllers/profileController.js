@@ -2,6 +2,9 @@ var Account = require('../db/models/account.js');
 var Post = require('../db/models/posts.js');
 var Comment = require('../db/models/comments.js');
 var async = require('async');
+const path = require('path');
+var fs = require('fs');
+const resize = require('../resize');
 
 //Controller for a profile
 exports.get_profile = function(req, res, next) {
@@ -217,11 +220,32 @@ exports.get_profile_unsubscribe = async function(req, res, next) {
     }
 };
 
+function deletePictureInUploads(filename) {
+    const dir = path.join(__dirname, "../public/uploads/")
+    var files = fs.readdirSync(dir);
+    for (let i = 0; i < files.length; i++) {
+        let matchedFileName = files[i].split(".")[0];
+        if (matchedFileName === filename) {
+            const matchedFilePath = path.join(dir, files[i]);
+            try {
+                fs.unlinkSync(matchedFilePath);
+                console.log(matchedFilePath+' was deleted');
+                return "Success";
+            } catch(err) {
+                console.error(err);
+                return "Error";
+            }
+        }
+    }
+    return "FileNotFound";
+}
+
 //Controller for modifying user settings
 exports.post_profile_settings = [
 
     async (req, res, next) => {
-        
+
+        //Handle the email switch
         console.log(req.body.email_enabled);
         let switchValue = 0;
         if (req.body.email_enabled) {
@@ -231,6 +255,21 @@ exports.post_profile_settings = [
         const updatedAccount = await Account.query().findById(req.params.id).patch({
             email_enabled: switchValue
         });
+
+        //Handle image upload
+        if (req.file) {
+            const tempPath = req.file.path;
+            const targetPath = path.join(__dirname, "../public/uploads/"+req.file.filename);
+            const format = req.file.filename.split(".")[1];
+            let t = deletePictureInUploads(req.file.filename.split(".")[0]);
+            var finalImg = fs.createWriteStream(targetPath);
+            resize("./"+tempPath, format, 750, 750).pipe(finalImg);
+            fs.unlinkSync(tempPath);
+            console.log("Image sucessfully uploaded");
+        } else {
+            console.log("No file found");
+        }
+
         res.redirect('/profile/'+req.params.id);
     }
 ]

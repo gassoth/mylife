@@ -96,18 +96,16 @@ app.get('/logout',
 
 //scheduler to run send email function once a day, and a rule to check emails once an hour
 var ruleCheck = new schedule.RecurrenceRule();
-//ruleCheck.minute = 30;
 var ruleSend = new schedule.RecurrenceRule();
-//ruleSend.hour = 18;
-ruleSend.second = 15;
-ruleCheck.second = 45;
+ruleSend.hour = 16;
+ruleSend.minute = 30;
+ruleCheck.minute = 0;
+var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);
+var sendEmails = schedule.scheduleJob(ruleSend, emailer.sendEmail);
 
 //var rule = new schedule.RecurrenceRule();
 //rule.second = 30;
- 
-//var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);
-//var sendEmails = schedule.scheduleJob(ruleSend, emailer.sendEmail);
-var test = schedule.scheduleJob(ruleSend, emailer.scheduleTest);
+//var test = schedule.scheduleJob(ruleSend, emailer.scheduleTest);
 
 //test email functions
 app.get('/testemail', emailer.getLabels);
@@ -169,9 +167,12 @@ add to subscription db - untested
 add to read db - untested
 bug -     err http headers when loading list of comments and list of posts for a user - fixed, untested
 bug - private posts breaks lists of posts - fixed, untested
+need to add profile pic editing lol - done, not tested. Profile pics can be uploaded per user, but not reflected on front end yet.
+update profile pics on front end
 
 later - add to read db - probably a cleaner way to do this part other than throwing random exceptions.   look into it.
 profile options
+
 -->
 
 <!--
