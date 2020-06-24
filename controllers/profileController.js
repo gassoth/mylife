@@ -71,6 +71,14 @@ exports.get_profile = function(req, res, next) {
         //Checks if the count of users posts is valid and sends the correct value
         let postsCount = 0;
         let commentsCount = 0;
+
+        //Handles check if profile picture is found, if not, then use default
+        const imgLocation = searchPicInUploads(convertToUnderscore(results.account.generated_username)).toString();
+        let relImgLocation = imgLocation;
+        if (imgLocation != "/images/test.jpg") {
+            relImgLocation = imgLocation.split('/public')[1];
+        }
+
         if (results.posts[0].count != '0') {
             postsCount = results.posts[0].count;
         }
@@ -79,9 +87,9 @@ exports.get_profile = function(req, res, next) {
         }
         // Successful, so render.  Either send in defined user or empty user since gives error if user not found
         if (req.user){
-            res.render('profile', { account: results.account, user: req.user, postsCount: postsCount, commentsCount: commentsCount, subscribers: subscriberIds} );
+            res.render('profile', { account: results.account, user: req.user, postsCount: postsCount, commentsCount: commentsCount, subscribers: subscriberIds, img: relImgLocation} );
         } else {
-            res.render('profile', { account: results.account, user: '', postsCount: postsCount, commentsCount: commentsCount, subscribers: subscriberIds} );
+            res.render('profile', { account: results.account, user: '', postsCount: postsCount, commentsCount: commentsCount, subscribers: subscriberIds, img: relImgLocation} );
         }
     });
 };
@@ -220,8 +228,9 @@ exports.get_profile_unsubscribe = async function(req, res, next) {
     }
 };
 
+//Searches for a phrase in the uploads folder and deletes that file
 function deletePictureInUploads(filename) {
-    const dir = path.join(__dirname, "../public/uploads/")
+    const dir = path.join(__dirname, "../public/uploads/");
     var files = fs.readdirSync(dir);
     for (let i = 0; i < files.length; i++) {
         let matchedFileName = files[i].split(".")[0];
@@ -238,6 +247,26 @@ function deletePictureInUploads(filename) {
         }
     }
     return "FileNotFound";
+}
+
+//Searches for a phrase in uploads folder and gets the path to that file
+function searchPicInUploads(filename) {
+    const dir = path.join(__dirname, "../public/uploads/");
+    var files = fs.readdirSync(dir);
+    for (let i = 0; i < files.length; i++) {
+        let matchedFileName = files[i].split(".")[0];
+        if (matchedFileName === filename) {
+            const matchedFilePath = path.join(dir, files[i]);
+            return matchedFilePath;
+        }
+    }
+    return "/images/test.jpg";
+}
+
+//Converts space to underscore so that we don't have %20 in the url
+function convertToUnderscore(str) {
+    const output = str.replace(/[ ,]+/g, "_");
+    return output;
 }
 
 //Controller for modifying user settings
@@ -259,9 +288,9 @@ exports.post_profile_settings = [
         //Handle image upload
         if (req.file) {
             const tempPath = req.file.path;
-            const targetPath = path.join(__dirname, "../public/uploads/"+req.file.filename);
+            const targetPath = path.join(__dirname, "../public/uploads/"+convertToUnderscore(req.file.filename));
             const format = req.file.filename.split(".")[1];
-            let t = deletePictureInUploads(req.file.filename.split(".")[0]);
+            let t = deletePictureInUploads(convertToUnderscore(req.file.filename.split(".")[0]));
             var finalImg = fs.createWriteStream(targetPath);
             resize("./"+tempPath, format, 750, 750).pipe(finalImg);
             fs.unlinkSync(tempPath);

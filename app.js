@@ -167,8 +167,8 @@ add to subscription db - untested
 add to read db - untested
 bug -     err http headers when loading list of comments and list of posts for a user - fixed, untested
 bug - private posts breaks lists of posts - fixed, untested
-need to add profile pic editing lol - done, not tested. Profile pics can be uploaded per user, but not reflected on front end yet.
-update profile pics on front end
+need to add profile pic editing lol - done, not tested
+update profile pics on front end - done not tested
 
 later - add to read db - probably a cleaner way to do this part other than throwing random exceptions.   look into it.
 profile options
