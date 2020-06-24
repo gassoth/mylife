@@ -3,7 +3,6 @@ const readline = require('readline');
 const {google} = require('googleapis');
 var base64 = require('js-base64').Base64;
 const simpleParser = require('mailparser').simpleParser;
-var Check = require('./check');
 var Posts = require('./db/models/posts.js');
 var Account = require('./db/models/account.js');
 var Tickets = require('./db/models/tickets.js');
