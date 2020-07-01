@@ -7,7 +7,6 @@ var Posts = require('./db/models/posts.js');
 var Account = require('./db/models/account.js');
 var Tickets = require('./db/models/tickets.js');
 var replyParser = require("node-email-reply-parser");
-
 const { convertHtmlToDelta } = require('node-quill-converter');
 
 // If modifying these scopes, delete token.json.
@@ -90,7 +89,7 @@ function listLabels(auth) {
   });
 }
 
-//Function to add email to database.
+//Function to add email to database. Email is the email, parsedEmailObject is extra data from the ticket or from the email.
 async function postMessage(email, parsedEmailObject) {
   let delta = convertHtmlToDelta(parsedEmailObject.body_html);
   let subject = email.subject;
@@ -113,6 +112,7 @@ async function postMessage(email, parsedEmailObject) {
 
 //Function to get the html version of reply email.  This function does not work for double replies, so improvement for the future
 //is to try to make this function work for double replies or at least check for double replies.
+//Parsed is the parsed object using replyparser library, htmlEmail is the original htmlEmail.
 function getParsedHtmlEmail(parsed, htmlEmail) {
   //Gets the fragment that has the reply emails
   const htmlString = parsed.getFragments()[1].getContent();
@@ -124,12 +124,14 @@ function getParsedHtmlEmail(parsed, htmlEmail) {
 
   //Splits the html email based on htmlStringSplitter, gets the first half, and then removes the whitespace and trims the trailing <p> tag.
   const htmlEmailSplit = htmlEmail.split(htmlStringSplitter)[0].trimRight().slice(0, -3);
-  console.log(htmlStringSplitter);
+
   //If the original htmlEmail sent in equals the split htmlEmail (which means a match was not found) we just use the original htmlEmail
   //Means that user will need to edit it on their own once its posted.
   if (htmlEmailSplit === htmlEmail) {
+    console.log("htmlEmail encountered an error and is returning the original htmlEmail");
     return htmlEmail;
   } else {
+    console.log("Parsed htmlEmail with no errors");
     return htmlEmailSplit;
   }
 }
@@ -141,7 +143,7 @@ async function checkUnreadAgainstTickets(emails) {
     console.log('There are no unread emails');
     return;
   }
-  //Parse code and email from the whole email and check that against the tickets table.  If we did delete something, we want to add the email to the 
+  //Parse code and email from the whole email and check that against the tickets table.  If we did delete(found) a ticket, we want to add the email to the 
   //database using that information (should store the ticket id_account before deletion).  If we dont delete anything, then we just do nothing. We
   //call the post message function to add it to the database as a post.
   for (let i = 0; i < emails.length; i++) {
@@ -168,8 +170,8 @@ async function checkUnreadAgainstTickets(emails) {
       const ticketIdAccount = ticket[0].id_account;
       const ticketDate = ticket[0].date_created;
 
-      //found a way to more reliably strip out the original message.  Now just need to find a way to maybe get the reply line from that strip, and 
-      //parse out the original message when it comes to html.
+      //replyParser gives us only the reply email, specifically an object that uses getters to get specific emails from a chain and from there we can get the reply
+      //Similarly, getParsedHtmlEmail gets us the html that corresponds to that reply email.
       const e = replyParser(email.text);
       const f = getParsedHtmlEmail(e, email.textAsHtml.trim());
       const message = e.getFragments()[0].getContent().trim();
@@ -188,6 +190,7 @@ async function checkUnreadAgainstTickets(emails) {
         throw new Error('No ticket found');
       }
     } catch (e) {
+      console.log("Most likely email did not match format, so we want to ignore it or potentially save it for manual review.")
       console.log(e);
     }
   }
@@ -241,7 +244,10 @@ async function getUnreadFunction(auth) {
     console.log(e);
     return;
   }
-  checkUnreadAgainstTickets(unreadEmails);
+  if (unreadEmails.length != 0) {
+    checkUnreadAgainstTickets(unreadEmails);
+  }
+  return unreadEmails;
 }
 
 //Function that creates an email in the format that gmail api can send.
@@ -256,7 +262,7 @@ function makeBody(to, from, subject, message) {
   ].join('');
 
   var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
-      return encodedMail;
+  return encodedMail;
 }
 
 //Function that uses the gmail api to send an email.
@@ -272,7 +278,7 @@ async function sendEmailFunction(gmailObj, email) {
 }
 
 //Function to create the subject line.  Match function parses a timestamp string and gets the day, month, and year.  It then turns that into a string
-//that can be used as the subject line.
+//that can be used as the subject line in the format Month Day Year (Mar 5 2019)
 function createSubject(dateObject) {
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var parts = dateObject.match(/(\d+)/g);
@@ -343,7 +349,7 @@ exports.getUnread = function(req, res, next) {
       });
 }
 
-//Function used to test send emails
+//Function used to send emails
 exports.sendEmail = function(req, res, next) {
     fs.readFile('credentials.json', async (err, content) => {
         if (err) return console.log('Error loading client secret file:', err);
@@ -356,3 +362,6 @@ exports.sendEmail = function(req, res, next) {
 exports.scheduleTest = function(req, res, next) {
   console.log('The answer to life, the universe, and everything!');
 }
+
+
+//message length test
