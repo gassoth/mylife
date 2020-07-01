@@ -97,9 +97,9 @@ app.get('/logout',
 //scheduler to run send email function once a day, and a rule to check emails once an hour
 var ruleCheck = new schedule.RecurrenceRule();
 var ruleSend = new schedule.RecurrenceRule();
-ruleSend.hour = 16;
-ruleSend.minute = 30;
-ruleCheck.minute = 0;
+ruleSend.hour = 18;
+ruleSend.minute = 0;
+ruleCheck.minute = 15;
 var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);
 var sendEmails = schedule.scheduleJob(ruleSend, emailer.sendEmail);
 
@@ -250,8 +250,8 @@ unit testing - maybe figure out how to do that + automated testing
 
 //create function that sends emails once a day and adds tickets - done but untested
 //modify add to db function with tickets (see the bottom part titled tickets table) - done but untested
-//implement scheduler
-//need to add strategic logging messages and clean up the code a little bit.
+//implement scheduler - done
+//need to add strategic logging messages and clean up the code a little bit. - done
 
 //stretch - add function that adds "Last month today/last year today/ last week today type message to send emails."
 

@@ -56,14 +56,28 @@ h3 {
   @extend h1;
   font-size: 2em;
   position: relative;
-  top: 1.3em;
-  left: 1.6em;
+  top: 0.75em;
+  right: 0.25em;
+}
+
+.home-icon {
+  position:  relative;
+  left: 8.5em;
+  top: 12em;
+}
+
+.home-text {
+  @extend h1;
+  font-size: 2em;
+  position:  relative;
+  left: 1.5em;
+  top: 8em;
+
 }
 
 .home-button {
   position:  relative;
-  left: 5em;
-  top: 30em;
+  top: 16em;
 }
 
 .feed-button {
