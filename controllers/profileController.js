@@ -190,7 +190,7 @@ exports.get_profile_settings = function (req, res, next) {
         if (err) { return next(err); }
         // Successful, so render.
         if (req.user && req.user.id == results.account.id) {
-            res.render('profile_settings', { id: req.params.id, emailSetting: results.account.email_enabled });
+            res.render('profile_settings', { id: req.params.id, emailSetting: results.account.email_enabled, description: results.account.about });
         } else {
             res.redirect('/');
         }
@@ -273,16 +273,18 @@ function convertToUnderscore(str) {
 exports.post_profile_settings = [
 
     async (req, res, next) => {
-
-        //Handle the email switch
+        
+        //Handle the email switch and account about section
         console.log(req.body.email_enabled);
+        console.log(req.body.description);
         let switchValue = 0;
         if (req.body.email_enabled) {
             switchValue = 1;
         }
 
         const updatedAccount = await Account.query().findById(req.params.id).patch({
-            email_enabled: switchValue
+            email_enabled: switchValue,
+            about: req.body.description
         });
 
         //Handle image upload
