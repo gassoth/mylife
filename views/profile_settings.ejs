@@ -16,14 +16,6 @@
                     <div class='row'>
                         <div class="switch col s12">
                             <form method="post" enctype="multipart/form-data">
-                                <div class="row">
-                                    <div class="container">
-                                        <div class="input-field col s12">
-                                            <textarea name="description" id="description" class="materialize-textarea" data-length="500"></textarea>
-                                            <label for="description">About Me</label>
-                                        </div>
-                                    </div>
-                                </div>
                                 <% if (emailSetting == 1) { %>
                                 <label>
                                     Do not send emails
@@ -47,6 +39,15 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="container">
+                            <div class="input-field col s12">
+                                <textarea name="description" id="description" class="materialize-textarea"
+                                    data-length="500"><%-about%></textarea>
+                                <label for="description">About Me</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <button type='submit' name='btn_search'
                             class='col s2 offset-s6 btn btn-large waves-effect indigo'>Submit</button>
                         <a class='col s2 offset-s2 btn btn-large waves-effect indigo'
@@ -62,6 +63,5 @@
     <script>
         const textNeedCount = document.querySelector('#description');
         const textNeedCountInstance = new M.CharacterCounter(textNeedCount);
-        const defaultValue = document.getElementById('description').value = '<%=description%>';
     </script>
 </body>

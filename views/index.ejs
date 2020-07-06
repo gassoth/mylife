@@ -38,26 +38,26 @@
 		<div class="row">
 			<div class="home-text">
 				<div class="col s3">
-					<a href="/feed/1" class="amber darken-2 waves-effect waves-light btn-large">Read</a>
+					<a href="/feed/1" class="amber darken-3 waves-effect waves-light btn-large">Read</a>
 				</div>
 				<div class="col s3">
-					<a href="/write" class="amber darken-2 waves-effect waves-light btn-large">Write</a>
+					<a href="/write" class="amber darken-3 waves-effect waves-light btn-large">Write</a>
 				</div>
 				<% if (user) { %>
 				<% let link = '/profile/' + user.id; %>
 				<div class="col s3">
-					<a href="<%=link%>" class="amber darken-2 waves-effect waves-light btn-large" style="right: 0.5em;">Profile</a>
+					<a href="<%=link%>" class="amber darken-3 waves-effect waves-light btn-large" style="right: 0.5em;">Profile</a>
 				</div>
 				<% } else { %>
 				<div class="col s3">
-					<a href="/profile/1" class="amber darken-2 waves-effect waves-light btn-large" style="right: 0.5em;">Profile</a>
+					<a href="/profile/1" class="amber darken-3 waves-effect waves-light btn-large" style="right: 0.5em;">Profile</a>
 				</div>
 				<% } %>
 				<div class="col s3">
 					<% if (user) { %>
-					<a href="/logout" class="amber darken-2 waves-effect waves-light btn-large" style="right:0.7em;">Logout</a>
+					<a href="/logout" class="amber darken-3 waves-effect waves-light btn-large" style="right:0.7em;">Logout</a>
 					<% } else { %>
-					<a href="/login" class="amber darken-2 waves-effect waves-light btn-large">Login</a>
+					<a href="/login" class="amber darken-3 waves-effect waves-light btn-large">Login</a>
 					<% } %>
 				</div>
 			</div>

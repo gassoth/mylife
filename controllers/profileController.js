@@ -190,7 +190,7 @@ exports.get_profile_settings = function (req, res, next) {
         if (err) { return next(err); }
         // Successful, so render.
         if (req.user && req.user.id == results.account.id) {
-            res.render('profile_settings', { id: req.params.id, emailSetting: results.account.email_enabled, description: results.account.about });
+            res.render('profile_settings', { id: req.params.id, emailSetting: results.account.email_enabled, about: results.account.about });
         } else {
             res.redirect('/');
         }
