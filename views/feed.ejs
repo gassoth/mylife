@@ -56,6 +56,7 @@
                         <div class="row">
                             <div class="input-field col s10">
                                 <input id="input_search" name="input_search" type="text" value="<%= currentSearch%>">
+                                <label for="input_search">Enter tags to search for separated by space. Can use 'and' and/or 'or'</label>
                             </div>
                             <button type='submit' id='btn_search'
                                 class='col s2 btn btn-large waves-effect indigo'>Search</button>
@@ -79,7 +80,7 @@
                             </div>
                             <% } else { %>
                             <div class="col s2">
-                                <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                <button type="submit" class="indigo lighten-2 waves-effect waves-light btn-large"
                                     onclick="dateSort(this)">Date</button>
                             </div>
                             <% } %>
@@ -94,7 +95,7 @@
                             </div>
                             <% } else { %>
                             <div class="col s2">
-                                <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                <button type="submit" class="indigo lighten-2 waves-effect waves-light btn-large"
                                     onclick="readSort(this)">Views</button>
                             </div>
                             <% } %>
@@ -109,7 +110,7 @@
                             </div>
                             <% } else { %>
                             <div class="col s2">
-                                <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                <button type="submit" class="indigo lighten-2 waves-effect waves-light btn-large"
                                     onclick="commentSort(this)">Comments</button>
                             </div>
                             <% } %>
@@ -121,7 +122,7 @@
                                 </div>
                                 <% } else { %> 
                                 <div class="col s2">
-                                    <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                    <button type="submit" class="indigo lighten-2 waves-effect waves-light btn-large"
                                         onclick="switchReadFlag(this)">All</button>
                                 </div>
                                 <% } %>
@@ -132,7 +133,7 @@
                                 </div>
                                 <% } else { %>
                                 <div class="col s2">
-                                        <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                        <button type="submit" class="indigo lighten-2 waves-effect waves-light btn-large"
                                             onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
                                 </div>                           
                                 <% } %>
@@ -143,7 +144,7 @@
                                 </div>
                                 <% } else { %>
                                 <div class="col s2">
-                                        <button type="submit" class="indigo lighten-3 waves-effect waves-light btn-large"
+                                        <button type="submit" class="indigo lighten-2 waves-effect waves-light btn-large"
                                             onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
                                 </div>                           
                                 <% } %>
@@ -165,7 +166,11 @@
                                 <div class="card feed-card">
                                     <div class="row">
                                         <div class="col s1">
-                                            <h3>R</h3>
+                                            <% if (posts[i].isRead) { %>
+                                                <h3>R</h3>
+                                            <% } else { %>
+                                                <h3>U</h3>
+                                            <% } %>
                                             <div class="feed-divider"></div>
                                         </div>
                                         <div class="col s8">

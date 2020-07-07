@@ -31,7 +31,7 @@ exports.get_feed = async (req, res) => {
             searchQueries.push(subquery);
             return searchQueries.filter(s => s.size > 0);
         }
-        //Uses user id, read (val 1 for read or 0 for all), and sb (2 for sub, 1 for bookmark, 0 for all))
+        //Uses user id, read (val 0 for unread only or 1 for all), and sb (2 for sub, 1 for bookmark, 0 for all))
         //Gets ids of posts that were read or all posts
         //returns querys posts of those ids to either return the bookmarked ones, posts by a subscribed-to user, or none.
         async function feedFilter(usrId, all, sb, tagSearch) {
@@ -135,6 +135,42 @@ exports.get_feed = async (req, res) => {
             }
         }
 
+        //Function ridiculously inefficient, look into improving it
+        async function setRead(posts, uid) {
+            let modifiedPosts = [];
+            if (uid == 0) {
+                for (let i = 0; i < posts.length; i++) {
+                    let modifiedPost = posts[i];
+                    modifiedPost.isRead = 0;
+                    modifiedPosts.push(modifiedPost);
+                }
+                return modifiedPosts;
+            }
+            for (let i = 0; i < posts.length; i++) {
+                let modifiedPost = posts[i];
+                const readList = await modifiedPost.$relatedQuery('read');
+                var swi = 0;
+                for (let j = 0; j < readList.length; j++) {
+                    if (uid == readList[j].id) {
+                        swi = 1;
+                        break;
+                    }
+                }
+                if (swi == 1) {
+                    modifiedPost.isRead = 1;
+                } else {
+                    modifiedPost.isRead = 0;
+                }
+                modifiedPosts.push(modifiedPost);
+                //check if in read where post.id and user.id
+                //if there, then modifiedPost.isRead = 1;
+                //else modifiePost.isRead = 0;
+                //modifiedPosts.push(modifiedPost);
+            }
+            return modifiedPosts;
+        }
+        //then in view, if post.isRead, set R, else set U
+
         let parsedQuery = [];
         if (req.query.input_search) {
             searchValue = req.query.input_search;
@@ -165,12 +201,13 @@ exports.get_feed = async (req, res) => {
         console.log(uid);
         let selectAll = await feedFilter(uid, allFlag, displayedPostsFlag, parsedQuery);
         let result = await feedSorter(sortFlag, selectAll, req.params.pageNum);
+        let resultModified = await setRead(result[0].results, uid);
         //console.log(result[0]);
         //console.log(result[1]);
         //console.log(await Post.query().findByIds(selectAll).select('posts.id').where('visibility', 1).orderBy('date_posted', 'desc'));
         console.log(allFlag);
         console.log(parsedQuery);
-        res.render('feed', { posts: result[0].results, 
+        res.render('feed', { posts: resultModified, 
             isNextPage: result[1], 
             pageNum: req.params.pageNum, 
             sortMethod: sortFlag,

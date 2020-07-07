@@ -135,11 +135,11 @@ h3 {
   min-width: 100%; 
   padding: 3vh 3vh 0vh; 
   border: 1px solid #EEE; 
-  background-color: #f3e5f5;
+  background-color: #ffefbd;
 }
 
 .feed-card {
-  background-color: #b4dc7f; 
+  background-color: #fcbb9f; 
   padding: 10px 0px 0px 0px;
 }
 
@@ -156,5 +156,5 @@ h3 {
 .feed-divider{
   @extend .divider;
   left: 8%;   
-  border-left: 1px solid #b4dc7f;
+  border-left: 1px solid #fcbb9f;
 }
