@@ -18,15 +18,39 @@
                             <a href="/read/<%=comments[i].id_posts%>">
                                 <div class="card feed-card">
                                     <div class="row">
-                                        <div class="col s12">
+                                        <div class="col s8">
                                             <div class="card-content grey-text text-lighten-3">
                                                 <div class="feed-card-author"><%= comments[i].body%></div>
+                                            </div>
+                                        </div>
+                                        <div class="col s4">
+                                            <div class="card-content grey-text text-lighten-3">
+                                                <span class="card-title" style="text-align: right;">
+                                                    <%= comments[i].date_posted.getDate(); %>
+                                                    <%= comments[i].date_posted.toLocaleString('default', { month: 'long' }); %>
+                                                    <%= comments[i].date_posted.getFullYear(); %> <br />
+                                                    <%= comments[i].date_posted.getHours(); %>:<%= (comments[i].date_posted.getMinutes()<10?'0':'') + comments[i].date_posted.getMinutes(); %>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                             </a>
                         </div>
                     <% } %>
+                    <div class="row">
+                        <ul class="pagination">
+                            <% if (pageNum == 1) { %>
+                            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                            <% } else { let prevPage = parseInt(pageNum)-1;%>
+                            <li class="waves-effect"><a href="/profile/comments/<%=comments[0].id_account%>/<%=prevPage%>"><i class="material-icons">chevron_left</i></a></li>
+                            <% } %>
+                            <% if (isNextPage) { let nextPage = parseInt(pageNum)+1; %>
+                            <li class="waves-effect"><a href="/profile/comments/<%=comments[0].id_account%>/<%=nextPage%>"><i class="material-icons">chevron_right</i></a></li>
+                            <% } else { %>
+                            <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                            <% } %>
+                        </ul>
+                    </div>
                     <div class="row">
                         <a class='col s2 offset-s10 btn btn-large waves-effect indigo' style="position: relative; right: 10px;" href="/profile/<%=comments[0].id_account%>">Return</a>
                     </div>

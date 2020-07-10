@@ -12,7 +12,7 @@
     <main>
         <center>
             <div class="container" style="padding: 10vh 0vh 0vh 0vh;">
-                <div class="z-depth-2 row" style="display: inline-block; min-width: 70vw; min-height: 70vh; position: relative; right: 20px; padding: 32px 48px 0px 48px; border: 1px solid #EEE; background-color: #f3e5f5">
+                <div class="z-depth-2 row" style="display: inline-block; min-width: 70vw; min-height: 70vh; position: relative; right: 20px; padding: 32px 48px 0px 48px; border: 1px solid #EEE; background-color: #ffefbd">
                     <div class="col s3">
                         <div class="row" style="padding: 5vh 0vh 0vh 0vh;"><img src="<%= img%>" style="width:160px;height:160px;"></div>
                         <div class="row" style="position: relative; bottom: 20px;">
@@ -48,10 +48,10 @@
                         <div class="section"></div>
                         <div class="row bio-right">
                             <div class="row">
-                                <a href="posts/<%=account.id %>"><h6>View <%=account.generated_username %>'s posts</h6></a>
+                                <a href="posts/<%=account.id %>/1"><h6>View <%=account.generated_username %>'s posts</h6></a>
                             </div>
                             <div class="row">
-                                <a href="comments/<%=account.id %>"><h6>View <%=account.generated_username %>'s comments</h6></a>
+                                <a href="comments/<%=account.id %>/1"><h6>View <%=account.generated_username %>'s comments</h6></a>
                             </div>
                             <% if (user == '' || user.id != account.id) { %>
                                 <% if (user != '' && subscribers.includes(user.id)) { %>

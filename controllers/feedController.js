@@ -71,8 +71,8 @@ exports.get_feed = async (req, res) => {
         }
         //Function to sort feed based on views count (2), comments count(1), or date (0). Need to test it.
         //posts is the posts that are being sorted, and pagenum is which page is needed
-        async function feedSorter(sort, posts, pageNum) {
-            if (sort == 2) {
+        async function feedSorter(sortType, posts, pageNum) {
+            if (sortType == 2) {
                 let sort = await Post.query().findByIds(posts).select('posts.id', 'posts.title', 'posts.date_posted', 'posts.author', 'posts.id_account')
                     .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
                     .groupBy('posts.id')
@@ -92,7 +92,7 @@ exports.get_feed = async (req, res) => {
                 } else {
                     return [sort, 0];
                 }
-            } else if (sort == 1) {
+            } else if (sortType == 1) {
                 let sort = await Post.query().findByIds(posts).select('posts.id', 'posts.title', 'posts.date_posted', 'posts.author', 'posts.id_account')
                     .leftOuterJoin('comments as c', 'c.id_posts', 'posts.id')
                     .groupBy('posts.id')

@@ -113,11 +113,30 @@ exports.get_profile_posts = function(req, res, next) {
         },
         posts: async function(callback) {
             try {
-                const post = await Post.query().select('posts.*').where('id_account', Number(req.params.id));
-                const postPublic = await Post.query().select('posts.*').where('id_account', Number(req.params.id)).where('visibility', 1);
-                return [post,postPublic];
+                const post = await Post.query().select('posts.*').where('id_account', Number(req.params.id)).page(req.params.pageNum-1, 10);
+                const postPublic = await Post.query().select('posts.*').where('id_account', Number(req.params.id)).where('visibility', 1).page(req.params.pageNum-1, 10);
+                return [post.results,postPublic.results];
             } catch (err) {
                 var err = new Error('Posts returned an error.  Please email ohthatemailaddress@gmail.com');
+                err.status = 404;
+                return next(err);
+            }
+        },
+        //check if theres a next page
+        postsNext: async function(callback) {
+            try {
+                const post = await Post.query().select('id', 'id_account').where('id_account', Number(req.params.id)).page(req.params.pageNum, 10);
+                const postPublic = await Post.query().select('id','visibility').where('id_account', Number(req.params.id)).where('visibility', 1).page(req.params.pageNum, 10);
+                let postVis = 0; let postPublicVis = 0;
+                if (post.results.length > 0) {
+                    postVis = 1;
+                }
+                if (postPublic.results.length > 0) {
+                    postPublicVis = 1;
+                }
+                return [postVis,postPublicVis];
+            } catch (err) {
+                var err = new Error('Comments returned an error.  Please email ohthatemailaddress@gmail.com');
                 err.status = 404;
                 return next(err);
             }
@@ -128,7 +147,6 @@ exports.get_profile_posts = function(req, res, next) {
         if (results.account != '') {
             userId = results.account.id;
         }
-
         console.log(userId);
         if (results.posts[0]<1) { // No results.
             res.render('profile_none', { id: req.params.id });
@@ -136,7 +154,7 @@ exports.get_profile_posts = function(req, res, next) {
         }
         if (userId == req.params.id || results.account.permission > 0) {
             // Successful and correct user is logged in, so private and public posts displayed
-            res.render('profile_posts', { posts: results.posts[0]} );
+            res.render('profile_posts', { posts: results.posts[0], isNextPage: results.postsNext[0], pageNum: req.params.pageNum} );
             return;
         }
         //Post authors is not logged in, so only public posts are displayed
@@ -144,7 +162,7 @@ exports.get_profile_posts = function(req, res, next) {
             res.render('profile_none', { id: req.params.id } );
             return;
         }
-        res.render('profile_posts', { posts: results.posts[1]} );
+        res.render('profile_posts', { posts: results.posts[1], isNextPage: results.postsNext[1], pageNum: req.params.pageNum} );
     });
 };
 
@@ -153,8 +171,24 @@ exports.get_profile_comments = function(req, res, next) {
     async.parallel({
         comments: async function(callback) {
                 try {
-                    const comment = await Comment.query().select('comments.*').where('id_account', Number(req.params.id));
+                    console.log(req.params.pageNum);
+                    const comment = await Comment.query().select('comments.*').where('id_account', Number(req.params.id)).page(req.params.pageNum-1, 10);
                     return comment;
+                } catch (err) {
+                    var err = new Error('Comments returned an error.  Please email ohthatemailaddress@gmail.com');
+                    err.status = 404;
+                    return next(err);
+                }
+            },
+
+        //check if theres a next page
+        commentsNext: async function(callback) {
+                try {
+                    var commentsNext = await Comment.query().select('comments.*').where('id_account', Number(req.params.id)).page(req.params.pageNum, 10);
+                    if (commentsNext.results.length == 0) {
+                        return 0;
+                    }
+                    return 1;
                 } catch (err) {
                     var err = new Error('Comments returned an error.  Please email ohthatemailaddress@gmail.com');
                     err.status = 404;
@@ -163,11 +197,11 @@ exports.get_profile_comments = function(req, res, next) {
             }
         }, function(err, results) {
             if (err) { return next(err); }
-            if (results.comments<1) { // No results.
+            if (results.comments.results<1) { // No results.
                 res.render('profile_none', { id: req.params.id });
             } else {
             // Successful, so render.
-            res.render('profile_comments', { comments: results.comments} );
+            res.render('profile_comments', { comments: results.comments.results, isNextPage: results.commentsNext, pageNum: req.params.pageNum } );
             }
         });
     };
@@ -304,3 +338,5 @@ exports.post_profile_settings = [
         res.redirect('/profile/'+req.params.id);
     }
 ]
+
+//go directly to comment stretch

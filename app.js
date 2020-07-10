@@ -266,3 +266,38 @@ user responds to email that is sent
     if found, post to db.  if not found, discard (it just logs error) - done, not tested
       concerns are if user replies to email and it isn't found
       */
+
+
+//mysterious spacing at bottom of feed page
+//home page icons again
+//login form username doesn't always click
+//  switch color xx
+//  text color xx
+
+//profile
+  //profiel posts - need test
+  //profile comments - need test
+  //need to test change in feed (renamed sort to sortMethod or something)
+  //finalize profile
+
+
+//view posts
+//view comments
+//profile settings
+
+//write page
+  //edit page
+  //tags
+
+//reada page
+  //error when clicking subscribe when not logged in
+  //error when posting empty comment
+
+
+
+
+
+
+  //heroku for deployment?  Thinking simple deploy, get a process set up, then start setting up testing harness
+  //pathway is front end cleanup, backend cleanup (testing), any simple additional features i wanna add, set up deployment process, then set up ci/cd
+  //i should have at least 1 month to do the last 2 steps

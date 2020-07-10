@@ -42,6 +42,20 @@
                             </a>
                         </div>
                     <% } %>
+                    <div>
+                        <ul class="pagination">
+                            <% if (pageNum == 1) { %>
+                            <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
+                            <% } else { let prevPage = parseInt(pageNum)-1;%>
+                            <li class="waves-effect"><a href="/profile/posts/<%=posts[0].id_account%>/<%=prevPage%>"><i class="material-icons">chevron_left</i></a></li>
+                            <% } %>
+                            <% if (isNextPage) { let nextPage = parseInt(pageNum)+1; %>
+                            <li class="waves-effect"><a href="/profile/posts/<%=posts[0].id_account%>/<%=nextPage%>"><i class="material-icons">chevron_right</i></a></li>
+                            <% } else { %>
+                            <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>
+                            <% } %>
+                        </ul>
+                    </div>
                     <div class="row">
                         <a class='col s2 offset-s10 btn btn-large waves-effect indigo' style="position: relative; right: 10px;" href="/profile/<%=posts[0].id_account%>">Return</a>
                     </div>

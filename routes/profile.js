@@ -38,10 +38,10 @@ router.get('/debugp', function(req, res, next) {
 router.get('/:id', profile_controller.get_profile);
 
 //Profile posts page route.  Gets the users posts with id match.
-router.get('/posts/:id', profile_controller.get_profile_posts);
+router.get('/posts/:id/:pageNum', profile_controller.get_profile_posts);
 
 //Profile comments page route.  Gets the users comments with id match.
-router.get('/comments/:id', profile_controller.get_profile_comments);
+router.get('/comments/:id/:pageNum', profile_controller.get_profile_comments);
 
 //Profile attempt to subscribe route.
 router.get('/subscribe/:id', profile_controller.get_profile_subscribe);
