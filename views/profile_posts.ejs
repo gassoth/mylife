@@ -19,7 +19,11 @@
                                 <div class="card feed-card">
                                     <div class="row">
                                         <div class="col s1">
-                                            <h3>R</h3>
+                                                <% if (posts[i].isRead) { %>
+                                                    <h3>R</h3>
+                                                <% } else { %>
+                                                    <h3>U</h3>
+                                                <% } %>
                                             <div class="feed-divider"></div>
                                         </div>
                                         <div class="col s8">

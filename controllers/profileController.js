@@ -5,6 +5,8 @@ var async = require('async');
 const path = require('path');
 var fs = require('fs');
 const resize = require('../resize');
+const { body,validationResult } = require('express-validator/check');
+const { sanitizeBody } = require('express-validator/filter');
 
 //Controller for a profile
 exports.get_profile = function(req, res, next) {
@@ -141,10 +143,47 @@ exports.get_profile_posts = function(req, res, next) {
                 return next(err);
             }
         }
-    }, function(err, results) {
+    }, async function(err, results) {
         if (err) { return next(err); }
-        let userId = '';
-        if (results.account != '') {
+
+        //Function ridiculously inefficient, look into improving it
+        async function setRead(posts, uid) {
+            let modifiedPosts = [];
+            if (uid == 0) {
+                for (let i = 0; i < posts.length; i++) {
+                    let modifiedPost = posts[i];
+                    modifiedPost.isRead = 0;
+                    modifiedPosts.push(modifiedPost);
+                }
+                return modifiedPosts;
+            }
+            for (let i = 0; i < posts.length; i++) {
+                let modifiedPost = posts[i];
+                const readList = await modifiedPost.$relatedQuery('read');
+                var swi = 0;
+                for (let j = 0; j < readList.length; j++) {
+                    if (uid == readList[j].id) {
+                        swi = 1;
+                        break;
+                    }
+                }
+                if (swi == 1) {
+                    modifiedPost.isRead = 1;
+                } else {
+                    modifiedPost.isRead = 0;
+                }
+                modifiedPosts.push(modifiedPost);
+                //check if in read where post.id and user.id
+                //if there, then modifiedPost.isRead = 1;
+                //else modifiePost.isRead = 0;
+                //modifiedPosts.push(modifiedPost);
+            }
+            return modifiedPosts;
+        }
+        //then in view, if post.isRead, set R, else set U
+
+        let userId = 0;
+        if (results.account != 0) {
             userId = results.account.id;
         }
         console.log(userId);
@@ -154,7 +193,8 @@ exports.get_profile_posts = function(req, res, next) {
         }
         if (userId == req.params.id || results.account.permission > 0) {
             // Successful and correct user is logged in, so private and public posts displayed
-            res.render('profile_posts', { posts: results.posts[0], isNextPage: results.postsNext[0], pageNum: req.params.pageNum} );
+            const finalPosts = await setRead(results.posts[0], userId);
+            res.render('profile_posts', { posts: finalPosts, isNextPage: results.postsNext[0], pageNum: req.params.pageNum} );
             return;
         }
         //Post authors is not logged in, so only public posts are displayed
@@ -162,7 +202,8 @@ exports.get_profile_posts = function(req, res, next) {
             res.render('profile_none', { id: req.params.id } );
             return;
         }
-        res.render('profile_posts', { posts: results.posts[1], isNextPage: results.postsNext[1], pageNum: req.params.pageNum} );
+        const finalPosts = await setRead(results.posts[0], userId);
+        res.render('profile_posts', { posts: finalPosts, isNextPage: results.postsNext[1], pageNum: req.params.pageNum} );
     });
 };
 
@@ -224,7 +265,7 @@ exports.get_profile_settings = function (req, res, next) {
         if (err) { return next(err); }
         // Successful, so render.
         if (req.user && req.user.id == results.account.id) {
-            res.render('profile_settings', { id: req.params.id, emailSetting: results.account.email_enabled, about: results.account.about });
+            res.render('profile_settings', { id: req.params.id, emailSetting: results.account.email_enabled, about: results.account.about, errors: '' });
         } else {
             res.redirect('/');
         }
@@ -305,8 +346,22 @@ function convertToUnderscore(str) {
 
 //Controller for modifying user settings
 exports.post_profile_settings = [
+        //Validate
+        body('description').isLength({ max: 1000 }).withMessage('Description too long'),
+    
+        //Sanitize
+        sanitizeBody('description').escape(),
 
     async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/errors messages.
+            console.log(req.body.description);
+            console.log(req.body.description.length);
+            res.render('profile_settings', { id: req.params.id, emailSetting: req.body.email_enabled, about: req.body.description, errors: errors.array() });
+            return;
+        }
+        else {
         
         //Handle the email switch and account about section
         console.log(req.body.email_enabled);
@@ -336,6 +391,7 @@ exports.post_profile_settings = [
         }
 
         res.redirect('/profile/'+req.params.id);
+        }
     }
 ]
 

@@ -269,6 +269,7 @@ user responds to email that is sent
 
 
 //mysterious spacing at bottom of feed page
+//positioning of r and u in feed
 //home page icons again
 //login form username doesn't always click
 //  switch color xx
@@ -277,8 +278,8 @@ user responds to email that is sent
 //profile
   //profiel posts - need test
   //profile comments - need test
-  //need to test change in feed (renamed sort to sortMethod or something)
   //finalize profile
+    //refine character counter - need test
 
 
 //view posts

@@ -11,6 +11,7 @@
     <div class="section"></div>
     <main>
         <center>
+                <div class="container">
             <div class="container feed-block-container">
                 <div class="z-depth-2 feed-block">
                     <div class='row'>
@@ -41,8 +42,8 @@
                     <div class="row">
                         <div class="container">
                             <div class="input-field col s12">
-                                <textarea name="description" id="description" class="materialize-textarea"
-                                    data-length="500"><%-about%></textarea>
+                                <textarea name="description" id="description" class="materialize-textarea validate"
+                                    data-length="500" maxlength="500"><%-about%></textarea>
                                 <label for="description">About Me</label>
                             </div>
                         </div>
@@ -53,11 +54,21 @@
                         <a class='col s2 offset-s2 btn btn-large waves-effect indigo'
                             style="position: relative; right: 10px;" href="/profile/<%=id%>">Return</a>
                     </div>
+                    <div class="row">
+                            <%if (errors != '') { %>
+                                <ul>
+                                  <% for(var i = 0; i < errors.length; i++) {%>
+                                 <li><%= errors[i].msg %></li>
+                                 <% } %>
+                                </ul>
+                                <% } %>
+                    </div>
                     </form>
                 </div>
             </div>
             </div>
             </div>
+        </div>
         </center>
     </main>
     <script>
