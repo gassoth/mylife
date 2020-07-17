@@ -53,7 +53,7 @@ exports.get_edit = function(req, res, next) {
         if (user != '' && (user.id == results.posts.id_account || user.permission > 0)) {
             res.render('edit', { posts: results.posts, errors: undefined } );
         } else {
-            res.render('read', { posts: results.posts, user: user, comments: results.comments} );
+            res.redirect('/read/'+results.posts.id);
         }
     });
 };
@@ -196,7 +196,7 @@ exports.get_tags = async (req, res) => {
     if (req.user && (req.user.id == current_post.id_account || req.user.permission > 0)) {
         const queried_tags = await Posts.query().select('tags').findById(req.params.id);
         console.log(queried_tags);
-        res.render('tags', {tags: queried_tags.tags, errors: ''});
+        res.render('tags', {tags: queried_tags.tags, errors: '', postId: req.params.id });
     } else {
         console.log('Cannot edit another users post')
         res.redirect('/');

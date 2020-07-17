@@ -20,8 +20,8 @@
                 </div>
         </center>
         <div class="container" style="min-width: 95%;  padding: 3vh 0vh 0vh 0vh;">
-            <form class="z-depth-2 row"
-                style="display: inline-block; min-width: 100%; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #f3e5f5"
+            <form class="z-depth-2 row write-card"
+                style="min-height: 0vh;"
                 method="post">
                 <div class="container z-depth-2 row" style="min-width: 90%; background-color: #EEE; padding: 2vh 2vh;">
                     <%if (tags.length > 0) { %>
@@ -39,9 +39,11 @@
                     </div>
                 </div>
                 <div class='row'>
-                    <button type='submit' name='btn_submit' class='col s2 offset-s7 btn btn-large waves-effect indigo'
+                    <a class='col s2 offset-s4 btn btn-large waves-effect blue'
+                        style="position: relative; right: 10px;" href="/read/<%=postId%>">Return</a>
+                    <button type='submit' name='btn_submit' class='col s2 offset-s1 btn btn-large waves-effect blue'
                         value='add'>Add</button>
-                    <button type='submit' name='btn_submit' class='col s2 offset-s1 btn btn-large waves-effect indigo'
+                    <button type='submit' name='btn_submit' class='col s2 offset-s1 btn btn-large waves-effect blue'
                         value='del'>Delete</button>
                     <%if (errors) { %>
                     <ul>

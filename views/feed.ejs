@@ -157,10 +157,9 @@
         </center>
         <center>
             <div class="container feed-block-container">
-                <div class="z-depth-2 row feed-block">
+                <div class="z-depth-2 feed-block">
                     <% if (posts) { %>
                     <% for (let i = 0; i < posts.length; i++) { %>
-                    <div class="row">
                         <div class="col s12">
                             <a href="/read/<%=posts[i].id%>">
                                 <div class="card feed-card">
@@ -194,7 +193,6 @@
                                     </div>
                             </a>
                         </div>
-                    </div>
                     <% } %>
                     <% } %>
                     <ul class="pagination">
@@ -214,6 +212,9 @@
                 </div>
             </div>
             </div>
+            
         </center>
+        <div class="section"></div>
+
     </main>
 </body>

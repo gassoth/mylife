@@ -148,7 +148,15 @@ h3 {
   font-size: 1.5em; }
 
 .feed-divider {
-  left: 8%;
+  left: 7.25%;
   border-left: 1px solid #fcbb9f; }
+
+.write-card {
+  display: inline-block;
+  min-width: 100%;
+  min-height: 70vh;
+  padding: 2vh 2vh 1vh;
+  border: 1px solid #EEE;
+  background-color: #ffefbd; }
 
 /*# sourceMappingURL=style.css.map */

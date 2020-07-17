@@ -19,7 +19,7 @@
         </div>
         <div class="container" style="min-width: 80%;  padding: 3vh 0vh 0vh 0vh;">
             <div class="z-depth-2 row"
-                style="display: inline-block; min-width: 100%; min-height: 70vh; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #f3e5f5">
+                style="display: inline-block; min-width: 100%; min-height: 70vh; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #ffefbd">
                 <div class="row">
                     <%-posts.body_html %>
                 </div>
@@ -30,34 +30,34 @@
         </div>
         <div class="container" style="min-width: 80%; margin-top: -45px; text-align: right;">
             <div class="row">
-                <div class="col s1" style="position: relative; top: 50px;">
-                    <% if (user.id == posts.id_account || user.permission > 0) { %>
-                    <% let link = '/write/' + posts.id; %>
-                    <a href="<%=link%>" class="indigo waves-effect waves-light btn-large">Edit</a>
-                    <% } %>
-                </div>
-                <div class="col s1" style="position: relative; top: 50px;">
-                        <% if (user.id == posts.id_account || user.permission > 0) { %>
-                        <% let link = '/write/tags/' + posts.id; %>
-                        <a href="<%=link%>" class="indigo waves-effect waves-light btn-large">Tags</a>
-                        <% } %>
-                </div>
-                <div class="col s1" style="position:  relative; top: 50px;">
-                        <% if (user.id == posts.id_account || user.permission > 0) { %>
-                        <% let delLink = 'delete/' + posts.id; %>
-                        <a href="<%=delLink%>" class="indigo waves-effect waves-light btn-large" onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
-                        <% } %>
-                </div>
                 <div class="col s1" style="position:  relative; top: 50px;">
                     <% if (user != '') { %>
                         <% if (!bookmark) { %>
-                        <% let bookmarkLink = 'bookmark/' + posts.id; %>
-                        <a href="<%=bookmarkLink%>" class="indigo waves-effect waves-light btn-large">Bookmark</a>
+                            <% let bookmarkLink = 'bookmark/' + posts.id; %>
+                            <a href="<%=bookmarkLink%>" class="blue darken-3 waves-effect waves-light btn-large">Bookmark</a>
                         <% } else { %>
-                        <% let unbookmarkLink = 'bookmark/remove/' + posts.id; %>
-                        <a href="<%=unbookmarkLink%>" class="indigo waves-effect waves-light btn-large">Unbookmark</a>
+                            <% let unbookmarkLink = 'bookmark/remove/' + posts.id; %>
+                            <a href="<%=unbookmarkLink%>" class="blue darken-3 waves-effect waves-light btn-large">Unbookmark</a>
                         <% } %>
                     <% } %>
+                </div>
+                <div class="col s1" style="position: relative; top: 50px; left: 35px;">
+                    <% if (user.id == posts.id_account || user.permission > 0) { %>
+                    <% let link = '/write/' + posts.id; %>
+                    <a href="<%=link%>" class="blue darken-3 waves-effect waves-light btn-large">Edit</a>
+                    <% } %>
+                </div>
+                <div class="col s1" style="position: relative; top: 50px; left: 30px;">
+                        <% if (user.id == posts.id_account || user.permission > 0) { %>
+                        <% let link = '/write/tags/' + posts.id; %>
+                        <a href="<%=link%>" class="blue darken-3 waves-effect waves-light btn-large">Tags</a>
+                        <% } %>
+                </div>
+                <div class="col s1" style="position:  relative; top: 50px; left: 25px;">
+                        <% if (user.id == posts.id_account || user.permission > 0) { %>
+                        <% let delLink = 'delete/' + posts.id; %>
+                        <a href="<%=delLink%>" class="blue darken-3 waves-effect waves-light btn-large" onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                        <% } %>
                 </div>
                 <div class="col s8">
                     <h1><%=posts.author %></h1>
@@ -68,17 +68,17 @@
             <div class="container" style="margin-bottom: -60px; min-width: 80%; margin-top: -20px">
                     <div class="container" style="min-width: 80%;  padding: 3vh 0vh 0vh 0vh;">
                         <div class="z-depth-2 row"
-                            style="display: inline-block; min-width: 100%; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #f3e5f5">
+                            style="display: inline-block; min-width: 100%; padding: 2vh 2vh 4vh; border: 1px solid #EEE; background-color: #ffefbd">
                             <div class="row">
                                 <div class="col s12">
-                                    <div class="row">
+                                    <div class="row" style="position: relative; left: 10px;">
                                             <h3><%= comments[i].author %></h3><%= comments[i].body %>
                                     </div>
                                     <div class="row">
                                             <div class="col s1" style="position:  relative; top: 50px;">
                                                 <% if (user.id == comments[i].id_account || user.permission > 0) { %>
                                                 <% let delLink = 'delete/comment/' + comments[i].id; %>
-                                                <a href="<%=delLink%>" class="indigo waves-effect waves-light btn-large" onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                                                <a href="<%=delLink%>" class="blue waves-effect waves-light btn-large" onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
                                                 <% } %>
                                             </div>
                                     </div>
@@ -91,17 +91,18 @@
         <div class="container" style="margin-bottom: -60px; min-width: 80%; margin-top: -30px">
             <div class="container" style="min-width: 80%;  padding: 3vh 0vh 0vh 0vh;">
                 <div class="z-depth-2 row"
-                    style="display: inline-block; min-width: 100%; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #f3e5f5">
+                    style="display: inline-block; min-width: 100%; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #ffefbd">
                     <div class="row">       
                         <form class="col s12" method="post">
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <textarea name="comment" id="comment" class="materialize-textarea"></textarea>
+                                    <textarea name="comment" id="comment" class="materialize-textarea" required></textarea>
                                     <label for="comment">Leave a comment</label>
                                 </div>
                             </div>
                             <div class="row">
-                                <button type="submit" name="btn_comment" class="indigo lighten-3 waves-effect waves-light btn-large">Submit</button>
+                                <button type="submit" name="btn_comment" class="blue waves-effect waves-light btn-large"
+                                style="position: relative; left: 10px;">Submit</button>
                             </div>
                         </form>
                     </div>

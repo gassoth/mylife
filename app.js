@@ -268,32 +268,37 @@ user responds to email that is sent
       */
 
 
-//mysterious spacing at bottom of feed page
-//positioning of r and u in feed
+//mysterious spacing at bottom of feed page - need test
+//positioning of r and u in feed - need test
 //home page icons again
 //login form username doesn't always click
 //  switch color xx
 //  text color xx
+//subscribed to and bookmarked posts?
 
 //profile
   //profiel posts - need test
   //profile comments - need test
   //finalize profile
     //refine character counter - need test
+  //view posts - need test
+  //view comments - need test
+  //profile settings - need test
 
-
-//view posts
-//view comments
-//profile settings
+//reada page
+  //need to modify comment styling - need test
+  //error when clicking subscribe when not logged in - need test
+  //error when posting empty comment - need test
+  //unbookmark not working - need test
+  //unbookmark spacing
+  //button coloring
+  //edit post when wrong user redirects without using bookmark causing an error - neet test
 
 //write page
   //edit page
   //tags
 
-//reada page
-  //error when clicking subscribe when not logged in
-  //error when posting empty comment
-
+//create an error handling page (example 404 page, please try again.)
 
 
 

@@ -328,7 +328,7 @@ exports.get_delete_bookmark = function(req, res, next) {
             if (!req.user) {
                 throw 'NotLoggedIn';
             }
-            results.account.$relatedQuery('bookmarks').unrelate().where({id_post: results.posts.id});
+            await results.account.$relatedQuery('bookmarks').unrelate().where({id_post: results.posts.id});
         } catch (err) {
             console.log(err);
             res.redirect('/');
