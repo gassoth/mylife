@@ -120,12 +120,13 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  //res.locals.message = err.message;
+  //res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  //res.status(err.status || 500);
+  console.log(err);
+  res.render('errorpage');
 });
 
 module.exports = app;
@@ -270,8 +271,8 @@ user responds to email that is sent
 
 //mysterious spacing at bottom of feed page - need test
 //positioning of r and u in feed - need test
-//home page icons again
-//login form username doesn't always click
+//home page icons again xx
+//login form username doesn't always click - need test
 //  switch color xx
 //  text color xx
 //subscribed to and bookmarked posts?
@@ -298,7 +299,7 @@ user responds to email that is sent
   //edit page
   //tags
 
-//create an error handling page (example 404 page, please try again.)
+//create an error handling page (example 404 page, please try again.) - need test
 
 
 

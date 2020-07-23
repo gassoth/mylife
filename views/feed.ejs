@@ -75,12 +75,12 @@
                                 <% } %>
                             <% if (sortMethod == 0) { %>
                             <div class="col s2">
-                                <button type="submit" class="blue lighten-1 waves-effect waves-light btn-large"
+                                <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
                                     onclick="dateSort(this)">Date</button>
                             </div>
                             <% } else { %>
                             <div class="col s2">
-                                <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
                                     onclick="dateSort(this)">Date</button>
                             </div>
                             <% } %>
@@ -90,12 +90,12 @@
                             <% } %>
                             <% if (sortMethod == 2) { %>
                             <div class="col s2">
-                                <button type="submit" class="blue lighten-1 waves-effect waves-light btn-large"
+                                <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
                                     onclick="readSort(this)">Views</button>
                             </div>
                             <% } else { %>
                             <div class="col s2">
-                                <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
                                     onclick="readSort(this)">Views</button>
                             </div>
                             <% } %>
@@ -105,46 +105,46 @@
                                 <% } %>
                             <% if (sortMethod == 1) { %>
                             <div class="col s2">
-                                <button type="submit" class="blue lighten-1 waves-effect waves-light btn-large"
+                                <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
                                     onclick="commentSort(this)">Comments</button>
                             </div>
                             <% } else { %>
                             <div class="col s2">
-                                <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
                                     onclick="commentSort(this)">Comments</button>
                             </div>
                             <% } %>
                             <% if (isLoggedIn != 0) { %>
                                 <% if (isAll == 1) { %>
                                 <div class="col s2">
-                                    <button type="submit" class="blue lighten-1 waves-effect waves-light btn-large"
+                                    <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
                                         onclick="switchReadFlag(this)">Unread</button>
                                 </div>
                                 <% } else { %> 
                                 <div class="col s2">
-                                    <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                    <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
                                         onclick="switchReadFlag(this)">All</button>
                                 </div>
                                 <% } %>
                                 <% if (displayedPosts == 2) { %>
                                 <div class="col s2">
-                                        <button type="submit" class="blue lighten-1 waves-effect waves-light btn-large"
+                                        <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
                                             onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
                                 </div>
                                 <% } else { %>
                                 <div class="col s2">
-                                        <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                        <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
                                             onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
                                 </div>                           
                                 <% } %>
                                 <% if (displayedPosts == 1) { %>
                                 <div class="col s2">
-                                        <button type="submit" class="blue lighten-1 waves-effect waves-light btn-large"
+                                        <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
                                             onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
                                 </div>
                                 <% } else { %>
                                 <div class="col s2">
-                                        <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                        <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
                                             onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
                                 </div>                           
                                 <% } %>
