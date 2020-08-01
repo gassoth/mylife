@@ -120,13 +120,13 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
-  //res.locals.message = err.message;
-  //res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  //res.status(err.status || 500);
-  console.log(err);
-  res.render('errorpage');
+  res.status(err.status || 500);
+  //console.log(err);
+  res.render('error');
 });
 
 module.exports = app;
@@ -292,12 +292,13 @@ user responds to email that is sent
   //error when posting empty comment - need test
   //unbookmark not working - need test
   //unbookmark spacing
+  //view tags
   //button coloring
   //edit post when wrong user redirects without using bookmark causing an error - neet test
 
 //write page
   //edit page
-  //tags
+  //tags errors
 
 //create an error handling page (example 404 page, please try again.) - need test
 
@@ -308,3 +309,5 @@ user responds to email that is sent
   //heroku for deployment?  Thinking simple deploy, get a process set up, then start setting up testing harness
   //pathway is front end cleanup, backend cleanup (testing), any simple additional features i wanna add, set up deployment process, then set up ci/cd
   //i should have at least 1 month to do the last 2 steps
+
+  //time zones and such

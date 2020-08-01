@@ -50,24 +50,24 @@
                         <div class="section"></div>
                         <div class="row bio-right">
                             <div class="row">
-                                <a href="posts/<%=account.id %>/1"><h6>View <%=account.generated_username %>'s posts</h6></a>
+                                <h6><a href="posts/<%=account.id %>/1">View <%=account.generated_username %>'s posts</a></h6>
                             </div>
                             <div class="row">
-                                <a href="comments/<%=account.id %>/1"><h6>View <%=account.generated_username %>'s comments</h6></a>
+                                <h6><a href="comments/<%=account.id %>/1">View <%=account.generated_username %>'s comments</a></h6>
                             </div>
                             <% if (user == '' || user.id != account.id) { %>
                                 <% if (user != '' && subscribers.includes(user.id)) { %>
                                 <div class="row">
-                                    <a href="unsubscribe/<%=account.id %>"><h6>Unsubscribe to <%=account.generated_username %></h6></a>
+                                    <h6><a href="unsubscribe/<%=account.id %>">Unsubscribe to <%=account.generated_username %></a></h6>
                                 </div>
                                 <% } else { %>
                                 <div class="row">
-                                    <a href="subscribe/<%=account.id %>"><h6>Subscribe to <%=account.generated_username %></h6></a>
+                                    <h6><a href="subscribe/<%=account.id %>">Subscribe to <%=account.generated_username %></a></h6>
                                 </div>
                                 <% } %>
                             <% } else { %>
                             <div class="row">
-                                <a href="settings/<%=account.id %>"><h6>Profile settings</h6></a>
+                                <h6><a href="settings/<%=account.id %>">Profile settings</a></h6>
                             </div>
                             <% } %>
                             <div class="row">
