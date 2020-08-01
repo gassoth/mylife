@@ -22,6 +22,15 @@
                 style="display: inline-block; min-width: 100%; min-height: 70vh; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #ffefbd">
                 <div class="row">
                     <%-posts.body_html %>
+                    <br>
+                    <br>
+                    Tags: <% for (let i = 0; i < tags.length; i++) { %>
+                            <% if (i == tags.length-1) { %>
+                                <%= tags[i] %>
+                            <% } else { %>
+                                <%= tags[i] %>, 
+                            <% } %>
+                          <% } %>
                 </div>
 
             </div>
@@ -72,7 +81,7 @@
                             <div class="row">
                                 <div class="col s12">
                                     <div class="row" style="position: relative; left: 10px;">
-                                            <h3><%= comments[i].author %></h3><%= comments[i].body %>
+                                            <a href="/profile/<%=comments[i].id_account %>"><h3><%= comments[i].author %></h3></a><%= comments[i].body %>
                                     </div>
                                     <div class="row">
                                             <div class="col s1" style="position:  relative; top: 50px;">

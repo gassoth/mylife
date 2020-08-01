@@ -42,6 +42,16 @@ exports.get_read = function(req, res, next) {
                 err.status = 404;
                 return next(err);
             }
+        },
+        tags: async function(callback) {
+            try {
+                const queried_tags = await Post.query().select('tags').findById(req.params.id);
+                return queried_tags;
+            } catch (err) {
+                var err = new Error('Tags returned an error.  Please email ohthatemailaddress@gmail.com');
+                err.status = 404;
+                return next(err);
+            }
         }
     }, async function(err, results) {
         if (err) { return next(err); }
@@ -94,7 +104,6 @@ exports.get_read = function(req, res, next) {
         } catch (err) {
             console.log(err);
         }
-
         //user should not be able to view a private post.
         try {
             if (results.posts.visibility == 0 && (req.user.id != results.posts.id_account && results.account.permission < 1)) {
@@ -108,7 +117,7 @@ exports.get_read = function(req, res, next) {
             return next(err);
         }
         // Successful, so render.
-        res.render('read', { posts: results.posts, user: user, comments: results.comments, bookmark: bookmarked } );
+        res.render('read', { posts: results.posts, user: user, comments: results.comments, bookmark: bookmarked, tags: results.tags.tags } );
     });
 };
 

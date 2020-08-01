@@ -198,7 +198,7 @@ exports.get_tags = async (req, res) => {
         console.log(queried_tags);
         res.render('tags', {tags: queried_tags.tags, errors: '', postId: req.params.id });
     } else {
-        console.log('Cannot edit another users post')
+        console.log('Cannot edit another users post');
         res.redirect('/');
     }
 

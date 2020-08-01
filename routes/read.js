@@ -26,5 +26,4 @@ router.get('/bookmark/:id', read_controller.get_bookmark);
 //read bookmark route.  removes a bookmark
 router.get('/bookmark/remove/:id', read_controller.get_delete_bookmark);
 
-
 module.exports = router;
