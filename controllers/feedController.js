@@ -199,8 +199,12 @@ exports.get_feed = async (req, res) => {
         }
         console.log('booty');
         console.log(uid);
+        let usedPageNum = 1;
+        if (searchValue == '') {
+            usedPageNum = req.params.pageNum;
+        }
         let selectAll = await feedFilter(uid, allFlag, displayedPostsFlag, parsedQuery);
-        let result = await feedSorter(sortFlag, selectAll, req.params.pageNum);
+        let result = await feedSorter(sortFlag, selectAll, usedPageNum);
         let resultModified = await setRead(result[0].results, uid);
         //console.log(result[0]);
         //console.log(result[1]);
@@ -209,7 +213,7 @@ exports.get_feed = async (req, res) => {
         console.log(parsedQuery);
         res.render('feed', { posts: resultModified, 
             isNextPage: result[1], 
-            pageNum: req.params.pageNum, 
+            pageNum: usedPageNum, 
             sortMethod: sortFlag,
             isAll: allFlag,
             displayedPosts: displayedPostsFlag,

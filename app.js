@@ -255,6 +255,7 @@ unit testing - maybe figure out how to do that + automated testing
 //need to add strategic logging messages and clean up the code a little bit. - done
 
 //stretch - add function that adds "Last month today/last year today/ last week today type message to send emails."
+//comment replies/notification
 
 /*
 tickets table
@@ -269,36 +270,22 @@ user responds to email that is sent
       */
 
 
-//mysterious spacing at bottom of feed page - need test
-//positioning of r and u in feed - need test
-//home page icons again xx
-//login form username doesn't always click - need test
-//  switch color xx
-//  text color xx
-//subscribed to and bookmarked posts?
+//frontend bugs
+//error when clicking bookmark when not logged in.  just redirect to error page for now, but says post not found even though should be acct not logged in??
+  //works fine when doing it from profile (subscribe and unsubscribe from user)
+//cant rerender comment with error.  currently just redirecting to page with empty comment
+//if on later page then search, says that page in url even search should begin on page 1.  will need to look into search results that have multiple pages
 
-//profile
-  //profiel posts - need test
-  //profile comments - need test
-  //finalize profile
-    //refine character counter - need test
-  //view posts - need test
-  //view comments - need test
-  //profile settings - need test
+//backend bugs
+//image upload weird when uploading long image
+//scheduler not really working
+
+
 
 //reada page
-  //need to modify comment styling - need test
-  //error when clicking subscribe when not logged in - need test
-  //error when posting empty comment - need test
-  //unbookmark not working - need test
   //unbookmark spacing
-  //view tags
-  //button coloring
   //edit post when wrong user redirects without using bookmark causing an error - neet test
 
-//write page
-  //edit page
-  //tags errors
 
 //create an error handling page (example 404 page, please try again.) - need test
 

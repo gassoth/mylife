@@ -1,3 +1,4 @@
+const { raw } = require('objection');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 var async = require('async');
@@ -151,11 +152,11 @@ exports.post_write = [
             tags = req.body.tags.split(" ");
         }
         const setTags = function(a) { return [...new Set(a)]};
-        let arrayOfTags = '{}';
-        if (tags != '') {
-            arrayOfTags = Array.from(setTags(tags));
+        let arrayOfTags = Array.from(setTags(tags));
+        //if (tags != '') {
+        //    arrayOfTags = Array.from(setTags(tags));
 
-        }
+        //}
 
         //var delta = req.body.editor.getContents();
         //console.log(req.body.title);
@@ -184,7 +185,14 @@ exports.post_write = [
         console.log(time);
         console.log(req.user.id);
         console.log(req.user.generated_username);
-        const insertedPost = await Posts.query().insert(newPost);
+        const insertedPost = await Posts.query().insertAndFetch(newPost);
+
+        //insert tags
+        for (let i = 0; i < arrayOfTags.length; i++) {
+            const insertedTag = await Posts.query().findById(insertedPost.id).patch({
+                tags: raw('array_append("tags", ?)', [arrayOfTags[i].toString().toLowerCase()])
+            });
+        }
 
         res.redirect('/');
     }
@@ -233,7 +241,6 @@ exports.post_tags = [
         }
         const setTags = function(a) { return [...new Set(a)]};
         const queried_tags = await Posts.query().select('tags').findById(req.params.id);
-        console.log(queried_tags.tags);
         if (req.body.btn_submit == 'add') {
             if (tags != '') {
                 let setOfTags = setTags(tags);
@@ -245,22 +252,30 @@ exports.post_tags = [
                         queried_tags.tags.push(newTag.toLowerCase());
                     }
                 }
-                const insertedTag = await Posts.query().findById(req.params.id).patch({
-                    tags: queried_tags.tags
-                });
+
+                //roundabout way of dropping all elements in array and then adding.  Removes duplicates first, then adds them.
+                //raw only works using one element at a time, can't insert multiple elements at once apparently
+                console.log(queried_tags.tags);
+                for (let i = 0; i < queried_tags.tags.length; i++) {
+                    const deletedTag = await Posts.query().findById(req.params.id).patch({
+                        tags: raw('array_remove("tags", ?)', [queried_tags.tags[i]])
+                    });
+                }
+                for (let i = 0; i < queried_tags.tags.length; i++) {
+                    const insertedTag = await Posts.query().findById(req.params.id).patch({
+                        tags: raw('array_append("tags", ?)', [queried_tags.tags[i]])
+                    });
+                }
+
             }
         } else {
             if (tags != '') {
                 let setOfTags = setTags(tags);
                 for (let i = 0; i < setOfTags.length; i++) {
-                    let index = queried_tags.tags.indexOf(setOfTags[i].toLowerCase());
-                    if (index > -1) {
-                        queried_tags.tags.splice(index, 1);
-                    }
+                    const deletedTag = await Posts.query().findById(req.params.id).patch({
+                        tags: raw('array_remove("tags", ?)', [setOfTags[i].toLowerCase()])
+                    });
                 }
-                const insertedTag = await Posts.query().findById(req.params.id).patch({
-                    tags: queried_tags.tags
-                });
             }
         }
         

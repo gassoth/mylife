@@ -126,7 +126,7 @@ exports.get_read = function(req, res, next) {
 exports.post_read = [
 
     //Validate
-    body('comment').isLength({ min: 1 }).trim().withMessage('Content required'),
+    body('comment').trim().isLength({ min: 1 }).withMessage('Content required'),
 
     //sanitize
     sanitizeBody('comment'),
@@ -136,7 +136,7 @@ exports.post_read = [
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
-            res.render('/read/'+req.params.id, { errors: errors.array() });
+            res.redirect('/read/'+req.params.id);
             return;
         }
         if (req.user == undefined) {
@@ -296,7 +296,7 @@ exports.get_bookmark = function(req, res, next) {
             return;
         }
 
-        // Successful, so delete.
+        // Successful, so redirect.
         res.redirect('/read/'+results.posts.id);
     });
 };
