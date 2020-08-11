@@ -14,7 +14,7 @@ module.exports = {
 
   test: {
     client: 'pg',
-    connection:'postgres://localhost/mylife_dev_test',
+    connection:'postgres://titopei:password@localhost/mylife_dev_test',
     migrations: {
       directory: './db/migrations'
     },

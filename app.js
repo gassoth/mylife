@@ -24,7 +24,7 @@ const emailer = require('./emailer.js');
 //Used for database stuff.
 const Knex = require('knex');
 const knexConfig = require('./knexfile');
-const knex = Knex(knexConfig.development);
+const knex = Knex(knexConfig.test);
 // Bind all Models to a knex instance. If you only have one database in
 // your server this is all you have to do. For multi database systems, see
 // the Model.bindKnex method.
@@ -97,9 +97,9 @@ app.get('/logout',
 //scheduler to run send email function once a day, and a rule to check emails once an hour
 var ruleCheck = new schedule.RecurrenceRule();
 var ruleSend = new schedule.RecurrenceRule();
-ruleSend.hour = 18;
-ruleSend.minute = 0;
-ruleCheck.minute = 15;
+ruleSend.hour = 16;
+ruleSend.minute = 57;
+ruleCheck.minute = 58;
 var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);
 var sendEmails = schedule.scheduleJob(ruleSend, emailer.sendEmail);
 
@@ -275,6 +275,7 @@ user responds to email that is sent
   //works fine when doing it from profile (subscribe and unsubscribe from user)
 //cant rerender comment with error.  currently just redirecting to page with empty comment
 //if on later page then search, says that page in url even search should begin on page 1.  will need to look into search results that have multiple pages
+//file too large error page addition/change
 
 //backend bugs
 //image upload weird when uploading long image
@@ -298,3 +299,7 @@ user responds to email that is sent
   //i should have at least 1 month to do the last 2 steps
 
   //time zones and such
+
+  //<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+  //db for testing/seeding data

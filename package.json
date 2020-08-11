@@ -36,6 +36,7 @@
     "sharp": "^0.25.4"
   },
   "devDependencies": {
+    "faker": "^4.1.0",
     "nodemon": "^2.0.1"
   }
 }
