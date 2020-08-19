@@ -4,6 +4,6 @@ exports.up = function(knex) {
 };
 
 exports.down = function(knex) {
-    let undoQuery = `ALTER TABLE account ALTER COLUMN password TYPE varchar (50);`
+    let undoQuery = `ALTER TABLE account ALTER COLUMN password TYPE varchar (100);`
     return knex.raw(undoQuery);
 };

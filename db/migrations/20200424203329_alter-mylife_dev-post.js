@@ -10,8 +10,8 @@ exports.up = function(knex) {
 exports.down = function(knex) {
     return Promise.all([
         knex.schema.alterTable('posts', function(table){
+          table.dropIndex(['tags'], 'tags_index');
           table.dropColumn('tags');
-          table.dropIndex('tags_index');
         })
     ])
 };

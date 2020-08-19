@@ -13,9 +13,7 @@ var Sentencer = require('sentencer');
 
 //Registration page route. Loads registration page, sets errors to undef since page won't load if not set to anything  Message is used if attempt failed
 exports.account_create = (req, res) => {
-    var un = Sentencer.make("{{ adjective }} {{ noun }}");
-    console.log(un);
-    res.render('register', {'errors': undefined, message: req.flash('error')});
+    res.render('register', {errors: undefined, message: req.flash('error')});
 }
 
 exports.account_create_post = [
@@ -92,7 +90,7 @@ exports.account_create_post = [
 exports.account_login = [
     
     //Validate
-    body('username').isLength({ min: 6 }).trim().withMessage('Username too short'),
+    body('username').isLength({ min: 5 }).trim().withMessage('Username too short'),
     body('password').isLength({ min: 8 }).trim().withMessage('Password too short'),
 
     //Sanitize

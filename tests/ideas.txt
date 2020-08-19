@@ -1,0 +1,10 @@
+profile
+get_profile - check if postscount and comments count keeps count of posts/comments correctly
+get_profile_posts - inherit feed test, test permissions, test the separate profile posts loads
+get_profile_comments - inherit feed test for comment pagination
+get_profile_subscribe - test catch error
+get_profile_unsubscribe - test catch error
+get_profile_settings - test catch error
+post_profile_settings - 
+
+note - jest concurrently working on db i think, need to figure out how to work around that

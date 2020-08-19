@@ -8,7 +8,7 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
     return Promise.all([
-        knex.schema.alterTable('posts', function(table){
+        knex.schema.alterTable('account', function(table){
           table.timestamp('date_created', { useTz: false }).notNullable().alter();
         })
     ])
