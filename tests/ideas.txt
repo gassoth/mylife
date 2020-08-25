@@ -5,6 +5,28 @@ get_profile_comments - inherit feed test for comment pagination
 get_profile_subscribe - test catch error
 get_profile_unsubscribe - test catch error
 get_profile_settings - test catch error
-post_profile_settings - 
+post_profile_settings - test helper functions, test image upload
+
+feed
+rqd - at least test helper functions within main functions
+
+write
+post_write - test the validators, test tags
+post edit - security vulnerabiltioy?  directly edit w post req.
+get_tags - maybe more permissions test
+post tags - button press - rqd
+
+read
+get_read - readers section test,test bookmarks section, branchign statements
+delete_read - branching statements
+comments_read - branching statements
+delette_read - branching statements
+bookmark - branching statements
+unbookmark - branching
+
+
 
 note - jest concurrently working on db i think, need to figure out how to work around that
+
+
+deleted migrations_lock in dev db so may have busto'd that lol

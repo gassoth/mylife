@@ -4,6 +4,16 @@ const faker = require('faker');
 var Account = require('../db/models/account.js');
 var bcrypt = require('bcryptjs');
 
+beforeAll(async () => {
+    const accountKnex = Account.knex();
+    await accountKnex.raw('TRUNCATE TABLE account RESTART IDENTITY CASCADE');
+});
+
+afterAll(async () => {
+    const accountKnex = Account.knex();
+    await accountKnex.raw('TRUNCATE TABLE account RESTART IDENTITY CASCADE');
+})
+
 describe('Index Endpoints', () => {
     it('should get index page', async () => {
         const res = await request(app)

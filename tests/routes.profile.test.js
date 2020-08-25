@@ -1,6 +1,5 @@
 const request = require('supertest')
 const app = require('../app')
-const faker = require('faker');
 var Account = require('../db/models/account.js');
 var bcrypt = require('bcryptjs');
 var server = request.agent(app);
@@ -15,7 +14,7 @@ async function initializeAccountDatabase() {
         date_created: currentdate,
         about: 'some test words yo',
         last_logged: currentdate,
-        email_enabled: 0
+        email_enabled: 1
     }
     let user2 = {
         email: 'jjjj@email.com',
@@ -57,6 +56,8 @@ function loginUser() {
 };
 
 beforeAll(async () => {
+    const accountKnex = Account.knex();
+    await accountKnex.raw('TRUNCATE TABLE account RESTART IDENTITY CASCADE');
     return await initializeAccountDatabase();
   });
 
@@ -98,6 +99,26 @@ describe('Profile Endpoints', () => {
         const newSub = await Account.query().findById(1);
         const newSubs = await newSub.$relatedQuery('subscriber');
         expect(newSubs.length).toEqual(1);
+    });
+    it('should update user to not email status', async () => {
+        const res = await server
+            .post('/profile/settings/1')
+            .send({
+                email_enabled: false
+            });
+        expect(res.statusCode).toEqual(302);
+        const newSub = await Account.query().findById(1);
+        expect(newSub.email_enabled).toEqual(0);
+    });
+    it('should update user about section', async () => {
+        const res = await server
+            .post('/profile/settings/1')
+            .send({
+                description: "the beast"
+            });
+        expect(res.statusCode).toEqual(302);
+        const newSub = await Account.query().findById(1);
+        expect(newSub.about).toEqual('the beast');
     });
     it('should get settings page since logged in', async () => {
         const res = await server
