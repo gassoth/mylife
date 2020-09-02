@@ -251,7 +251,7 @@ async function getUnreadFunction(auth) {
 }
 
 //Function that creates an email in the format that gmail api can send.
-function makeBody(to, from, subject, message) {
+exports.makeBody = function makeBody(to, from, subject, message) {
   var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
       "MIME-Version: 1.0\n",
       "Content-Transfer-Encoding: 7bit\n",
@@ -279,7 +279,7 @@ async function sendEmailFunction(gmailObj, email) {
 
 //Function to create the subject line.  Match function parses a timestamp string and gets the day, month, and year.  It then turns that into a string
 //that can be used as the subject line in the format Month Day Year (Mar 5 2019)
-function createSubject(dateObject) {
+exports.createSubject = function createSubject(dateObject) {
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var parts = dateObject.match(/(\d+)/g);
   const parsedTime = new Date(parts[0], parts[1]-1, parts[2]);
@@ -297,6 +297,7 @@ async function emailUsersFunction(auth) {
     users = await Account.query().select('email', 'id').where('email_enabled', 1);
   } catch (e) {
     console.log(e);
+    return 0;
   }
 
   //Formats a message, creates a ticket with a unique ticket email+ticketCode that can be used to verify a response, and then
@@ -321,8 +322,10 @@ async function emailUsersFunction(auth) {
       let sent = await sendEmailFunction(gmail, email);
     } catch (e) {
       console.log(e);
+      return 0;
     }
     console.log(ticketInsert);
+    return 1;
   }
 }
 

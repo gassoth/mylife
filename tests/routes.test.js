@@ -22,19 +22,6 @@ describe('Index Endpoints', () => {
     })
 })
 
-describe('Feed Endpoints', () => {
-    it('should get feed', async () => {
-        const res = await request(app)
-            .get('/feed/1')
-        expect(res.statusCode).toEqual(200)
-    });
-    it('should get feed error', async () => {
-        const res = await request(app)
-            .get('/feed/')
-        expect(res.statusCode).toEqual(404)
-    });
-})
-
 describe('Login Endpoints', () => {
     it('should get login page', async () => {
         const res = await request(app)

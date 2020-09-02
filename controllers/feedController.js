@@ -71,19 +71,26 @@ exports.get_feed = async (req, res) => {
         }
         //Function to sort feed based on views count (2), comments count(1), or date (0). Need to test it.
         //posts is the posts that are being sorted, and pagenum is which page is needed
-        async function feedSorter(sortType, posts, pageNum) {
+        async function feedSorter(sortType, posts, pageNum, userId) {
             if (sortType == 2) {
                 let sort = await Post.query().findByIds(posts).select('posts.id', 'posts.title', 'posts.date_posted', 'posts.author', 'posts.id_account')
                     .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
                     .groupBy('posts.id')
-                    .count('posts.id')
+                    .count('r.id')
                     .where('visibility', 1)
+                    .orWhere(function () {
+                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                    })
                     .orderBy('count', 'desc').page(pageNum-1, 10);
                 let sortNext = await Post.query().findByIds(posts).select('posts.id')
                     .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
                     .groupBy('posts.id')
-                    .count('posts.id')
+                    .count('r.id')
+                    //why r.id?
                     .where('visibility', 1)
+                    .orWhere(function () {
+                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                    })
                     .orderBy('count', 'desc').page(pageNum, 10);
 
                 //checks whether or not theres a next page
@@ -98,12 +105,18 @@ exports.get_feed = async (req, res) => {
                     .groupBy('posts.id')
                     .count('c.id')
                     .where('visibility', 1)
+                    .orWhere(function () {
+                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                    })
                     .orderBy('count', 'desc').page(pageNum-1, 10);
                 let sortNext = await Post.query().findByIds(posts).select('posts.id')
                     .leftOuterJoin('comments as c', 'c.id_posts', 'posts.id')
                     .groupBy('posts.id')
                     .count('c.id')
                     .where('visibility', 1)
+                    .orWhere(function () {
+                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                    })
                     .orderBy('count', 'desc').page(pageNum, 10);
 
                 //checks whether or not theres a next page
@@ -117,12 +130,18 @@ exports.get_feed = async (req, res) => {
                     .query()
                     .findByIds(posts).select('posts.id', 'posts.title', 'posts.date_posted', 'posts.author', 'posts.id_account')
                     .where('visibility', 1)
+                    .orWhere(function () {
+                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                    })
                     .orderBy('date_posted', 'desc')
                     .page(pageNum-1, 10);
                 const sortNext = await Post
                     .query().select('posts.id')
                     .findByIds(selectAll)
                     .where('visibility', 1)
+                    .orWhere(function () {
+                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                    })
                     .orderBy('date_posted', 'desc')
                     .page(pageNum, 10);
 
@@ -135,9 +154,11 @@ exports.get_feed = async (req, res) => {
             }
         }
 
-        //Function ridiculously inefficient, look into improving it
+        //Adds an R to read (1) posts, and U (0) to unread posts
         async function setRead(posts, uid) {
             let modifiedPosts = [];
+            let readPosts = [];
+
             if (uid == 0) {
                 for (let i = 0; i < posts.length; i++) {
                     let modifiedPost = posts[i];
@@ -145,31 +166,23 @@ exports.get_feed = async (req, res) => {
                     modifiedPosts.push(modifiedPost);
                 }
                 return modifiedPosts;
+            } else {
+                let readPostsIds = await Account.query().findById(uid);
+                readPosts = await readPostsIds.$relatedQuery('read');
             }
             for (let i = 0; i < posts.length; i++) {
                 let modifiedPost = posts[i];
-                const readList = await modifiedPost.$relatedQuery('read');
-                var swi = 0;
-                for (let j = 0; j < readList.length; j++) {
-                    if (uid == readList[j].id) {
-                        swi = 1;
-                        break;
-                    }
-                }
-                if (swi == 1) {
+                if (readPosts.some(e => e.id === modifiedPost.id)) {
                     modifiedPost.isRead = 1;
+                    modifiedPosts.push(modifiedPost);
                 } else {
                     modifiedPost.isRead = 0;
+                    modifiedPosts.push(modifiedPost);
                 }
-                modifiedPosts.push(modifiedPost);
-                //check if in read where post.id and user.id
-                //if there, then modifiedPost.isRead = 1;
-                //else modifiePost.isRead = 0;
-                //modifiedPosts.push(modifiedPost);
+
             }
             return modifiedPosts;
         }
-        //then in view, if post.isRead, set R, else set U
 
         let parsedQuery = [];
         if (req.query.input_search) {
@@ -204,8 +217,9 @@ exports.get_feed = async (req, res) => {
             usedPageNum = req.params.pageNum;
         }
         let selectAll = await feedFilter(uid, allFlag, displayedPostsFlag, parsedQuery);
-        let result = await feedSorter(sortFlag, selectAll, usedPageNum);
+        let result = await feedSorter(sortFlag, selectAll, usedPageNum, uid);
         let resultModified = await setRead(result[0].results, uid);
+
         //console.log(result[0]);
         //console.log(result[1]);
         //console.log(await Post.query().findByIds(selectAll).select('posts.id').where('visibility', 1).orderBy('date_posted', 'desc'));
@@ -225,85 +239,3 @@ exports.get_feed = async (req, res) => {
         res.redirect('/');
     }
 }
-
-
-
-/*
-
-date(default)/views(query number of views per post in read table)/comments(query number of comments per post)  
-
-subscribed(only query people im subscribed to)/bookmarked(only query posts i've bookmarked)/read/unread/all
-
-
-posts/account/account_post/read/comments
-
-need comment counter for a post?
-    -different comment count than database might break, headache to fix
-
-
-
-let db-result;
-
-if (read/unread/all)
-    db-result = filter by read/unread/all
-
-if (subscribed or bookmarked)
-   db-result = db-result.filter(subscribed or bookmarked)//not both
-
-<search would be here i think>
-
-result = db-result.query (date/function for views/function for comments).paginated
-
-send result?
-*/
-
-
-/*
-        
-        let selectAll = await feedFilter(5, 0, 0);
-        let sortTest = await Post.query().findByIds(selectAll).select('posts.id')
-            .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
-            .groupBy('posts.id')
-            .count('posts.id')
-            .where('visibility', 1)
-            .orderBy('count', 'desc');
-        console.log(sortTest); 
-        console.log(await Post.query().findByIds(selectAll).select('posts.id').where('visibility', 1).orderBy('date_posted', 'desc'))
-
-        //rn working on sorting based on comments or views or date.  none currently implemented 
-        let commentTest = await Post.query().findByIds(selectAll).select('posts.id')
-            .leftOuterJoin('comments as c', 'c.id_posts', 'posts.id')
-            .groupBy('posts.id')
-            .count('c.id')
-            .where('visibility', 1)
-            .orderBy('count', 'desc');
-        console.log(commentTest);
-
-        //test select all
-        const listPosts = await Post.query().findByIds(selectAll).where('visibility', 1).orderBy('date_posted', 'desc').page(req.params.pageNum-1, 10);
-        const nextCheck = await Post.query().findByIds(selectAll).where('visibility', 1).orderBy('date_posted', 'desc').page(req.params.pageNum, 10);
-        //Sets whether there is another page.
-        if (nextCheck.results.length != 0) {
-            nextPage = 1;
-        } 
-
-        async function feedFilter(usrId, all, sb, tagSearch) {
-            let searchFilteredQueryIdsSet = new Set();
-            for (let i = 0; i < tagSearch.length; i++) {
-                let queryIds; 
-                if (all == 0) {
-                    queryIds = await Post.query().select('posts.id').where('tags', '@>', tagSearch[i])
-                    .leftOuterJoin('read as r', joinBuilder => { 
-                        joinBuilder.on('posts.id', '=', 'r.id_posts')
-                        .andOn('r.id_account', usrId);
-                    })
-                    .whereNull('r.id_posts').map(a => a.id);
-                } else {
-                    queryIds = await Post.query().where('tags', '@>', tagSearch[i]).select('posts.id').map(a => a.id);
-                }
-                queryIds.forEach(item => searchFilteredQueryIds.add(item));
-            }
-            let searchFilteredQueryIds = Array.from(searchFilteredQueryIdsSet);
-
-
-*/

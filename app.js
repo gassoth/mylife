@@ -97,9 +97,10 @@ app.get('/logout',
 //scheduler to run send email function once a day, and a rule to check emails once an hour
 var ruleCheck = new schedule.RecurrenceRule();
 var ruleSend = new schedule.RecurrenceRule();
-ruleSend.hour = 16;
-ruleSend.minute = 57;
-ruleCheck.minute = 58;
+ruleSend.hour = 8;
+ruleSend.minute = 51;
+ruleCheck.minute = 30;
+
 var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);
 var sendEmails = schedule.scheduleJob(ruleSend, emailer.sendEmail);
 
@@ -305,3 +306,5 @@ user responds to email that is sent
   //db for testing/seeding data
 
   //write test for controller functions
+
+  //look up app.close error tcpserverwrap jest when you start working on deploy
