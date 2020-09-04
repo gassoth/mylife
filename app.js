@@ -24,7 +24,7 @@ const emailer = require('./emailer.js');
 //Used for database stuff.
 const Knex = require('knex');
 const knexConfig = require('./knexfile');
-const knex = Knex(knexConfig.test);
+const knex = Knex(knexConfig.development);
 // Bind all Models to a knex instance. If you only have one database in
 // your server this is all you have to do. For multi database systems, see
 // the Model.bindKnex method.
@@ -99,7 +99,7 @@ var ruleCheck = new schedule.RecurrenceRule();
 var ruleSend = new schedule.RecurrenceRule();
 ruleSend.hour = 8;
 ruleSend.minute = 51;
-ruleCheck.minute = 30;
+ruleCheck.minute = 39;
 
 var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);
 var sendEmails = schedule.scheduleJob(ruleSend, emailer.sendEmail);

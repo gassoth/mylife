@@ -89,13 +89,21 @@ function listLabels(auth) {
   });
 }
 
+//extracts re: from email subject
+function extractReply(str) {
+  var rx = /^.{0,3}:\s/g;
+  var arr = rx.exec(str);
+  return arr; 
+}
+
 //Function to add email to database. Email is the email, parsedEmailObject is extra data from the ticket or from the email.
 async function postMessage(email, parsedEmailObject) {
   let delta = convertHtmlToDelta(parsedEmailObject.body_html);
   let subject = email.subject;
-  if (subject.includes("Re: ")) {
-    subject = subject.split("Re: ")[1];
+  if (extractReply(subject) != null) {
+    subject = subject.substring(4);
   }
+
   var newPost = {
     title: subject,
     body_delta: JSON.stringify(delta),
@@ -114,7 +122,7 @@ async function postMessage(email, parsedEmailObject) {
 //is to try to make this function work for double replies or at least check for double replies.
 //Parsed is the parsed object using replyparser library, htmlEmail is the original htmlEmail.
 function getParsedHtmlEmail(parsed, htmlEmail) {
-  //Gets the fragment that has the reply emails
+  //Gets the original message from the full message
   const htmlString = parsed.getFragments()[1].getContent();
 
   //Trims whitespace, splits based on \n, gets the first section of that (hopefully the line that say "You replied to this email on xx\yy\zz w.e")
@@ -136,7 +144,6 @@ function getParsedHtmlEmail(parsed, htmlEmail) {
   }
 }
 
-
 //Function to check emails against tickets.
 async function checkUnreadAgainstTickets(emails) {
   if (emails.length == 0) {
@@ -155,13 +162,17 @@ async function checkUnreadAgainstTickets(emails) {
       from.lastIndexOf(">")
     );
     const toEmail = to.substring(
-      from.lastIndexOf("<")+1,
-      from.lastIndexOf(">")
+      to.lastIndexOf("<")+1,
+      to.lastIndexOf(">")
     );
     const ticketCode = to.substring(
       to.lastIndexOf("+")+1,
       to.lastIndexOf("@")
     );
+
+    if (toEmail == 'mylifejournalapp@gmail.com') {
+      continue;
+    }
 
     try {
       const ticket = await Tickets.query().select('id','id_account', 'date_created')
@@ -230,9 +241,10 @@ async function getUnreadFunction(auth) {
         to: parsed.to.text,
         from: parsed.from.text,
         text: parsed.text,
-        textAsHtml: parsed.textAsHtml
+        textAsHtml: parsed.html
       }
       unreadEmails.push(parsedEmail);
+      console.log(parsed.html);
     }
     //If fail just log
   } catch (e) {
@@ -251,7 +263,7 @@ async function getUnreadFunction(auth) {
 }
 
 //Function that creates an email in the format that gmail api can send.
-exports.makeBody = function makeBody(to, from, subject, message) {
+exports.makeBody = function(to, from, subject, message) {
   var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
       "MIME-Version: 1.0\n",
       "Content-Transfer-Encoding: 7bit\n",
@@ -279,7 +291,7 @@ async function sendEmailFunction(gmailObj, email) {
 
 //Function to create the subject line.  Match function parses a timestamp string and gets the day, month, and year.  It then turns that into a string
 //that can be used as the subject line in the format Month Day Year (Mar 5 2019)
-exports.createSubject = function createSubject(dateObject) {
+exports.createSubject = function(dateObject) {
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var parts = dateObject.match(/(\d+)/g);
   const parsedTime = new Date(parts[0], parts[1]-1, parts[2]);
@@ -305,7 +317,7 @@ async function emailUsersFunction(auth) {
   const message = "How was your day today? Reply to this message with a journal entry and view your entry on the website! "
     +"If you would like to change the title of the journal post, just change the subject of the email.  Please make sure to not change the reply address!";
   const time = new Date().toISOString();
-  const subject = createSubject(time);
+  const subject = exports.createSubject(time);
   for (let i = 0; i < users.length; i++) {
     const ticketCode = [...Array(10)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
     let ticket = {
@@ -318,7 +330,7 @@ async function emailUsersFunction(auth) {
       ticketInsert = await Tickets.query().insert(ticket);
       let replyAddress = 'mylifejournalapp+'.concat(ticketCode).concat('@gmail.com');
       console.log(replyAddress);
-      let email = makeBody(users[i].email, replyAddress, subject, message)
+      let email = exports.makeBody(users[i].email, replyAddress, subject, message)
       let sent = await sendEmailFunction(gmail, email);
     } catch (e) {
       console.log(e);
@@ -372,3 +384,4 @@ exports.scheduleTest = function(req, res, next) {
 
 
 //message length test
+//html kidna works, kinda doesn't
