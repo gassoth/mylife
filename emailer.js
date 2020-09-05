@@ -109,7 +109,7 @@ async function postMessage(email, parsedEmailObject) {
     body_delta: JSON.stringify(delta),
     body_html: parsedEmailObject.body_html,
     date_posted: parsedEmailObject.ticket_date.toISOString(),
-    author: parsedEmailObject.from,
+    author: parsedEmailObject.generated_username,
     visibility: 0,
     id_account: parsedEmailObject.id_account,
     tags: []
@@ -187,12 +187,14 @@ async function checkUnreadAgainstTickets(emails) {
       const f = getParsedHtmlEmail(e, email.textAsHtml.trim());
       const message = e.getFragments()[0].getContent().trim();
       const ticketDeleted = await Tickets.query().deleteById(ticket[0].id);
+      const username = await Account.query().select('generated_username').findById(5);
       const parsedEmailObject = {
         body: message,
         body_html: f,
         from: fromEmail,
         ticket_date: ticketDate,
-        id_account: ticketIdAccount
+        id_account: ticketIdAccount,
+        generated_username: username.generated_username
       }
       if (ticketDeleted == 1) {
         const postedMessage = await postMessage(email, parsedEmailObject);
@@ -241,7 +243,7 @@ async function getUnreadFunction(auth) {
         to: parsed.to.text,
         from: parsed.from.text,
         text: parsed.text,
-        textAsHtml: parsed.html
+        textAsHtml: parsed.textAsHtml
       }
       unreadEmails.push(parsedEmail);
       console.log(parsed.html);
@@ -362,7 +364,7 @@ exports.getUnread = function(req, res, next) {
         // Authorize a client with credentials, then call the Gmail API.
         const time = new Date().toISOString();
         console.log('got unread'+time)
-        //authorize(JSON.parse(content), getUnreadFunction);
+        authorize(JSON.parse(content), getUnreadFunction);
       });
 }
 
@@ -382,6 +384,37 @@ exports.scheduleTest = function(req, res, next) {
   console.log('The answer to life, the universe, and everything!');
 }
 
+//Send the email that contains the special url to reset
+async function emailResetAccount(auth, user, hash) {
+  try {
+    //gmail obj
+    const gmail = google.gmail({ version: 'v1', auth });
+    //message
+    const message = "You have requested a password reset.  Please click the link below to do so\n\n" + hash;
+    const email = exports.makeBody(user, 'mylifejournalapp@gmail.com', 'Reset password for Mylife', message);
+    const sent = await sendEmailFunction(gmail, email);
+    return 1;
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
+}
 
-//message length test
-//html kidna works, kinda doesn't
+//Authenticates server to send email to user
+exports.authResetEmail = function(credentials, user, hash) {
+  const {client_secret, client_id, redirect_uris} = credentials.installed;
+  const oAuth2Client = new google.auth.OAuth2(
+      client_id, client_secret, redirect_uris[0]);
+
+  // Check if we have previously stored a token.
+  fs.readFile(TOKEN_PATH, (err, token) => {
+    if (err) return getNewToken(oAuth2Client);
+    oAuth2Client.setCredentials(JSON.parse(token));
+    emailResetAccount(oAuth2Client, user, hash)
+  });
+}
+
+//known issues
+//html taken literally aka it'll break lines halfway through the page bc thats what the html says
+//attachments, pictures, links not working
+//authResetEmail getNewToken doesn't call function.
