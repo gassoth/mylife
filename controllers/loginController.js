@@ -100,7 +100,6 @@ exports.account_create_post = [
             bcrypt.genSalt(10, function(err, salt) {
                 bcrypt.hash(req.body.password, salt, async function(err, hash) {
                     newAccount.password = hash;
-                    console.log(hash);
                     const insertedAccount = await Account.query().insert(newAccount);
                     res.redirect('/');
                 });
@@ -204,3 +203,140 @@ exports.post_reset_email = [
 exports.get_account_reset = function (req, res, next) {
     res.render('reset', { errors: undefined, message: req.flash('error') });
 };
+
+//Actually reset the users password if it is correct
+exports.post_account_reset = [
+
+    //Validate
+    body('password_validate').isLength({ min: 1 }).trim().withMessage('Validation field empty'),
+    body('password').isLength({ min: 8 }).trim().withMessage('Password is too short'),
+    body('password')
+    .custom((value,{req, loc, path}) => {
+        if (value !== req.body.password_validate || req.body.password_validate == '') {
+            // throw error if passwords do not match
+            throw new Error("Passwords don't match");
+        } else {
+            return value;
+        }
+    }),
+    //sanitize
+    sanitizeBody('password').escape(),
+    sanitizeBody('password_validate').escape(),
+
+    async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/errors messages.
+            console.log(errors.array());
+            res.render('reset', { errors: errors.array(), message: req.flash('error') });
+            return;
+        } else {
+            try {
+                //Check if password request was generated more than 2 hours ago
+                let urlToday = new Date(base64Decode(req.params.today));
+                let serverToday = new Date();
+                const milliseconds = Math.abs(serverToday - urlToday);
+                const hours = milliseconds / 36e5;
+                if (hours > 2) {
+                    throw new Error("User requested password reset more than 2 hours ago");
+                }
+                let userId = base64Decode(req.params.ident);
+
+                //Check if url account exists
+                const resetAccount = await Account.query().select('id', 'generated_username', 'password', 'last_logged', 'email')
+                    .findById(userId);
+                if (resetAccount == undefined) {
+                    throw new Error("Account was not found");
+                }
+                // Hash again all the data to compare it with the link
+                // THe link in invalid when:
+                // 1. If the lastLoginDate is changed, user has already do a login 
+                // 2. If the password is changed, the user has already changed the password
+                const data = {
+                    today: base64Decode(req.params.today),
+                    userId: userId.toString(),
+                    lastLogin: resetAccount.last_logged.toString(),
+                    password: resetAccount.password,
+                    email: resetAccount.email.toString()
+                };
+                const hash = sha256(JSON.stringify(data), process.env.TOKENSECRET);
+                if (hash == req.params.hash) {
+                    bcrypt.genSalt(10, function(err, salt) {
+                        bcrypt.hash(req.body.password, salt, async function(err, hash) {
+                            const updatedPassword = await Account.query().findById(userId).patch({
+                                password: hash
+                            });
+                            console.log('password changed');
+                            res.redirect('/login');
+                        });
+                    });
+                } else {
+                    throw new Error("Hash does not match");
+                }
+                return;
+            } catch (err) {
+                return next(err)
+            }
+        }
+    }
+];
+
+//Get the actual page where you change the password
+exports.get_account_change = function (req, res, next) {
+    res.render('reset', { errors: undefined, message: req.flash('error') });
+};
+
+//Actually reset the users password if it is correct
+exports.post_account_change = [
+
+    //Validate
+    body('password_validate').isLength({ min: 1 }).trim().withMessage('Validation field empty'),
+    body('password').isLength({ min: 8 }).trim().withMessage('Password is too short'),
+    body('password')
+    .custom((value,{req, loc, path}) => {
+        if (value !== req.body.password_validate || req.body.password_validate == '') {
+            // throw error if passwords do not match
+            throw new Error("Passwords don't match");
+        } else {
+            return value;
+        }
+    }),
+    //sanitize
+    sanitizeBody('password').escape(),
+    sanitizeBody('password_validate').escape(),
+
+    async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/errors messages.
+            console.log(errors.array());
+            res.render('reset', { errors: errors.array(), message: req.flash('error') });
+            return;
+        } else {
+            try {
+                //Check if user logged in, get logged in user, update their password
+                if (req.user == undefined) {
+                    throw new Error("Not logged in");
+                }
+                let userId = req.user.id;
+                const resetAccount = await Account.query().select('email')
+                    .findById(userId);
+                if (resetAccount == undefined) {
+                    throw new Error("Account was not found");
+                }
+                bcrypt.genSalt(10, function(err, salt) {
+                    bcrypt.hash(req.body.password, salt, async function(err, hash) {
+                        const updatedPassword = await Account.query().findById(userId).patch({
+                            password: hash
+                        });
+                        console.log('password changed');
+                        res.redirect('/');
+                    });
+                });
+                return;
+            } catch (err) {
+                return next(err)
+            }
+        }
+    }
+];

@@ -307,44 +307,5 @@ user responds to email that is sent
   //look up app.close error tcpserverwrap jest when you start working on deploy
 
   //minor features for 1.0
-    //password reset
+    //password reset - done, need to check for security issues/test
     //search by username or post title
-
-
-//get reset
-//get reset pw page
-
-//sender (post reset)
-/*
-
-
-*/
-/*
-try {
-get user
-                if(err) {
-                    writeLog("ERROR", req.url + " - Error: -1 " + err.message);
-                    res.status(500).send( { error: err.message, errnum: -1 } );
-                    return;
-                }
-                if(!account){
-                    writeLog("TRACE",req.url + " - Account not found!");
-                    res.status(404).send( { error: "Account not found!", errnum: -2 } );
-                    return;
-                }
-
-
-
-send email with url /change-password/:ident/:today-:hash
-              }
-catch (err) {
-            writeLog("ERROR",req.url + " - Unexpected error during the password reset process. " + err.message);
-            res.status(500).send( { error: "Unexpected error during the password reset process :| " + err.message, errnum: -99 } );
-            return;
-        }
-
-//receiver
-//if good, redirect to reset pw page
-
-//reset pw page
-*/

@@ -28,6 +28,15 @@ router.post('/resetemail', login_controller.post_reset_email);
 //Get reset pw page where you actually reset the password
 router.get('/reset/:ident/:today-:hash', login_controller.get_account_reset);
 
+//Get reset pw page where you actually reset the password
+router.post('/reset/:ident/:today-:hash', login_controller.post_account_reset);
+
+//Get reset pw page when a user is logged in
+router.get('/reset/change_password', login_controller.get_account_change);
+
+//Post reset pw page when a user is logged in
+router.post('/reset/change_password', login_controller.post_account_change);
+
 //Test Controller
 //router.get('/accounts', logins_controller.accounts_list);
     
