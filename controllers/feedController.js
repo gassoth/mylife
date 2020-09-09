@@ -14,8 +14,20 @@ exports.get_feed = async (req, res) => {
 
         //function used to parse search.  Creates an array of sets, each set is a query if separated by or, else it will just be one set.
         function parseSearch(q) {
+            let query = [];
+
+            //regex searches for single words or words grouped by paranthesis
+            var regexpSplit = /[^\s"]+|"([^"]*)"/gi;
+            do {
+                //each exec returns next regex match as array
+                var match = regexpSplit.exec(q);
+                if (match != null) {
+                    //index 1 is captured group if exist, index 0 is matched text used if captured group does not exist
+                    query.push(match[1] ? match[1] : match[0]);
+                }
+            } while (match != null);
+
             let searchQueries = [];
-            const query = String(q).split(' ');
             let subquery = new Set();
             for (let i = 0; i < query.length; i++) {
                 if (String(query[i]).toLowerCase() == "or") {

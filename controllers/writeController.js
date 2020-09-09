@@ -104,12 +104,23 @@ exports.post_edit = [
         //console.log(req.body.htmlText);
         //console.log(req.user.id);
         //console.log(req.user.generated_username);
+        const postTitle = await Posts.query().select('title').findById(req.params.id);
+        if (postTitle != undefined) {
+            const deletedTag = await Posts.query().findById(req.params.id).patch({
+                tags: raw('array_remove("tags", ?)', [postTitle.title])
+            });
+        }
+
         console.log(req.params.id);
         const updatedPost = await Posts.query().findById(req.params.id).patch({
             title: req.body.title,
             body_delta: req.body.deltaText,
             body_html: req.body.htmlText,
             visibility: visibility
+        });
+
+        const insertedTag = await Posts.query().findById(req.params.id).patch({
+            tags: raw('array_append("tags", ?)', [req.body.title])
         });
         res.redirect('/');
     }
@@ -147,10 +158,13 @@ exports.post_write = [
             visibility = 1;
         }
         //creates tags for this post, removes whitespace and then duplicates, then inserts
-        let tags = '';
+        let tags = [];
         if (req.body.tags.trim().length > 0) {
             tags = req.body.tags.split(" ");
         }
+        tags.push(req.user.generated_username);
+        tags.push(req.body.title);
+
         const setTags = function(a) { return [...new Set(a)]};
         let arrayOfTags = Array.from(setTags(tags));
         //if (tags != '') {

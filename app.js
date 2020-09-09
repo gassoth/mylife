@@ -308,4 +308,4 @@ user responds to email that is sent
 
   //minor features for 1.0
     //password reset - done, need to check for security issues/test
-    //search by username or post title
+    //search by username or post title - done, need test
