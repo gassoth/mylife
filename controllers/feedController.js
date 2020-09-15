@@ -38,7 +38,7 @@ exports.get_feed = async (req, res) => {
                 if (String(query[i]).toLowerCase() == "and") {
                     continue;
                 }
-                subquery.add(String(query[i]));
+                subquery.add(String(query[i]).toLowerCase());
             }
             searchQueries.push(subquery);
             return searchQueries.filter(s => s.size > 0);

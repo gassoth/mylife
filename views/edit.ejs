@@ -32,6 +32,7 @@
                 <div class='row' style="padding: 0vh 0vh 1vh; max-width: 99%;">
                     <input name="deltaText" type="hidden">
                     <input name="htmlText" type="hidden">
+                    <input name="stringText" type="hidden">
                     <div class='editor-wrapper'>
                         <div class="z-depth-2">
                             <div id="editor">
@@ -77,15 +78,18 @@
             // Populate hidden form on submit
             var deltaText = document.querySelector('input[name=deltaText]');
             var htmlText = document.querySelector('input[name=htmlText]');
+            var stringText = document.querySelector('input[name=stringText]');
 
             
             //check if quill is empty
             if (quill.getText().trim().length === 0 && quill.container.firstChild.innerHTML.includes("img") === false) {
                 deltaText.value = '';
                 htmlText.value = '';
+                stringText = '';
             } else {
                 deltaText.value = JSON.stringify(quill.getContents());
                 htmlText.value = quill.root.innerHTML;
+                stringText.value = quill.getText();
             }
             console.log("Submitted", $(form).serialize(), $(form).serializeArray());
             return true;

@@ -115,8 +115,8 @@ exports.get_profile_posts = function(req, res, next) {
         },
         posts: async function(callback) {
             try {
-                const post = await Post.query().select('posts.*').where('id_account', Number(req.params.id)).page(req.params.pageNum-1, 10);
-                const postPublic = await Post.query().select('posts.*').where('id_account', Number(req.params.id)).where('visibility', 1).page(req.params.pageNum-1, 10);
+                const post = await Post.query().select('posts.*').where('id_account', Number(req.params.id)).orderBy('date_posted', 'desc').page(req.params.pageNum-1, 10);
+                const postPublic = await Post.query().select('posts.*').where('id_account', Number(req.params.id)).where('visibility', 1).orderBy('date_posted', 'desc').page(req.params.pageNum-1, 10);
                 return [post.results,postPublic.results];
             } catch (err) {
                 var err = new Error('Posts returned an error.  Please email ohthatemailaddress@gmail.com');
@@ -146,9 +146,11 @@ exports.get_profile_posts = function(req, res, next) {
     }, async function(err, results) {
         if (err) { return next(err); }
 
-        //Function ridiculously inefficient, look into improving it
+        //Adds an R to read (1) posts, and U (0) to unread posts
         async function setRead(posts, uid) {
             let modifiedPosts = [];
+            let readPosts = [];
+
             if (uid == 0) {
                 for (let i = 0; i < posts.length; i++) {
                     let modifiedPost = posts[i];
@@ -156,31 +158,23 @@ exports.get_profile_posts = function(req, res, next) {
                     modifiedPosts.push(modifiedPost);
                 }
                 return modifiedPosts;
+            } else {
+                let readPostsIds = await Account.query().findById(uid);
+                readPosts = await readPostsIds.$relatedQuery('read');
             }
             for (let i = 0; i < posts.length; i++) {
                 let modifiedPost = posts[i];
-                const readList = await modifiedPost.$relatedQuery('read');
-                var swi = 0;
-                for (let j = 0; j < readList.length; j++) {
-                    if (uid == readList[j].id) {
-                        swi = 1;
-                        break;
-                    }
-                }
-                if (swi == 1) {
+                if (readPosts.some(e => e.id === modifiedPost.id)) {
                     modifiedPost.isRead = 1;
+                    modifiedPosts.push(modifiedPost);
                 } else {
                     modifiedPost.isRead = 0;
+                    modifiedPosts.push(modifiedPost);
                 }
-                modifiedPosts.push(modifiedPost);
-                //check if in read where post.id and user.id
-                //if there, then modifiedPost.isRead = 1;
-                //else modifiePost.isRead = 0;
-                //modifiedPosts.push(modifiedPost);
+
             }
             return modifiedPosts;
         }
-        //then in view, if post.isRead, set R, else set U
 
         let userId = 0;
         if (results.account != 0) {
@@ -213,7 +207,7 @@ exports.get_profile_comments = function(req, res, next) {
         comments: async function(callback) {
                 try {
                     console.log(req.params.pageNum);
-                    const comment = await Comment.query().select('comments.*').where('id_account', Number(req.params.id)).page(req.params.pageNum-1, 10);
+                    const comment = await Comment.query().select('comments.*').where('id_account', Number(req.params.id)).orderBy('date_posted', 'desc').page(req.params.pageNum-1, 10);
                     return comment;
                 } catch (err) {
                     var err = new Error('Comments returned an error.  Please email ohthatemailaddress@gmail.com');
@@ -225,7 +219,7 @@ exports.get_profile_comments = function(req, res, next) {
         //check if theres a next page
         commentsNext: async function(callback) {
                 try {
-                    var commentsNext = await Comment.query().select('comments.*').where('id_account', Number(req.params.id)).page(req.params.pageNum, 10);
+                    var commentsNext = await Comment.query().select('comments.*').where('id_account', Number(req.params.id)).orderBy('date_posted', 'desc').page(req.params.pageNum, 10);
                     if (commentsNext.results.length == 0) {
                         return 0;
                     }

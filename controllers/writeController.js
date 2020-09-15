@@ -72,6 +72,7 @@ exports.post_edit = [
     //sanitize
     sanitizeBody('deltaText'),
     sanitizeBody('htmlText'),
+    sanitizeBody('stringText'),
     sanitizeBody('title'),
 
 
@@ -107,7 +108,7 @@ exports.post_edit = [
         const postTitle = await Posts.query().select('title').findById(req.params.id);
         if (postTitle != undefined) {
             const deletedTag = await Posts.query().findById(req.params.id).patch({
-                tags: raw('array_remove("tags", ?)', [postTitle.title])
+                tags: raw('array_remove("tags", ?)', [postTitle.title.toLowerCase()])
             });
         }
 
@@ -116,11 +117,12 @@ exports.post_edit = [
             title: req.body.title,
             body_delta: req.body.deltaText,
             body_html: req.body.htmlText,
-            visibility: visibility
+            visibility: visibility,
+            body: req.body.stringText
         });
 
         const insertedTag = await Posts.query().findById(req.params.id).patch({
-            tags: raw('array_append("tags", ?)', [req.body.title])
+            tags: raw('array_append("tags", ?)', [req.body.title.toLowerCase()])
         });
         res.redirect('/');
     }
@@ -139,6 +141,7 @@ exports.post_write = [
 
     //sanitize
     sanitizeBody('deltaText'),
+    sanitizeBody('stringText'),
     sanitizeBody('htmlText'),
     sanitizeBody('title'),
     sanitizeBody('tags'),
@@ -164,9 +167,10 @@ exports.post_write = [
         }
         tags.push(req.user.generated_username);
         tags.push(req.body.title);
+        let lowercasedTags = tags.map(tag => tag.toLowerCase());
 
         const setTags = function(a) { return [...new Set(a)]};
-        let arrayOfTags = Array.from(setTags(tags));
+        let arrayOfTags = Array.from(setTags(lowercasedTags));
         //if (tags != '') {
         //    arrayOfTags = Array.from(setTags(tags));
 
@@ -182,7 +186,8 @@ exports.post_write = [
             author: req.user.generated_username,
             visibility: visibility,
             id_account: req.user.id,
-            tags: arrayOfTags
+            tags: arrayOfTags,
+            body: req.body.stringText
         };
         console.log(newPost);
         console.log(req.body.title);
@@ -204,7 +209,7 @@ exports.post_write = [
         //insert tags
         for (let i = 0; i < arrayOfTags.length; i++) {
             const insertedTag = await Posts.query().findById(insertedPost.id).patch({
-                tags: raw('array_append("tags", ?)', [arrayOfTags[i].toString().toLowerCase()])
+                tags: raw('array_append("tags", ?)', [arrayOfTags[i].toString()])
             });
         }
 
@@ -260,12 +265,13 @@ exports.post_tags = [
                 let setOfTags = setTags(tags);
                 for (let i = 0; i < setOfTags.length; i++) {
                     var newTag = setOfTags[i];
-                    if (queried_tags.tags.includes(newTag)) {
+                    if (queried_tags.tags.includes(newTag.toLowerCase())) {
                         continue;
                     } else {
                         queried_tags.tags.push(newTag.toLowerCase());
                     }
                 }
+                console.log(queried_tags);
 
                 //roundabout way of dropping all elements in array and then adding.  Removes duplicates first, then adds them.
                 //raw only works using one element at a time, can't insert multiple elements at once apparently

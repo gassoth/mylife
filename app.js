@@ -285,7 +285,6 @@ user responds to email that is sent
 
 
 //reada page
-  //unbookmark spacing
   //edit post when wrong user redirects without using bookmark causing an error - neet test
 
 
@@ -309,3 +308,22 @@ user responds to email that is sent
   //minor features for 1.0
     //password reset - done, need to check for security issues/test
     //search by username or post title - done, need test
+    //button on post to return - done, need test
+    //add the 1 week/1month/1 year ago feature - done, need test
+      //need to strip html from sent message - done, need test
+    //add link to profile - done, need test
+    //unbookmark spacing
+    //timezones
+
+    //email sending ** for bold - stretch, not working bc simpleparser textAsHtml vs HTML.
+    //search/sort posts by user (profile page) - stretch, requires refactoring
+    //post not bolding - fixed
+
+//known issues emailer
+//html taken literally aka it'll break lines halfway through the page bc thats what the html says - stretch
+//attachments, pictures, links not working - stretch
+//authResetEmail getNewToken doesn't call function. - strecth
+
+//only sending 1 email-fixed
+
+    //testing, cleanup and error pages (remove console.logs unless needed), deploy

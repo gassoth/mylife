@@ -8,6 +8,7 @@ var Account = require('./db/models/account.js');
 var Tickets = require('./db/models/tickets.js');
 var replyParser = require("node-email-reply-parser");
 const { convertHtmlToDelta } = require('node-quill-converter');
+const { raw } = require('objection');
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/gmail.modify'];
@@ -103,9 +104,12 @@ async function postMessage(email, parsedEmailObject) {
   if (extractReply(subject) != null) {
     subject = subject.substring(4);
   }
+  //creates tags for this post, removes whitespace and then duplicates, then inserts
+  let tags = [subject, parsedEmailObject.generated_username];
 
   var newPost = {
     title: subject,
+    body: parsedEmailObject.body,
     body_delta: JSON.stringify(delta),
     body_html: parsedEmailObject.body_html,
     date_posted: parsedEmailObject.ticket_date.toISOString(),
@@ -114,8 +118,16 @@ async function postMessage(email, parsedEmailObject) {
     id_account: parsedEmailObject.id_account,
     tags: []
   };
-  const insertedPost = await Posts.query().insert(newPost);
-  return insertedPost;
+  const insertedPost = await Posts.query().insertAndFetch(newPost);
+
+  //insert tags
+  for (let i = 0; i < tags.length; i++) {
+      const insertedTag = await Posts.query().findById(insertedPost.id).patch({
+          tags: raw('array_append("tags", ?)', [tags[i].toString().toLowerCase()])
+      });
+  }
+  const finalInsertedPost = await Posts.query().findById(insertedPost.id);
+  return finalInsertedPost; 
 }
 
 //Function to get the html version of reply email.  This function does not work for double replies, so improvement for the future
@@ -132,7 +144,6 @@ function getParsedHtmlEmail(parsed, htmlEmail) {
 
   //Splits the html email based on htmlStringSplitter, gets the first half, and then removes the whitespace and trims the trailing <p> tag.
   const htmlEmailSplit = htmlEmail.split(htmlStringSplitter)[0].trimRight().slice(0, -3);
-
   //If the original htmlEmail sent in equals the split htmlEmail (which means a match was not found) we just use the original htmlEmail
   //Means that user will need to edit it on their own once its posted.
   if (htmlEmailSplit === htmlEmail) {
@@ -187,7 +198,7 @@ async function checkUnreadAgainstTickets(emails) {
       const f = getParsedHtmlEmail(e, email.textAsHtml.trim());
       const message = e.getFragments()[0].getContent().trim();
       const ticketDeleted = await Tickets.query().deleteById(ticket[0].id);
-      const username = await Account.query().select('generated_username').findById(5);
+      const username = await Account.query().select('generated_username').findById(ticket[0].id_account);
       const parsedEmailObject = {
         body: message,
         body_html: f,
@@ -246,7 +257,6 @@ async function getUnreadFunction(auth) {
         textAsHtml: parsed.textAsHtml
       }
       unreadEmails.push(parsedEmail);
-      console.log(parsed.html);
     }
     //If fail just log
   } catch (e) {
@@ -318,29 +328,65 @@ async function emailUsersFunction(auth) {
   //adds that ticket to the ticket table.  It then calls sendEmailFunction to send the email.
   const message = "How was your day today? Reply to this message with a journal entry and view your entry on the website! "
     +"If you would like to change the title of the journal post, just change the subject of the email.  Please make sure to not change the reply address!";
-  const time = new Date().toISOString();
-  const subject = exports.createSubject(time);
+  const time = new Date();
+  const subject = exports.createSubject(time.toISOString());
   for (let i = 0; i < users.length; i++) {
     const ticketCode = [...Array(10)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
     let ticket = {
       email: users[i].email,
       id_account: users[i].id,
       ticket_code: ticketCode,
-      date_created: time
+      date_created: time.toISOString()
     }
+
+    var lastWeek = new Date(time.getFullYear(), time.getMonth(), time.getDate() - 7);
+    var lastWeekPlus = new Date(time.getFullYear(), time.getMonth(), time.getDate() - 6);
+    var lastMonth = new Date(time.getFullYear(), time.getMonth() - 1, time.getDate());
+    var lastMonthPlus = new Date(time.getFullYear(), time.getMonth() - 1, time.getDate()+1);
+    var lastYear = new Date(time.getFullYear() - 1, time.getMonth(), time.getDate());
+    var lastYearPlus = new Date(time.getFullYear() - 1, time.getMonth(), time.getDate()+1); 
+    const postsLastYear = await Posts.query().select('body', 'id', 'date_posted')
+      .whereBetween('date_posted', [lastYear, lastYearPlus])
+      .where('id_account', users[i].id);
+    const postsLastMonth = await Posts.query().select('body', 'id', 'date_posted')
+      .whereBetween('date_posted', [lastMonth, lastMonthPlus])
+      .where('id_account', users[i].id);
+    const postsLastWeek = await Posts.query().select('body', 'id', 'date_posted')
+      .whereBetween('date_posted', [lastWeek, lastWeekPlus])
+      .where('id_account', users[i].id);
+
+    let p = '';
+    let timePosted = '';
+    if (postsLastYear.length != 0) {
+      p = postsLastYear[0];
+      timePosted = 'Last year on this day';
+    } else if (postsLastMonth.length != 0) {
+      p = postsLastMonth[0];
+      timePosted = 'Last month on this day';
+    } else if (postsLastWeek.length != 0) {
+      p = postsLastWeek[0];
+      timePosted = 'Last week on this day';
+    } else {
+      p = 'None';
+    }
+    console.log(p);
+    let previousMessage = '';
+    if (p != 'None') {
+      previousMessage = '\n\nDo you remember this message? ' + timePosted + ' you posted this.\n\n' + p.body;
+    }
+    previousMessage = previousMessage + '\n\n' + 'Find your posts at localhost:3000/profile/'+users[i].id.toString();
     try {
       ticketInsert = await Tickets.query().insert(ticket);
       let replyAddress = 'mylifejournalapp+'.concat(ticketCode).concat('@gmail.com');
-      console.log(replyAddress);
-      let email = exports.makeBody(users[i].email, replyAddress, subject, message)
+      let email = exports.makeBody(users[i].email, replyAddress, subject, message+previousMessage)
       let sent = await sendEmailFunction(gmail, email);
     } catch (e) {
       console.log(e);
       return 0;
     }
     console.log(ticketInsert);
-    return 1;
   }
+  return 1;
 }
 
 /**
@@ -375,12 +421,12 @@ exports.sendEmail = function(req, res, next) {
         // Authorize a client with credentials, then call the Gmail API.
         const time = new Date().toISOString();
         console.log('sent email'+time);
-        //authorize(JSON.parse(content), emailUsersFunction);
+        authorize(JSON.parse(content), emailUsersFunction);
       });
 }
 
 //Scheduler test function
-exports.scheduleTest = function(req, res, next) {
+exports.scheduleTest = async function(req, res, next) {
   console.log('The answer to life, the universe, and everything!');
 }
 
@@ -413,8 +459,3 @@ exports.authResetEmail = function(credentials, user, hash) {
     emailResetAccount(oAuth2Client, user, hash)
   });
 }
-
-//known issues
-//html taken literally aka it'll break lines halfway through the page bc thats what the html says
-//attachments, pictures, links not working
-//authResetEmail getNewToken doesn't call function.
