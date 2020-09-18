@@ -80,6 +80,91 @@ exports.account_create_post = [
             return;
         }
         else {
+            //time zone object
+            let tzInts = [
+                {"label":"Etc/GMT+12","value":-12},
+                {"label":"Pacific/Midway","value":-11},
+                {"label":"Pacific/Honolulu","value":-10},
+                {"label":"US/Alaska","value":-9},
+                {"label":"America/Los_Angeles","value":-8},
+                {"label":"America/Tijuana","value":-8},
+                {"label":"US/Arizona","value":-7},
+                {"label":"America/Chihuahua","value":-7},
+                {"label":"US/Mountain","value":-7},
+                {"label":"America/Managua","value":-6},
+                {"label":"US/Central","value":-6},
+                {"label":"America/Mexico_City","value":-5},
+                {"label":"Canada/Saskatchewan","value":-5},
+                {"label":"America/Bogota","value":-5},
+                {"label":"US/Eastern","value":-4},
+                {"label":"US/East-Indiana","value":-4},
+                {"label":"Canada/Atlantic","value":-4},
+                {"label":"America/Caracas","value":-4},
+                {"label":"America/Manaus","value":-3},
+                {"label":"America/Santiago","value":-3},
+                {"label":"Canada/Newfoundland","value":-3},
+                {"label":"America/Sao_Paulo","value":-3},
+                {"label":"America/Argentina/Buenos_Aires","value":-3},
+                {"label":"America/Godthab","value":-3},
+                {"label":"America/Montevideo","value":-3},
+                {"label":"America/Noronha","value":-2},
+                {"label":"Atlantic/Cape_Verde","value":-1},
+                {"label":"Atlantic/Azores","value":-1},
+                {"label":"Africa/Casablanca","value":0},
+                {"label":"Etc/Greenwich","value":0},
+                {"label":"Europe/Amsterdam","value":1},
+                {"label":"Europe/Belgrade","value":1},
+                {"label":"Europe/Brussels","value":1},
+                {"label":"Europe/Sarajevo","value":1},
+                {"label":"Africa/Lagos","value":1},
+                {"label":"Asia/Amman","value":2},
+                {"label":"Europe/Athens","value":2},
+                {"label":"Asia/Beirut","value":2},
+                {"label":"Africa/Cairo","value":2},
+                {"label":"Africa/Harare","value":2},
+                {"label":"Europe/Helsinki","value":2},
+                {"label":"Asia/Jerusalem","value":2},
+                {"label":"Europe/Minsk","value":2},
+                {"label":"Africa/Windhoek","value":2},
+                {"label":"Asia/Kuwait","value":3},
+                {"label":"Europe/Moscow","value":3},
+                {"label":"Africa/Nairobi","value":3},
+                {"label":"Asia/Tbilisi","value":3},
+                {"label":"Asia/Tehran","value":3},
+                {"label":"Asia/Muscat","value":4},
+                {"label":"Asia/Baku","value":4},
+                {"label":"Asia/Yerevan","value":4},
+                {"label":"Asia/Kabul","value":4},
+                {"label":"Asia/Yekaterinburg","value":5},
+                {"label":"Asia/Karachi","value":5},
+                {"label":"Asia/Calcutta","value":5},
+                {"label":"Asia/Calcutta","value":5},
+                {"label":"Asia/Katmandu","value":5},
+                {"label":"Asia/Almaty","value":6},
+                {"label":"Asia/Dhaka","value":6},
+                {"label":"Asia/Rangoon","value":6},
+                {"label":"Asia/Bangkok","value":7},
+                {"label":"Asia/Krasnoyarsk","value":7},
+                {"label":"Asia/Hong_Kong","value":8},
+                {"label":"Asia/Kuala_Lumpur","value":8},
+                {"label":"Asia/Irkutsk","value":8},
+                {"label":"Australia/Perth","value":8},
+                {"label":"Asia/Taipei","value":8},
+                {"label":"Asia/Tokyo","value":9},
+                {"label":"Asia/Seoul","value":9},
+                {"label":"Asia/Yakutsk","value":9},
+                {"label":"Australia/Adelaide","value":9},
+                {"label":"Australia/Darwin","value":9},
+                {"label":"Australia/Brisbane","value":10},
+                {"label":"Australia/Canberra","value":10},
+                {"label":"Australia/Hobart","value":10},
+                {"label":"Pacific/Guam","value":10},
+                {"label":"Asia/Vladivostok","value":10},
+                {"label":"Asia/Magadan","value":11},
+                {"label":"Pacific/Auckland","value":-12},
+                {"label":"Pacific/Fiji","value":-12},
+                {"label":"Pacific/Tongatapu","value":-11}
+            ]
             //Generates username.  Username is an adjective noun pair, like crazy diamond.
             //Permission is 0 for regular user
             var un = Sentencer.make("{{ adjective }} {{ noun }}");
@@ -88,6 +173,14 @@ exports.account_create_post = [
             if (req.body.email_enabled != undefined) {
                 emailEnabled = 1;
             }
+            let tz_preference = 7;
+            for (let i = 0; i < tzInts.length; i++) {
+                let entry = tzInts[i];
+                if (entry.label == req.body.timezones) {
+                    tz_preference = entry.value+12;
+                }
+            }
+
             var newAccount =
                 {
                     email: req.body.username,
@@ -95,7 +188,8 @@ exports.account_create_post = [
                     permission: 0,
                     email_enabled: emailEnabled,
                     generated_username: un,
-                    date_created: time
+                    date_created: time,
+                    tz_preference: tz_preference
                 };
             bcrypt.genSalt(10, function(err, salt) {
                 bcrypt.hash(req.body.password, salt, async function(err, hash) {

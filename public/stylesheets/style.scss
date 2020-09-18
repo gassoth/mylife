@@ -145,6 +145,14 @@ h3 {
   box-shadow: 0 1px 0 0 #9e9e9e !important;
 }
 
+.select-dropdown{
+  color: #9e9e9e;
+}
+
+ul.dropdown-content.select-dropdown li span {
+  color: #90caf9;
+}
+
 .switch label input[type=checkbox]:checked+.lever {
   background-color: #42a5f5;
 }

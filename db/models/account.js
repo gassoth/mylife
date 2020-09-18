@@ -28,7 +28,8 @@ class Account extends Model {
         email_enabled: { type: "integer" },
         generated_username: { type: "string" },
         date_created: { type: "string", format: "date-time" },
-        last_logged: { type: "string", format: "date-time" }
+        last_logged: { type: "string", format: "date-time" },
+        tz_preference: { type: "integer" }
       }
     };
   }

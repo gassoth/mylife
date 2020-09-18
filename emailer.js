@@ -16,7 +16,6 @@ const SCOPES = ['https://www.googleapis.com/auth/gmail.modify'];
 // created automatically when the authorization flow completes for the first
 // time.
 const TOKEN_PATH = 'token.json';
-
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
@@ -89,6 +88,9 @@ function listLabels(auth) {
     }
   });
 }
+
+//Current timezone to send the email to
+let tzCounter = 7;
 
 //extracts re: from email subject
 function extractReply(str) {
@@ -318,7 +320,14 @@ async function emailUsersFunction(auth) {
   const gmail = google.gmail({ version: 'v1', auth });
   let users;
   try {
-    users = await Account.query().select('email', 'id').where('email_enabled', 1);
+    if (tzCounter == 24) {
+      tzCounter = 0;
+    } else {
+      tzCounter += 1;
+    }
+    users = await Account.query().select('email', 'id')
+      .where('email_enabled', 1)
+      .where('tz_preference', tzCounter);
   } catch (e) {
     console.log(e);
     return 0;

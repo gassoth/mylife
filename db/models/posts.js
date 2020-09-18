@@ -27,7 +27,8 @@ class Posts extends Model {
                 author: { type: "string" },
                 visibility: { type: "integer" },
                 id_account: { type: "integer" },
-                tags: { type: "string[]"}
+                tags: { type: "string[]"},
+                body: { type: "string" }
             }
         };
     }
