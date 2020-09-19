@@ -17,30 +17,45 @@
 <script>
     function dateSort(o) {
         document.getElementById('sortFlag').value = 0;
+        document.getElementById('reset').value = 1;
     };
     function readSort(o) {
         document.getElementById('sortFlag').value = 2;
+        document.getElementById('reset').value = 1;
+
     };
     function commentSort(o) {
         document.getElementById('sortFlag').value = 1;
+        document.getElementById('reset').value = 1;
+
     };
     function switchReadFlag(o) {
         document.getElementById('allFlag').value = 1 - parseInt(document.getElementById('allFlag').value);
+        document.getElementById('reset').value = 1;
+
     };
     function switchDisplayedPostsFlagSub(o) {
         if (parseInt(document.getElementById('displayedPostsFlag').value) == 2) {
             document.getElementById('displayedPostsFlag').value = 0;
+            document.getElementById('reset').value = 1;
         } else {
             document.getElementById('displayedPostsFlag').value = 2;
+            document.getElementById('reset').value = 1;
         }
     };
     function switchDisplayedPostsFlagBookmark(o) {
         if (parseInt(document.getElementById('displayedPostsFlag').value) == 1) {
             document.getElementById('displayedPostsFlag').value = 0;
+            document.getElementById('reset').value = 1;
+
         } else {
             document.getElementById('displayedPostsFlag').value = 1;
+            document.getElementById('reset').value = 1;
         }
     };
+    function resetFlag(o) {
+        document.getElementById('reset').value=1;
+    }
 </script>
 
 <body>
@@ -56,10 +71,11 @@
                         <div class="row">
                             <div class="input-field col s10">
                                 <input id="input_search" name="input_search" type="text" value="<%= currentSearch%>">
+                                <input type="hidden" name="reset" id="reset" value=0 />
                                 <label for="input_search">Enter tags to search for separated by space. Can use 'and' and/or 'or'.  TItles and usernames will only match literals unless theres no spaces.</label>
                             </div>
                             <button type='submit' id='btn_search'
-                                class='col s2 btn btn-large waves-effect blue'>Search</button>
+                                class='col s2 btn btn-large waves-effect blue' onclick="resetFlag(this)">Search</button>
                         </div>
                 </div>
             </div>
@@ -199,11 +215,11 @@
                         <% if (pageNum == 1) { %>
                         <li class="disabled"><a href="#!"><i class="material-icons">chevron_left</i></a></li>
                         <% } else { let prevPage = parseInt(pageNum)-1;%>
-                        <li class="waves-effect"><a href="/feed/<%=prevPage%>"><i
+                        <li class="waves-effect"><a href="/feed/<%=prevPage%><%=urlFlags%>"><i
                                     class="material-icons">chevron_left</i></a></li>
                         <% } %>
                         <% if (isNextPage) { let nextPage = parseInt(pageNum)+1; %>
-                        <li class="waves-effect"><a href="/feed/<%=nextPage%>"><i
+                        <li class="waves-effect"><a href="/feed/<%=nextPage%><%=urlFlags%>"><i
                                     class="material-icons">chevron_right</i></a></li>
                         <% } else { %>
                         <li class="disabled"><a href="#!"><i class="material-icons">chevron_right</i></a></li>

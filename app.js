@@ -24,7 +24,7 @@ const emailer = require('./emailer.js');
 //Used for database stuff.
 const Knex = require('knex');
 const knexConfig = require('./knexfile');
-const knex = Knex(knexConfig.test);
+const knex = Knex(knexConfig.development);
 // Bind all Models to a knex instance. If you only have one database in
 // your server this is all you have to do. For multi database systems, see
 // the Model.bindKnex method.

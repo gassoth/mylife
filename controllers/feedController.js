@@ -12,6 +12,20 @@ exports.get_feed = async (req, res) => {
         let allFlag = 1;
         let searchValue = '';
 
+        //Get original url, remove reset flag if included.  Process reset flag if it exists
+        //Reset flag will start search on page 1 again, intended if starting a new search/clicking a new filter
+        let urlFlags = req.originalUrl.split('?')[1];
+        if (urlFlags) {
+            urlFlags = '?'.concat(urlFlags).replace('&reset=1',"");
+        } else {
+            urlFlags = '';
+        }
+        let usedPageNum = req.params.pageNum;
+        if (req.query.reset) {
+            res.redirect('/feed/1'+urlFlags);
+            return;
+        }
+
         //function used to parse search.  Creates an array of sets, each set is a query if separated by or, else it will just be one set.
         function parseSearch(q) {
             let query = [];
@@ -104,7 +118,6 @@ exports.get_feed = async (req, res) => {
                         this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
                     })
                     .orderBy('count', 'desc').page(pageNum, 10);
-
                 //checks whether or not theres a next page
                 if (sortNext.results.length != 0) {
                     return [sort, 1];
@@ -130,7 +143,6 @@ exports.get_feed = async (req, res) => {
                         this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
                     })
                     .orderBy('count', 'desc').page(pageNum, 10);
-
                 //checks whether or not theres a next page
                 if (sortNext.results.length != 0) {
                     return [sort, 1];
@@ -148,15 +160,14 @@ exports.get_feed = async (req, res) => {
                     .orderBy('date_posted', 'desc')
                     .page(pageNum-1, 10);
                 const sortNext = await Post
-                    .query().select('posts.id')
-                    .findByIds(selectAll)
+                    .query().findByIds(posts)
+                    .select('posts.id')
                     .where('visibility', 1)
                     .orWhere(function () {
                         this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
                     })
                     .orderBy('date_posted', 'desc')
                     .page(pageNum, 10);
-
                 //checks whether or not theres a next page
                 if (sortNext.results.length != 0) {
                     return [sort, 1];
@@ -224,10 +235,7 @@ exports.get_feed = async (req, res) => {
         }
         console.log('booty');
         console.log(uid);
-        let usedPageNum = 1;
-        if (searchValue == '') {
-            usedPageNum = req.params.pageNum;
-        }
+
         let selectAll = await feedFilter(uid, allFlag, displayedPostsFlag, parsedQuery);
         let result = await feedSorter(sortFlag, selectAll, usedPageNum, uid);
         let resultModified = await setRead(result[0].results, uid);
@@ -244,7 +252,8 @@ exports.get_feed = async (req, res) => {
             isAll: allFlag,
             displayedPosts: displayedPostsFlag,
             currentSearch: searchValue,
-            isLoggedIn: uid
+            isLoggedIn: uid,
+            urlFlags: urlFlags
         });
     } catch(err) {
         console.log(err);
