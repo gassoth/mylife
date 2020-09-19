@@ -14,7 +14,8 @@ async function initializeAccountDatabase() {
         date_created: currentdate,
         about: 'some test words yo',
         last_logged: currentdate,
-        email_enabled: 1
+        email_enabled: 1,
+        tz_preference: 7
     }
     let user2 = {
         email: 'jjjj@email.com',
@@ -24,7 +25,8 @@ async function initializeAccountDatabase() {
         date_created: currentdate,
         about: 'some test words yo',
         last_logged: currentdate,
-        email_enabled: 0
+        email_enabled: 0,
+        tz_preference: 7
     }
     const insert = await Account.query().insert(user);
     const insert2 = await Account.query().insert(user2);

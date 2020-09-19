@@ -21,7 +21,8 @@ async function initializeAccountDatabase() {
         date_created: currentdate,
         about: 'some test words yo',
         last_logged: currentdate,
-        email_enabled: 1
+        email_enabled: 1,
+        tz_preference: 7
     }
     let user2 = {
         email: 'jjjj@email.com',
@@ -31,7 +32,8 @@ async function initializeAccountDatabase() {
         date_created: currentdate,
         about: 'some test words yo',
         last_logged: currentdate,
-        email_enabled: 0
+        email_enabled: 0,
+        tz_preference: 7
     }
     const insert = await Account.query().insert(user);
     const insert2 = await Account.query().insert(user2);
@@ -56,7 +58,8 @@ async function initializePostDatabase() {
             author: 'hot tub',
             visibility: 0,
             id_account: 1,
-            tags: ''
+            tags: '',
+            body:'we in here'
     }
     let p2 = {
         title: 'das boot boot',
@@ -66,7 +69,8 @@ async function initializePostDatabase() {
         author: 'hot tub',
         visibility: 0,
         id_account: 1,
-        tags: ''
+        tags: '',
+        body: 'we in here'
     }
     const insert = await Post.query().insert(p);
     const insert2 = await Post.query().insert(p2);

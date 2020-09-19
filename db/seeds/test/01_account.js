@@ -9,8 +9,8 @@ const createFakeUser = () => ({
   date_created: faker.date.recent(100),
   about: faker.lorem.paragraph(),
   last_logged: faker.date.recent(10),
-  email_enabled: 0
-
+  email_enabled: 0,
+  tz_preference: 7
 })
 
 

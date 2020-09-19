@@ -19,7 +19,8 @@ async function initializeAccountDatabase() {
         date_created: currentdate,
         about: 'some test words yo',
         last_logged: currentdate,
-        email_enabled: 1
+        email_enabled: 1,
+        tz_preference: 7
     }
     let user2 = {
         email: 'jjjj@email.com',
@@ -29,7 +30,8 @@ async function initializeAccountDatabase() {
         date_created: currentdate,
         about: 'some test words yo',
         last_logged: currentdate,
-        email_enabled: 0
+        email_enabled: 0,
+        tz_preference: 7
     }
     const insert = await Account.query().insert(user);
     const insert2 = await Account.query().insert(user2);
@@ -91,7 +93,8 @@ describe('Write route endpoints', () => {
                 tags: 'tag',
                 visibility: 0,
                 htmlText: '<p>test post</p>',
-                deltaText: convertHtmlToDelta('<p>test post</p>').toString()
+                deltaText: convertHtmlToDelta('<p>test post</p>').toString(),
+                stringText: 'test post'
             });
         expect(res.statusCode).toEqual(302);
         const newPost = await Post.query().findById(1);
@@ -119,7 +122,8 @@ describe('Write route endpoints', () => {
                 title: 'quick brown',
                 visibility: 0,
                 htmlText: '<p>test post</p>',
-                deltaText: convertHtmlToDelta('<p>test post</p>').toString()
+                deltaText: convertHtmlToDelta('<p>test post</p>').toString(),
+                stringText: 'test post'
             });
         expect(res.statusCode).toEqual(302);
         const newPost = await Post.query().findById(1);

@@ -19,7 +19,8 @@ async function initializeAccountDatabase() {
     date_created: currentdate,
     about: 'some test words yo',
     last_logged: currentdate,
-    email_enabled: 1
+    email_enabled: 1,
+    tz_preference: 7
   }
   let user2 = {
     email: 'jjjj@email.com',
@@ -29,7 +30,8 @@ async function initializeAccountDatabase() {
     date_created: currentdate,
     about: 'some test words yo',
     last_logged: currentdate,
-    email_enabled: 0
+    email_enabled: 0,
+    tz_preference: 7
   }
   const insert = await Account.query().insert(user);
   const insert2 = await Account.query().insert(user2);
@@ -63,7 +65,8 @@ async function initializePostDatabase() {
     author: 'hot tub',
     visibility: 1,
     id_account: 1,
-    tags: []
+    tags: [],
+    body: 'we in here'
   }
   let p2 = {
     title: 'das boot 2',
@@ -73,7 +76,8 @@ async function initializePostDatabase() {
     author: 'hot tub',
     visibility: 1,
     id_account: 1,
-    tags: ['red', 'cherry', 'rum']
+    tags: ['red', 'cherry', 'rum'],
+    body: 'we in here'
   }
   let p3 = {
     title: 'das boot 3',
@@ -83,7 +87,8 @@ async function initializePostDatabase() {
     author: 'hot tub',
     visibility: 0,
     id_account: 1,
-    tags: ['blue', 'cherry', 'rum']
+    tags: ['blue', 'cherry', 'rum'],
+    body: 'we in here'
   }
   let p4 = {
     title: 'das boot 4',
@@ -93,7 +98,8 @@ async function initializePostDatabase() {
     author: 'tub tub',
     visibility: 1,
     id_account: 2,
-    tags: ['green', 'cherry', 'rum']
+    tags: ['green', 'cherry', 'rum'],
+    body: 'we in here'
   }
   let p5 = {
     title: 'das boot 5',
@@ -103,7 +109,8 @@ async function initializePostDatabase() {
     author: 'tub tub',
     visibility: 1,
     id_account: 2,
-    tags: ['white', 'cherry', 'rum']
+    tags: ['white', 'cherry', 'rum'],
+    body: 'we in here'
   }
 
   const insert = await Post.query().insert(p);

@@ -20,7 +20,8 @@ async function createFakePost() {
   id_account: accountId,
   tags: [faker.hacker.adjective(),faker.hacker.noun(),faker.hacker.adjective(),faker.hacker.noun()],
   body_delta: postDelta,
-  body_html: postHtml
+  body_html: postHtml,
+  body: postHtml
   }
   return post;
 }

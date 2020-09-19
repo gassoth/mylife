@@ -48,7 +48,8 @@ describe('Login Endpoints', () => {
             .send({
                 username: 'jj@email.com',
                 password: 'passwordwordpass',
-                password_validate: 'passwordwordpass'
+                password_validate: 'passwordwordpass',
+                timezones: 'US/Eastern'
             });
         expect(res.statusCode).toEqual(302);
         const newUser = await Account.query().findById(1);
