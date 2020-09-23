@@ -258,7 +258,7 @@ exports.get_profile_settings = function (req, res, next) {
     }, function (err, results) {
         if (err) { return next(err); }
         // Successful, so render.
-        if (req.user && req.user.id == results.account.id) {
+        if (req.user && (req.user.id == results.account.id || req.user.permission > 0)) {
             res.render('profile_settings', { id: req.params.id, emailSetting: results.account.email_enabled, about: results.account.about, errors: '' });
         } else {
             res.redirect('/');
@@ -360,88 +360,88 @@ exports.post_profile_settings = [
         
         //time zone object
         let tzInts = [
-            {"label":"Etc/GMT+12","value":-12},
-            {"label":"Pacific/Midway","value":-11},
-            {"label":"Pacific/Honolulu","value":-10},
-            {"label":"US/Alaska","value":-9},
-            {"label":"America/Los_Angeles","value":-8},
-            {"label":"America/Tijuana","value":-8},
-            {"label":"US/Arizona","value":-7},
-            {"label":"America/Chihuahua","value":-7},
-            {"label":"US/Mountain","value":-7},
-            {"label":"America/Managua","value":-6},
-            {"label":"US/Central","value":-6},
-            {"label":"America/Mexico_City","value":-5},
-            {"label":"Canada/Saskatchewan","value":-5},
-            {"label":"America/Bogota","value":-5},
-            {"label":"US/Eastern","value":-4},
-            {"label":"US/East-Indiana","value":-4},
-            {"label":"Canada/Atlantic","value":-4},
-            {"label":"America/Caracas","value":-4},
-            {"label":"America/Manaus","value":-3},
-            {"label":"America/Santiago","value":-3},
-            {"label":"Canada/Newfoundland","value":-3},
-            {"label":"America/Sao_Paulo","value":-3},
-            {"label":"America/Argentina/Buenos_Aires","value":-3},
-            {"label":"America/Godthab","value":-3},
-            {"label":"America/Montevideo","value":-3},
-            {"label":"America/Noronha","value":-2},
-            {"label":"Atlantic/Cape_Verde","value":-1},
-            {"label":"Atlantic/Azores","value":-1},
-            {"label":"Africa/Casablanca","value":0},
-            {"label":"Etc/Greenwich","value":0},
-            {"label":"Europe/Amsterdam","value":1},
-            {"label":"Europe/Belgrade","value":1},
-            {"label":"Europe/Brussels","value":1},
-            {"label":"Europe/Sarajevo","value":1},
-            {"label":"Africa/Lagos","value":1},
-            {"label":"Asia/Amman","value":2},
-            {"label":"Europe/Athens","value":2},
-            {"label":"Asia/Beirut","value":2},
-            {"label":"Africa/Cairo","value":2},
-            {"label":"Africa/Harare","value":2},
-            {"label":"Europe/Helsinki","value":2},
-            {"label":"Asia/Jerusalem","value":2},
-            {"label":"Europe/Minsk","value":2},
-            {"label":"Africa/Windhoek","value":2},
-            {"label":"Asia/Kuwait","value":3},
-            {"label":"Europe/Moscow","value":3},
-            {"label":"Africa/Nairobi","value":3},
-            {"label":"Asia/Tbilisi","value":3},
-            {"label":"Asia/Tehran","value":3},
-            {"label":"Asia/Muscat","value":4},
-            {"label":"Asia/Baku","value":4},
-            {"label":"Asia/Yerevan","value":4},
-            {"label":"Asia/Kabul","value":4},
-            {"label":"Asia/Yekaterinburg","value":5},
-            {"label":"Asia/Karachi","value":5},
-            {"label":"Asia/Calcutta","value":5},
-            {"label":"Asia/Calcutta","value":5},
-            {"label":"Asia/Katmandu","value":5},
-            {"label":"Asia/Almaty","value":6},
-            {"label":"Asia/Dhaka","value":6},
-            {"label":"Asia/Rangoon","value":6},
-            {"label":"Asia/Bangkok","value":7},
-            {"label":"Asia/Krasnoyarsk","value":7},
-            {"label":"Asia/Hong_Kong","value":8},
-            {"label":"Asia/Kuala_Lumpur","value":8},
-            {"label":"Asia/Irkutsk","value":8},
-            {"label":"Australia/Perth","value":8},
-            {"label":"Asia/Taipei","value":8},
-            {"label":"Asia/Tokyo","value":9},
-            {"label":"Asia/Seoul","value":9},
-            {"label":"Asia/Yakutsk","value":9},
-            {"label":"Australia/Adelaide","value":9},
-            {"label":"Australia/Darwin","value":9},
-            {"label":"Australia/Brisbane","value":10},
-            {"label":"Australia/Canberra","value":10},
-            {"label":"Australia/Hobart","value":10},
-            {"label":"Pacific/Guam","value":10},
-            {"label":"Asia/Vladivostok","value":10},
-            {"label":"Asia/Magadan","value":11},
-            {"label":"Pacific/Auckland","value":-12},
-            {"label":"Pacific/Fiji","value":-12},
-            {"label":"Pacific/Tongatapu","value":-11}
+            {"label":"Pacific&#x2F;Auckland","value":-12},
+            {"label":"Pacific&#x2F;Fiji","value":-12},
+            {"label":"Etc&#x2F;GMT+12","value":-12},
+            {"label":"Pacific&#x2F;Midway","value":-11},
+            {"label":"Pacific&#x2F;Honolulu","value":-10},
+            {"label":"US&#x2F;Alaska","value":-9},
+            {"label":"America&#x2F;Los_Angeles","value":-8},
+            {"label":"America&#x2F;Tijuana","value":-8},
+            {"label":"US&#x2F;Arizona","value":-7},
+            {"label":"America&#x2F;Chihuahua","value":-7},
+            {"label":"US&#x2F;Mountain","value":-7},
+            {"label":"America&#x2F;Managua","value":-6},
+            {"label":"US&#x2F;Central","value":-6},
+            {"label":"America&#x2F;Mexico_City","value":-5},
+            {"label":"Canada&#x2F;Saskatchewan","value":-5},
+            {"label":"America&#x2F;Bogota","value":-5},
+            {"label":"US&#x2F;Eastern","value":-4},
+            {"label":"US&#x2F;East-Indiana","value":-4},
+            {"label":"Canada&#x2F;Atlantic","value":-4},
+            {"label":"America&#x2F;Caracas","value":-4},
+            {"label":"America&#x2F;Manaus","value":-3},
+            {"label":"America&#x2F;Santiago","value":-3},
+            {"label":"Canada&#x2F;Newfoundland","value":-3},
+            {"label":"America&#x2F;Sao_Paulo","value":-3},
+            {"label":"America&#x2F;Argentina&#x2FBuenos_Aires","value":-3},
+            {"label":"America&#x2F;Godthab","value":-3},
+            {"label":"America&#x2F;Montevideo","value":-3},
+            {"label":"America&#x2F;Noronha","value":-2},
+            {"label":"Atlantic&#x2F;Cape_Verde","value":-1},
+            {"label":"Atlantic&#x2F;Azores","value":-1},
+            {"label":"Africa&#x2F;Casablanca","value":0},
+            {"label":"Etc&#x2F;Greenwich","value":0},
+            {"label":"Europe&#x2F;Amsterdam","value":1},
+            {"label":"Europe&#x2F;Belgrade","value":1},
+            {"label":"Europe&#x2F;Brussels","value":1},
+            {"label":"Europe&#x2F;Sarajevo","value":1},
+            {"label":"Africa&#x2F;Lagos","value":1},
+            {"label":"Asia&#x2F;Amman","value":2},
+            {"label":"Europe&#x2F;Athens","value":2},
+            {"label":"Asia&#x2F;Beirut","value":2},
+            {"label":"Africa&#x2F;Cairo","value":2},
+            {"label":"Africa&#x2F;Harare","value":2},
+            {"label":"Europe&#x2F;Helsinki","value":2},
+            {"label":"Asia&#x2F;Jerusalem","value":2},
+            {"label":"Europe&#x2F;Minsk","value":2},
+            {"label":"Africa&#x2F;Windhoek","value":2},
+            {"label":"Asia&#x2F;Kuwait","value":3},
+            {"label":"Europe&#x2F;Moscow","value":3},
+            {"label":"Africa&#x2F;Nairobi","value":3},
+            {"label":"Asia&#x2F;Tbilisi","value":3},
+            {"label":"Asia&#x2F;Tehran","value":3},
+            {"label":"Asia&#x2F;Muscat","value":4},
+            {"label":"Asia&#x2F;Baku","value":4},
+            {"label":"Asia&#x2F;Yerevan","value":4},
+            {"label":"Asia&#x2F;Kabul","value":4},
+            {"label":"Asia&#x2F;Yekaterinburg","value":5},
+            {"label":"Asia&#x2F;Karachi","value":5},
+            {"label":"Asia&#x2F;Calcutta","value":5},
+            {"label":"Asia&#x2F;Calcutta","value":5},
+            {"label":"Asia&#x2F;Katmandu","value":5},
+            {"label":"Asia&#x2F;Almaty","value":6},
+            {"label":"Asia&#x2F;Dhaka","value":6},
+            {"label":"Asia&#x2F;Rangoon","value":6},
+            {"label":"Asia&#x2F;Bangkok","value":7},
+            {"label":"Asia&#x2F;Krasnoyarsk","value":7},
+            {"label":"Asia&#x2F;Hong_Kong","value":8},
+            {"label":"Asia&#x2F;Kuala_Lumpur","value":8},
+            {"label":"Asia&#x2F;Irkutsk","value":8},
+            {"label":"Australia&#x2F;Perth","value":8},
+            {"label":"Asia&#x2F;Taipei","value":8},
+            {"label":"Asia&#x2F;Tokyo","value":9},
+            {"label":"Asia&#x2F;Seoul","value":9},
+            {"label":"Asia&#x2F;Yakutsk","value":9},
+            {"label":"Australia&#x2F;Adelaide","value":9},
+            {"label":"Australia&#x2F;Darwin","value":9},
+            {"label":"Australia&#x2F;Brisbane","value":10},
+            {"label":"Australia&#x2F;Canberra","value":10},
+            {"label":"Australia&#x2F;Hobart","value":10},
+            {"label":"Pacific&#x2F;Guam","value":10},
+            {"label":"Asia&#x2F;Vladivostok","value":10},
+            {"label":"Asia&#x2F;Magadan","value":11},
+            {"label":"Pacific&#x2F;Tongatapu","value":-11}
         ]
         console.log(req.body);
         let tz_preference;
@@ -459,7 +459,7 @@ exports.post_profile_settings = [
         if (req.body.email_enabled) {
             switchValue = 1;
         }
-        if (tz_preference) {
+        if (tz_preference != undefined) {
             const updatedAccount = await Account.query().findById(req.params.id).patch({
                 email_enabled: switchValue,
                 about: req.body.description,
@@ -490,5 +490,30 @@ exports.post_profile_settings = [
         }
     }
 ]
+
+//Controller for confirming delete account
+exports.get_delete_account = async function(req, res, next) {
+        //check permissions if user is allowed to delete posts (admins have greater than 0 permission)
+        if (!req.user || (req.params.id != req.user.id && req.user.permission == 0)) {
+            var err = new Error('Attempted to delete another users account');
+            err.status = 403;
+            return next(err);
+        }
+        // Successful, so delete.
+        req.logout();
+        const numDeleted = await Account.query().deleteById(req.params.id);
+        res.redirect('/');
+    
+};
+
+exports.check_permission = function(req, res, next) {
+    if (!req.user || (req.params.id != req.user.id && req.user.permission == 0)) {
+        var err = new Error('Attempted to modify another users account');
+        err.status = 403;
+        return next(err);
+    }
+    next();
+}
+
 
 //go directly to comment stretch

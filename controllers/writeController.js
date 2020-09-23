@@ -9,7 +9,7 @@ var Tags = require('../db/models/tags.js');
 //Controller to get static page
 exports.get_write = (req, res) => {
     if (req.user) {
-        res.render('write', {errors: undefined, posts: '', title: '' });
+        res.render('write', {errors: undefined, posts: '', title: '', tags: '', vis: '' });
     } else {
         res.redirect('/login');
     }
@@ -52,7 +52,7 @@ exports.get_edit = function(req, res, next) {
         console.log(results.posts.title);
         //check if user is allowed to edit post, else just redirect to the post
         if (user != '' && (user.id == results.posts.id_account || user.permission > 0)) {
-            res.render('edit', { posts: results.posts, errors: undefined } );
+            res.render('edit', { posts: results.posts, title: '', post: '', errors: undefined, vis: '' } );
         } else {
             res.redirect('/read/'+results.posts.id);
         }
@@ -82,9 +82,10 @@ exports.post_edit = [
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
             let post = await Posts.query().findById(req.params.id);
-            res.render('edit', { errors: errors.array(), posts: post });
+            res.render('edit', { errors: errors.array(), posts: post, post: req.body.htmlText, title: req.body.title, vis: req.body.visibility });
             return;
         }
+
         var visibility = 0;
         if (req.body.visibility != undefined) {
             visibility = 1;
@@ -105,7 +106,14 @@ exports.post_edit = [
         //console.log(req.body.htmlText);
         //console.log(req.user.id);
         //console.log(req.user.generated_username);
-        const postTitle = await Posts.query().select('title').findById(req.params.id);
+        const postTitle = await Posts.query().select('title', 'id_account').findById(req.params.id);
+
+        if (!req.user || (req.user.id != postTitle.id_account && req.user.permission == 0)) {
+            var err = new Error('Unauthorized access');
+            err.status = 403;
+            return next(err);
+        }
+
         if (postTitle != undefined) {
             const deletedTag = await Posts.query().findById(req.params.id).patch({
                 tags: raw('array_remove("tags", ?)', [postTitle.title.toLowerCase()])
@@ -151,7 +159,11 @@ exports.post_write = [
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
-            res.render('write', { errors: errors.array(), posts: req.body.htmlText, title: req.body.title });
+            var vis = '';
+            if (req.body.visibility != undefined) {
+                vis = 1;
+            }
+            res.render('write', { errors: errors.array(), posts: req.body.htmlText, title: req.body.title, tags: req.body.tags, vis: vis });
             return;
         }
 
@@ -259,7 +271,14 @@ exports.post_tags = [
             tags = req.body.tags.split(" ");
         }
         const setTags = function(a) { return [...new Set(a)]};
-        const queried_tags = await Posts.query().select('tags').findById(req.params.id);
+        const queried_tags = await Posts.query().select('tags', 'id_account').findById(req.params.id);
+
+        if (!req.user || (req.user.id != queried_tags.id_account && req.user.permission == 0)) {
+            var err = new Error('Unauthorized access');
+            err.status = 403;
+            return next(err);
+        }
+
         if (req.body.btn_submit == 'add') {
             if (tags != '') {
                 let setOfTags = setTags(tags);

@@ -4,14 +4,17 @@ var router = express.Router();
 var profile_controller = require('../controllers/profileController.js');
 var multer  = require('multer');
 const path = require('path');
+var Account = require('../db/models/account.js');
 
 var storage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
         cb(null, './public/temp_upload/')
     },
-    filename: function (req, file, cb) {
+    filename: async function (req, file, cb) {
         var datetimestamp = Date.now();
-        cb(null, req.user.generated_username+'.'+file.originalname.split('.')[file.originalname.split('.').length - 1]);
+        const user = await Account.query().select('generated_username').findById(req.params.id);
+        console.log(user);
+        cb(null, user.generated_username+'.'+file.originalname.split('.')[file.originalname.split('.').length - 1]);
     }
 });
 
@@ -53,6 +56,10 @@ router.get('/unsubscribe/:id', profile_controller.get_profile_unsubscribe);
 router.get('/settings/:id', profile_controller.get_profile_settings);
 
 //Profile post setting page
-router.post('/settings/:id', upload.single('avatar'), profile_controller.post_profile_settings);
+var protectedUpload = [profile_controller.check_permission, upload.single('avatar')];
+router.post('/settings/:id', protectedUpload, profile_controller.post_profile_settings);
+
+//Deletes account and all associated posts and comments
+router.get('/settings/:id/delete', profile_controller.get_delete_account);
 
 module.exports = router;

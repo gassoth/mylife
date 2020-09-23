@@ -216,7 +216,8 @@ async function checkUnreadAgainstTickets(emails) {
         throw new Error('No ticket found');
       }
     } catch (e) {
-      console.log("Most likely email did not match format, so we want to ignore it or potentially save it for manual review.")
+      console.log("Most likely email did not match format, so we want to ignore it or potentially save it for manual review.");
+      console.log(email);
       console.log(e);
     }
   }
@@ -319,6 +320,7 @@ async function emailUsersFunction(auth) {
   //Gets the users that have elected to receive emails.
   const gmail = google.gmail({ version: 'v1', auth });
   let users;
+  /*
   try {
     if (tzCounter == 24) {
       tzCounter = 0;
@@ -331,8 +333,9 @@ async function emailUsersFunction(auth) {
   } catch (e) {
     console.log(e);
     return 0;
-  }
-
+  }*/
+  users = await Account.query().select('email', 'id')
+  .where('email_enabled', 1)
   //Formats a message, creates a ticket with a unique ticket email+ticketCode that can be used to verify a response, and then
   //adds that ticket to the ticket table.  It then calls sendEmailFunction to send the email.
   const message = "How was your day today? Reply to this message with a journal entry and view your entry on the website! "

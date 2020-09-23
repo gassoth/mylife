@@ -98,8 +98,7 @@ app.get('/logout',
 var ruleCheck = new schedule.RecurrenceRule();
 var ruleSend = new schedule.RecurrenceRule();
 //ruleSend.hour = 8;
-//ruleSend.minute = 51;
-ruleSend.second = 1;
+ruleSend.minute = 51;
 ruleCheck.minute = 39;
 
 var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);

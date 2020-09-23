@@ -24,7 +24,13 @@
                 method="post">
                 <div class='row' style="margin-bottom: 5px;">
                     <div class='input-field col s12'>
-                        <input class='validate' type='text' name='title' id='title' value='<%= posts.title %>'/>
+                        <% if (title != '') { %>
+                                <input class='validate' type='text' name='title' id='title' value='<%= title%>' />
+                                <label for='title'>Create a title</label>
+                            <% } else { %>
+                                <input class='validate' type='text' name='title' id='title' value='<%= posts.title %>'/>
+                                <label for='title'>Create a title</label>
+                        <% } %>                        
                         <label class='active' for='title'>Create a title</label>
                     </div>
                 </div>
@@ -36,7 +42,11 @@
                     <div class='editor-wrapper'>
                         <div class="z-depth-2">
                             <div id="editor">
-                                <%-posts.body_html %>
+                                <% if (post != '') { %>
+                                        <%- post%>
+                                    <% } else { %>
+                                        <%- posts.body_html %>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -44,10 +54,29 @@
                 <div class='row'>
                     <div class="switch col s3">
                         <label>
-                            Private
-                            <input type="checkbox" name="visibility">
-                            <span class="lever"></span>
-                            Public
+                            <% if (title == '' && post == '' && errors == undefined && vis == '') { %>
+                                <% if (posts.visibility == 1) { %>
+                                    Private
+                                    <input type="checkbox" name="visibility" checked='checked'>
+                                    <span class="lever"></span>
+                                    Public
+                                <% } else { %>
+                                    Private
+                                    <input type="checkbox" name="visibility">
+                                    <span class="lever"></span>
+                                    Public
+                                <% } %>
+                            <% } else if (vis != undefined) { %>
+                                Private
+                                <input type="checkbox" name="visibility" checked='checked'>
+                                <span class="lever"></span>
+                                Public
+                            <% } else  { %>
+                                Private
+                                <input type="checkbox" name="visibility">
+                                <span class="lever"></span>
+                                Public
+                            <% } %>
                         </label>
                     </div>
                     <a class='col s2 offset-s4 btn btn-large waves-effect blue'
