@@ -2,7 +2,7 @@
 var express = require('express');
 var router = express.Router();
 
-//Require login controller modules
+//Require feed controller modules
 var feed_controller = require('../controllers/feedController.js');
 
 //Get feed route

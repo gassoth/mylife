@@ -23,5 +23,4 @@ router.get('/tags/:id', write_controller.get_tags);
 //post edit tags page (add or remove tags)
 router.post('/tags/:id', write_controller.post_tags);
 
-
 module.exports = router;

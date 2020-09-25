@@ -72,9 +72,6 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 
-//users just used for debugging, remove later
-app.use('/users', usersRouter);
-
 //profile page route
 app.use('/profile', profileRouter);
 
@@ -97,19 +94,12 @@ app.get('/logout',
 //scheduler to run send email function once a day, and a rule to check emails once an hour
 var ruleCheck = new schedule.RecurrenceRule();
 var ruleSend = new schedule.RecurrenceRule();
-//ruleSend.hour = 8;
-ruleSend.minute = 51;
-ruleCheck.minute = 39;
+ruleSend.minute = 45;
+ruleCheck.minute = 15;
 
 var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);
 var sendEmails = schedule.scheduleJob(ruleSend, emailer.sendEmail);
 
-//var rule = new schedule.RecurrenceRule();
-//rule.second = 30;
-//var test = schedule.scheduleJob(ruleSend, emailer.scheduleTest);
-
-//test email functions
-app.get('/testemail', emailer.getLabels);
 app.get('/testunread', emailer.getUnread);
 app.get('/testsend', emailer.sendEmail);
 
@@ -127,7 +117,7 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   //console.log(err);
-  res.render('error');
+  res.render('errorpage');
 });
 
 module.exports = app;

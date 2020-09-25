@@ -1,14 +1,14 @@
-const fs = require('fs');
-const readline = require('readline');
-const {google} = require('googleapis');
 var base64 = require('js-base64').Base64;
-const simpleParser = require('mailparser').simpleParser;
 var Posts = require('./db/models/posts.js');
 var Account = require('./db/models/account.js');
 var Tickets = require('./db/models/tickets.js');
 var replyParser = require("node-email-reply-parser");
 const { convertHtmlToDelta } = require('node-quill-converter');
 const { raw } = require('objection');
+const fs = require('fs');
+const readline = require('readline');
+const {google} = require('googleapis');
+const simpleParser = require('mailparser').simpleParser;
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/gmail.modify'];
@@ -89,7 +89,7 @@ function listLabels(auth) {
   });
 }
 
-//Current timezone to send the email to
+//Initial timezone to send the email to (Starting at US EAST 6PM)
 let tzCounter = 7;
 
 //extracts re: from email subject
@@ -106,7 +106,8 @@ async function postMessage(email, parsedEmailObject) {
   if (extractReply(subject) != null) {
     subject = subject.substring(4);
   }
-  //creates tags for this post, removes whitespace and then duplicates, then inserts
+  
+  //creates the title and username tags for the post
   let tags = [subject, parsedEmailObject.generated_username];
 
   var newPost = {
@@ -132,14 +133,13 @@ async function postMessage(email, parsedEmailObject) {
   return finalInsertedPost; 
 }
 
-//Function to get the html version of reply email.  This function does not work for double replies, so improvement for the future
-//is to try to make this function work for double replies or at least check for double replies.
+//Function to get the html version of reply email. (Strip out the original email in the html email)
 //Parsed is the parsed object using replyparser library, htmlEmail is the original htmlEmail.
 function getParsedHtmlEmail(parsed, htmlEmail) {
   //Gets the original message from the full message
   const htmlString = parsed.getFragments()[1].getContent();
 
-  //Trims whitespace, splits based on \n, gets the first section of that (hopefully the line that say "You replied to this email on xx\yy\zz w.e")
+  //Trims whitespace, splits based on '\n' delimiter, gets the first section of that (hopefully the line that say "You replied to this email on xx\yy\zz w.e")
   //then gets the first 20 characters (which are hopefully unique enough that it'll find the correct words).  This will be used
   //to split the html because that is the only part of the html that doesn't have html tags in it.
   const htmlStringSplitter = htmlString.trim().split("\n")[0].substring(0,20);
@@ -163,6 +163,7 @@ async function checkUnreadAgainstTickets(emails) {
     console.log('There are no unread emails');
     return;
   }
+
   //Parse code and email from the whole email and check that against the tickets table.  If we did delete(found) a ticket, we want to add the email to the 
   //database using that information (should store the ticket id_account before deletion).  If we dont delete anything, then we just do nothing. We
   //call the post message function to add it to the database as a post.
@@ -188,6 +189,7 @@ async function checkUnreadAgainstTickets(emails) {
     }
 
     try {
+      //Gets ticket.  If ticket doesn't exist eventually error will occur and console will log it.
       const ticket = await Tickets.query().select('id','id_account', 'date_created')
       .where('email', fromEmail)
       .where('ticket_code', ticketCode);
@@ -197,6 +199,9 @@ async function checkUnreadAgainstTickets(emails) {
       //replyParser gives us only the reply email, specifically an object that uses getters to get specific emails from a chain and from there we can get the reply
       //Similarly, getParsedHtmlEmail gets us the html that corresponds to that reply email.
       const e = replyParser(email.text);
+
+      //getParsedHtmlEmail takes in the reply email (e) and the html from the email (reply + original), then attempts to strip out the original from
+      //the HTML version of the email.
       const f = getParsedHtmlEmail(e, email.textAsHtml.trim());
       const message = e.getFragments()[0].getContent().trim();
       const ticketDeleted = await Tickets.query().deleteById(ticket[0].id);
@@ -234,6 +239,7 @@ async function getUnreadFunction(auth) {
     q: query
   });
   let unreadEmails = [];
+
   //If unread emails were found, we want to add those emails to unreadEmails and also set them as read.
   try {
 
@@ -271,6 +277,8 @@ async function getUnreadFunction(auth) {
     console.log(e);
     return;
   }
+
+  //Finally checks if these unread emails are messages to be posted
   if (unreadEmails.length != 0) {
     checkUnreadAgainstTickets(unreadEmails);
   }
@@ -321,6 +329,7 @@ async function emailUsersFunction(auth) {
   const gmail = google.gmail({ version: 'v1', auth });
   let users;
   /*
+  //Gets the users where in their timezone it is 6pm
   try {
     if (tzCounter == 24) {
       tzCounter = 0;
@@ -351,6 +360,7 @@ async function emailUsersFunction(auth) {
       date_created: time.toISOString()
     }
 
+    //Adds a previously posted message to the user if it exists
     var lastWeek = new Date(time.getFullYear(), time.getMonth(), time.getDate() - 7);
     var lastWeekPlus = new Date(time.getFullYear(), time.getMonth(), time.getDate() - 6);
     var lastMonth = new Date(time.getFullYear(), time.getMonth() - 1, time.getDate());
@@ -387,6 +397,8 @@ async function emailUsersFunction(auth) {
       previousMessage = '\n\nDo you remember this message? ' + timePosted + ' you posted this.\n\n' + p.body;
     }
     previousMessage = previousMessage + '\n\n' + 'Find your posts at localhost:3000/profile/'+users[i].id.toString();
+    
+    //Sends the final email
     try {
       ticketInsert = await Tickets.query().insert(ticket);
       let replyAddress = 'mylifejournalapp+'.concat(ticketCode).concat('@gmail.com');
@@ -433,13 +445,8 @@ exports.sendEmail = function(req, res, next) {
         // Authorize a client with credentials, then call the Gmail API.
         const time = new Date().toISOString();
         console.log('sent email'+time);
-        authorize(JSON.parse(content), emailUsersFunction);
+        //authorize(JSON.parse(content), emailUsersFunction);
       });
-}
-
-//Scheduler test function
-exports.scheduleTest = async function(req, res, next) {
-  console.log('The answer to life, the universe, and everything!');
 }
 
 //Send the email that contains the special url to reset

@@ -46,11 +46,13 @@
 				<% if (user) { %>
 				<% let link = '/profile/' + user.id; %>
 				<div class="col s3">
-					<a href="<%=link%>" class="blue waves-effect waves-light btn-large" style="right: 0.5em;">Profile</a>
+					<a href="<%=link%>" class="blue waves-effect waves-light btn-large"
+						style="right: 0.5em;">Profile</a>
 				</div>
 				<% } else { %>
 				<div class="col s3">
-					<a href="/profile/1" class="blue waves-effect waves-light btn-large" style="right: 0.5em;">Profile</a>
+					<a href="/login" class="blue waves-effect waves-light btn-large"
+						style="right: 0.5em;">Profile</a>
 				</div>
 				<% } %>
 				<div class="col s3">
@@ -63,9 +65,6 @@
 			</div>
 		</div>
 	</div>
-<!--	<hr class="line">-->
-	<!--<p>Welcome to <%= title %></p>-->
-
 </body>
 
 </html>

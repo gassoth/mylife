@@ -3,8 +3,8 @@ var express = require('express');
 var router = express.Router();
 var profile_controller = require('../controllers/profileController.js');
 var multer  = require('multer');
-const path = require('path');
 var Account = require('../db/models/account.js');
+const path = require('path');
 
 var storage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
@@ -30,11 +30,6 @@ var upload = multer({ //multer settings
     limits: {
         fileSize: 1024 * 1024
     }
-});
-
-//debug profile.  Just a static profile
-router.get('/debugp', function(req, res, next) {
-    res.render('debugp');
 });
 
 //Profile page route. Gets profile with id match.

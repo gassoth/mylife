@@ -2,13 +2,7 @@ var Post = require('../db/models/posts.js');
 var Comment = require('../db/models/comments.js');
 var Account = require('../db/models/account.js');
 var async = require('async');
-const { body,validationResult } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
-
-//Controller to get static page
-exports.get_debug = (req, res) => {
-        res.render('debugread');
-}
+const { body, validationResult, sanitizeBody } = require('express-validator');
 
 //Controller for getting a blog post
 exports.get_read = function(req, res, next) {
@@ -18,9 +12,9 @@ exports.get_read = function(req, res, next) {
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
             } catch (err) {
-                var err = new Error('Either user is not logged in or account is not found');
-                err.status = 404;
-                return '';
+                var updatedErr = new Error('Either user is not logged in or account is not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         posts: async function(callback) {
@@ -28,9 +22,9 @@ exports.get_read = function(req, res, next) {
                 const current_post = await Post.query().findById(req.params.id);
                 return current_post;
             } catch (err) {
-                var err = new Error('Post not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('Post not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         comments: async function(callback) {
@@ -38,9 +32,9 @@ exports.get_read = function(req, res, next) {
                 const comments = await Comment.query().select('comments.*').where('id_posts', Number(req.params.id));
                 return comments;
             } catch (err) {
-                var err = new Error('Comment returned an error.  Please email ohthatemailaddress@gmail.com');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('Comment returned an error.  Please email ohthatemailaddress@gmail.com');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         tags: async function(callback) {
@@ -48,9 +42,9 @@ exports.get_read = function(req, res, next) {
                 const queried_tags = await Post.query().select('tags').findById(req.params.id);
                 return queried_tags;
             } catch (err) {
-                var err = new Error('Tags returned an error.  Please email ohthatemailaddress@gmail.com');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('Tags returned an error.  Please email ohthatemailaddress@gmail.com');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         }
     }, async function(err, results) {
@@ -68,7 +62,7 @@ exports.get_read = function(req, res, next) {
         //gets readers for a posts, checks if logged in user is in that list. if not, adds.
         try {
             if (user == '') {
-                throw 'NotLoggedIn';
+                console.log('NotLoggedIn');
             }
             var readers = await results.posts.$relatedQuery('read');
             var swi = 0;
@@ -79,19 +73,21 @@ exports.get_read = function(req, res, next) {
                 }
             }
             if (swi) {
-                throw 'UserFound';
+                console.log('UserFound');
             } else {
                 await results.account.$relatedQuery('read').relate(results.posts);
             }
         } catch (err) {
-            console.log(err);
+            var updatedErr = new Error('Reading returned an error.  Please email ohthatemailaddress@gmail.com');
+            updatedErr.status = 500
+            return(next(updatedErr));
         }
 
         let bookmarked = 0;
         //gets bookmarks for a posts, checks if logged in user is in that list to determine whether or not to display bookmark or unbookmark
         try {
             if (user == '') {
-                throw 'NotLoggedIn';
+                console.log('NotLoggedIn');
             }
             var bookmarks = await results.posts.$relatedQuery('bookmarks');
             console.log(bookmarks);
@@ -102,8 +98,9 @@ exports.get_read = function(req, res, next) {
                 }
             }
         } catch (err) {
-            console.log(err);
-        }
+            var updatedErr = new Error('Bookmarks returned an error.  Please email ohthatemailaddress@gmail.com');
+            updatedErr.status = 500
+            return(next(updatedErr));        }
         //user should not be able to view a private post.
         try {
             if (results.posts.visibility == 0 && (req.user.id != results.posts.id_account && results.account.permission < 1)) {
@@ -131,7 +128,6 @@ exports.post_read = [
     //sanitize
     sanitizeBody('comment'),
 
-    //test
     async (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -151,9 +147,8 @@ exports.post_read = [
             id_posts: Number(req.params.id),
             id_account: Number(req.user.id)
         };
-        console.log(newComment);
-
         const insertedComment = await Comment.query().insert(newComment);
+        console.log('Success' + insertedComment);
         res.redirect('back');
     }
 ]
@@ -166,9 +161,9 @@ exports.get_delete_post = function(req, res, next) {
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
             } catch (err) {
-                var err = new Error('User not logged in or account is not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('User not logged in or account is not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         posts: async function(callback) {
@@ -176,9 +171,9 @@ exports.get_delete_post = function(req, res, next) {
                 const current_post = await Post.query().findById(req.params.id);
                 return current_post;
             } catch (err) {
-                var err = new Error('Post not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('Post not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
     }, async function(err, results) {
@@ -208,9 +203,9 @@ exports.get_delete_comment = function(req, res, next) {
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
             } catch (err) {
-                var err = new Error('User not logged in or account not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('User not logged in or account not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         comments: async function(callback) {
@@ -218,9 +213,9 @@ exports.get_delete_comment = function(req, res, next) {
                 const current_comment = await Comment.query().findById(req.params.id);
                 return current_comment;
             } catch (err) {
-                var err = new Error('Comment not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('Comment not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
     }, async function(err, results) {
@@ -249,9 +244,9 @@ exports.get_bookmark = function(req, res, next) {
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
             } catch (err) {
-                var err = new Error('User not logged in or account is not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('User not logged in or account is not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         posts: async function(callback) {
@@ -259,9 +254,9 @@ exports.get_bookmark = function(req, res, next) {
                 const current_post = await Post.query().findById(req.params.id);
                 return current_post;
             } catch (err) {
-                var err = new Error('Post not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('Post not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
     }, async function(err, results) {
@@ -275,7 +270,8 @@ exports.get_bookmark = function(req, res, next) {
         //gets bookmarks for a posts, checks if logged in user is in that list. if they are, it ends execution.
         try {
             if (!req.user) {
-                throw 'NotLoggedIn';
+                console.log('NotLoggedIn');
+                res.redirect('/login/');
             }
             var bookmarks = await results.posts.$relatedQuery('bookmarks');
             var swi = 0;
@@ -286,14 +282,15 @@ exports.get_bookmark = function(req, res, next) {
                 }
             }
             if (swi) {
-                throw 'UserFound';
+                console.log('User already bookmarked');
+                res.redirect('/');
             } else {
                 await results.account.$relatedQuery('bookmarks').relate(results.posts);
             }
         } catch (err) {
-            console.log(err);
-            res.redirect('/');
-            return;
+            var updatedErr = new Error('Bookmarks returned an error.  Please email ohthatemailaddress@gmail.com');
+            updatedErr.status = 500
+            return(next(updatedErr));
         }
 
         // Successful, so redirect.
@@ -301,7 +298,7 @@ exports.get_bookmark = function(req, res, next) {
     });
 };
 
-//Controller for confirming bookmark post
+//Controller for confirming unbookmark post
 exports.get_delete_bookmark = function(req, res, next) {
     async.parallel({
         account: async function(callback) {
@@ -309,9 +306,9 @@ exports.get_delete_bookmark = function(req, res, next) {
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
             } catch (err) {
-                var err = new Error('User not logged in or account is not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('User not logged in or account is not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         posts: async function(callback) {
@@ -319,9 +316,9 @@ exports.get_delete_bookmark = function(req, res, next) {
                 const current_post = await Post.query().findById(req.params.id);
                 return current_post;
             } catch (err) {
-                var err = new Error('Post not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('Post not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
     }, async function(err, results) {
@@ -335,13 +332,14 @@ exports.get_delete_bookmark = function(req, res, next) {
         //gets bookmarks for a posts, checks if logged in, then removes bookmark
         try {
             if (!req.user) {
-                throw 'NotLoggedIn';
+                console.log('NotLoggedIn');
+                res.redirect('/login/');
             }
             await results.account.$relatedQuery('bookmarks').unrelate().where({id_post: results.posts.id});
         } catch (err) {
-            console.log(err);
-            res.redirect('/');
-            return;
+            var updatedErr = new Error('Bookmarks returned an error.  Please email ohthatemailaddress@gmail.com');
+            updatedErr.status = 500
+            return(next(updatedErr));
         }
 
         // Successful, so delete.

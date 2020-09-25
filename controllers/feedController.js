@@ -1,8 +1,5 @@
 var Post = require('../db/models/posts.js');
 var Account = require('../db/models/account.js');
-var async = require('async');
-
-///currently integrating, need to check if flags is a good method.
 
 //Controller to get static page
 exports.get_feed = async (req, res) => {
@@ -33,9 +30,11 @@ exports.get_feed = async (req, res) => {
             //regex searches for single words or words grouped by paranthesis
             var regexpSplit = /[^\s"]+|"([^"]*)"/gi;
             do {
+
                 //each exec returns next regex match as array
                 var match = regexpSplit.exec(q);
                 if (match != null) {
+
                     //index 1 is captured group if exist, index 0 is matched text used if captured group does not exist
                     query.push(match[1] ? match[1] : match[0]);
                 }
@@ -57,6 +56,7 @@ exports.get_feed = async (req, res) => {
             searchQueries.push(subquery);
             return searchQueries.filter(s => s.size > 0);
         }
+
         //Uses user id, read (val 0 for unread only or 1 for all), and sb (2 for sub, 1 for bookmark, 0 for all))
         //Gets ids of posts that were read or all posts
         //returns querys posts of those ids to either return the bookmarked ones, posts by a subscribed-to user, or none.
@@ -95,6 +95,7 @@ exports.get_feed = async (req, res) => {
                 return await Post.query().findByIds(searchFilteredQueryIds).select('posts.id').map(a => a.id);
             }
         }
+
         //Function to sort feed based on views count (2), comments count(1), or date (0). Need to test it.
         //posts is the posts that are being sorted, and pagenum is which page is needed
         async function feedSorter(sortType, posts, pageNum, userId) {
@@ -112,7 +113,6 @@ exports.get_feed = async (req, res) => {
                     .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
                     .groupBy('posts.id')
                     .count('r.id')
-                    //why r.id?
                     .where('visibility', 1)
                     .orWhere(function () {
                         this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
@@ -216,6 +216,7 @@ exports.get_feed = async (req, res) => {
             }
         }
 
+        //set flags for input to functions
         if (req.query.sortFlag) {
             sortFlag = parseInt(req.query.sortFlag);
         }
@@ -233,16 +234,12 @@ exports.get_feed = async (req, res) => {
             displayedPostsFlag = 0;
             allFlag = 1;
         }
-        console.log('booty');
         console.log(uid);
 
         let selectAll = await feedFilter(uid, allFlag, displayedPostsFlag, parsedQuery);
         let result = await feedSorter(sortFlag, selectAll, usedPageNum, uid);
         let resultModified = await setRead(result[0].results, uid);
 
-        //console.log(result[0]);
-        //console.log(result[1]);
-        //console.log(await Post.query().findByIds(selectAll).select('posts.id').where('visibility', 1).orderBy('date_posted', 'desc'));
         console.log(allFlag);
         console.log(parsedQuery);
         res.render('feed', { posts: resultModified, 
@@ -257,6 +254,6 @@ exports.get_feed = async (req, res) => {
         });
     } catch(err) {
         console.log(err);
-        res.redirect('/');
+        return(next(err));
     }
 }

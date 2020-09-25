@@ -2,11 +2,10 @@ var Account = require('../db/models/account.js');
 var Post = require('../db/models/posts.js');
 var Comment = require('../db/models/comments.js');
 var async = require('async');
-const path = require('path');
 var fs = require('fs');
+const path = require('path');
 const resize = require('../resize');
-const { body,validationResult } = require('express-validator/check');
-const { sanitizeBody } = require('express-validator/filter');
+const { body, validationResult, sanitizeBody } = require('express-validator');
 
 //Controller for a profile
 exports.get_profile = function(req, res, next) {
@@ -16,9 +15,10 @@ exports.get_profile = function(req, res, next) {
                 const user_profile = await Account.query().findById(req.params.id);
                 return user_profile;
             } catch (err) {
-                var err = new Error('Account not found');
-                err.status = 404;
-                return next(err);
+                console.log(err);
+                var updatedErr = new Error('Account not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         //posts count
@@ -27,9 +27,10 @@ exports.get_profile = function(req, res, next) {
                 const post = await Post.query().count('posts.*').where('id_account', Number(req.params.id));
                 return post;
             } catch (err) {
-                var err = new Error('Posts returned an error.  Please email ohthatemailaddress@gmail.com');
-                err.status = 404;
-                return next(err);
+                console.log(err)
+                var updatedErr = new Error('Posts returned an error.  Please email ohthatemailaddress@gmail.com');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         //comments count
@@ -38,9 +39,10 @@ exports.get_profile = function(req, res, next) {
                 const comment = await Comment.query().count('comments.*').where('id_account', Number(req.params.id));
                 return comment;
             } catch (err) {
-                var err = new Error('Comment returned an error.  Please email ohthatemailaddress@gmail.com');
-                err.status = 404;
-                return next(err);
+                console.log(err);
+                var updatedErr = new Error('Comment returned an error.  Please email ohthatemailaddress@gmail.com');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         //subscribers for a user
@@ -51,9 +53,9 @@ exports.get_profile = function(req, res, next) {
                 return subscriber;
             } catch (err) {
                 console.log(err);
-                var err = new Error('Subscriber error');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('Subscriber error');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         }
     }, function(err, results) {
@@ -108,9 +110,9 @@ exports.get_profile_posts = function(req, res, next) {
                 return user_profile;
             } catch (err) {
                 console.log(err);
-                var err = new Error('Account not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('Account not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         posts: async function(callback) {
@@ -119,9 +121,10 @@ exports.get_profile_posts = function(req, res, next) {
                 const postPublic = await Post.query().select('posts.*').where('id_account', Number(req.params.id)).where('visibility', 1).orderBy('date_posted', 'desc').page(req.params.pageNum-1, 10);
                 return [post.results,postPublic.results];
             } catch (err) {
-                var err = new Error('Posts returned an error.  Please email ohthatemailaddress@gmail.com');
-                err.status = 404;
-                return next(err);
+                console.log(err)
+                var updatedErr = new Error('Posts returned an error.  Please email ohthatemailaddress@gmail.com');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
         //check if theres a next page
@@ -138,9 +141,10 @@ exports.get_profile_posts = function(req, res, next) {
                 }
                 return [postVis,postPublicVis];
             } catch (err) {
-                var err = new Error('Comments returned an error.  Please email ohthatemailaddress@gmail.com');
-                err.status = 404;
-                return next(err);
+                console.log(err)
+                var updatedErr = new Error('Comments returned an error.  Please email ohthatemailaddress@gmail.com');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         }
     }, async function(err, results) {
@@ -171,7 +175,6 @@ exports.get_profile_posts = function(req, res, next) {
                     modifiedPost.isRead = 0;
                     modifiedPosts.push(modifiedPost);
                 }
-
             }
             return modifiedPosts;
         }
@@ -192,10 +195,12 @@ exports.get_profile_posts = function(req, res, next) {
             return;
         }
         //Post authors is not logged in, so only public posts are displayed
+        //If no posts found
         if (results.posts[1]<1)  {//no public posts available 
             res.render('profile_none', { id: req.params.id } );
             return;
         }
+        //Else display public posts only
         const finalPosts = await setRead(results.posts[0], userId);
         res.render('profile_posts', { posts: finalPosts, isNextPage: results.postsNext[1], pageNum: req.params.pageNum} );
     });
@@ -210,9 +215,10 @@ exports.get_profile_comments = function(req, res, next) {
                     const comment = await Comment.query().select('comments.*').where('id_account', Number(req.params.id)).orderBy('date_posted', 'desc').page(req.params.pageNum-1, 10);
                     return comment;
                 } catch (err) {
-                    var err = new Error('Comments returned an error.  Please email ohthatemailaddress@gmail.com');
-                    err.status = 404;
-                    return next(err);
+                    console.log(err)
+                    var updatedErr = new Error('Comments returned an error.  Please email ohthatemailaddress@gmail.com');
+                    updatedErr.status = 404;
+                    return next(updatedErr);
                 }
             },
 
@@ -225,9 +231,10 @@ exports.get_profile_comments = function(req, res, next) {
                     }
                     return 1;
                 } catch (err) {
-                    var err = new Error('Comments returned an error.  Please email ohthatemailaddress@gmail.com');
-                    err.status = 404;
-                    return next(err);
+                    console.log(err)
+                    var updatedErr = new Error('Comments returned an error.  Please email ohthatemailaddress@gmail.com');
+                    updatedErr.status = 404;
+                    return next(updatedErr);
                 }
             }
         }, function(err, results) {
@@ -250,9 +257,9 @@ exports.get_profile_settings = function (req, res, next) {
                 return user_profile;
             } catch (err) {
                 console.log(err);
-                var err = new Error('Account not found');
-                err.status = 404;
-                return next(err);
+                var updatedErr = new Error('Account not found');
+                updatedErr.status = 404;
+                return next(updatedErr);
             }
         },
     }, function (err, results) {
@@ -311,11 +318,11 @@ function deletePictureInUploads(filename) {
                 return "Success";
             } catch(err) {
                 console.error(err);
-                return "Error";
+                return err;
             }
         }
     }
-    return "FileNotFound";
+    return "File not found"
 }
 
 //Searches for a phrase in uploads folder and gets the path to that file
@@ -351,8 +358,6 @@ exports.post_profile_settings = [
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
-            console.log(req.body.description);
-            console.log(req.body.description.length);
             res.render('profile_settings', { id: req.params.id, emailSetting: req.body.email_enabled, about: req.body.description, errors: errors.array() });
             return;
         }
@@ -453,8 +458,6 @@ exports.post_profile_settings = [
         }
 
         //Handle the email switch and account about section
-        console.log(req.body.email_enabled);
-        console.log(req.body.description);
         let switchValue = 0;
         if (req.body.email_enabled) {
             switchValue = 1;
@@ -478,14 +481,18 @@ exports.post_profile_settings = [
             const targetPath = path.join(__dirname, "../public/uploads/"+convertToUnderscore(req.file.filename));
             const format = req.file.filename.split(".")[1];
             let t = deletePictureInUploads(convertToUnderscore(req.file.filename.split(".")[0]));
+            if (t != "Success" && t != "File not found") {
+                return next(t);
+            }
             var finalImg = fs.createWriteStream(targetPath);
             resize("./"+tempPath, format, 750, 750).pipe(finalImg);
             fs.unlinkSync(tempPath);
             console.log("Image sucessfully uploaded");
         } else {
-            console.log("No file found");
+            var updatedErr = new Error('File not found');
+            updatedErr.status = 404;
+            return next(updatedErr);
         }
-
         res.redirect('/profile/'+req.params.id);
         }
     }
@@ -514,6 +521,3 @@ exports.check_permission = function(req, res, next) {
     }
     next();
 }
-
-
-//go directly to comment stretch

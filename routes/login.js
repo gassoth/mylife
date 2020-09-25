@@ -36,8 +36,5 @@ router.get('/reset/change_password', login_controller.get_account_change);
 
 //Post reset pw page when a user is logged in
 router.post('/reset/change_password', login_controller.post_account_change);
-
-//Test Controller
-//router.get('/accounts', logins_controller.accounts_list);
     
 module.exports = router;
