@@ -54,7 +54,7 @@
         }
     };
     function resetFlag(o) {
-        document.getElementById('reset').value=1;
+        document.getElementById('reset').value = 1;
     }
 </script>
 
@@ -70,101 +70,105 @@
                     <form class="col s12" method="get">
                         <div class="row">
                             <div class="input-field col s10">
-                                <input id="input_search" name="input_search" type="text" value="<%= currentSearch%>" maxlength="200">
+                                <input id="input_search" name="input_search" type="text" value="<%= currentSearch%>"
+                                    maxlength="200">
                                 <input type="hidden" name="reset" id="reset" value=0 />
-                                <label for="input_search">Enter tags to search for separated by space. Can use 'and' and/or 'or'.  TItles and usernames will only match literals unless theres no spaces.</label>
+                                <label for="input_search">Enter tags to search for separated by space. Can use 'and'
+                                    and/or 'or'. TItles and usernames will only match literals unless theres no
+                                    spaces.</label>
                             </div>
-                            <button type='submit' id='btn_search'
-                                class='col s2 btn btn-large waves-effect blue' onclick="resetFlag(this)">Search</button>
+                            <button type='submit' id='btn_search' class='col s2 btn btn-large waves-effect blue'
+                                onclick="resetFlag(this)">Search</button>
                         </div>
                 </div>
             </div>
             <div class="container" style="min-width: 80%;">
                 <div class="row">
                     <div class="feed-button">
-                            <input type="hidden" name="sortFlag" id="sortFlag" value="<%= sortMethod%>" />
-                            <input type="hidden" name="allFlag" id="allFlag" value="<%= isAll%>" />
-                            <input type="hidden" name="displayedPostsFlag" id="displayedPostsFlag" value="<%= displayedPosts%>" />
-                            <% if (isLoggedIn == 0) { %>
-                                <div class="col s2">
-                                </div>
-                                <% } %>
-                            <% if (sortMethod == 0) { %>
-                            <div class="col s2">
-                                <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
-                                    onclick="dateSort(this)">Date</button>
-                            </div>
-                            <% } else { %>
-                            <div class="col s2">
-                                <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
-                                    onclick="dateSort(this)">Date</button>
-                            </div>
-                            <% } %>
-                            <% if (isLoggedIn == 0) { %>
-                            <div class="col s1">
-                            </div>
-                            <% } %>
-                            <% if (sortMethod == 2) { %>
-                            <div class="col s2">
-                                <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
-                                    onclick="readSort(this)">Views</button>
-                            </div>
-                            <% } else { %>
-                            <div class="col s2">
-                                <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
-                                    onclick="readSort(this)">Views</button>
-                            </div>
-                            <% } %>
-                            <% if (isLoggedIn == 0) { %>
-                                <div class="col s1">
-                                </div>
-                                <% } %>
-                            <% if (sortMethod == 1) { %>
-                            <div class="col s2">
-                                <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
-                                    onclick="commentSort(this)">Comments</button>
-                            </div>
-                            <% } else { %>
-                            <div class="col s2">
-                                <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
-                                    onclick="commentSort(this)">Comments</button>
-                            </div>
-                            <% } %>
-                            <% if (isLoggedIn != 0) { %>
-                                <% if (isAll == 1) { %>
-                                <div class="col s2">
-                                    <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
-                                        onclick="switchReadFlag(this)">Unread</button>
-                                </div>
-                                <% } else { %> 
-                                <div class="col s2">
-                                    <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
-                                        onclick="switchReadFlag(this)">All</button>
-                                </div>
-                                <% } %>
-                                <% if (displayedPosts == 2) { %>
-                                <div class="col s2">
-                                        <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
-                                            onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
-                                </div>
-                                <% } else { %>
-                                <div class="col s2">
-                                        <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
-                                            onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
-                                </div>                           
-                                <% } %>
-                                <% if (displayedPosts == 1) { %>
-                                <div class="col s2">
-                                        <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
-                                            onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
-                                </div>
-                                <% } else { %>
-                                <div class="col s2">
-                                        <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
-                                            onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
-                                </div>                           
-                                <% } %>
-                            <% } %>
+                        <input type="hidden" name="sortFlag" id="sortFlag" value="<%= sortMethod%>" />
+                        <input type="hidden" name="allFlag" id="allFlag" value="<%= isAll%>" />
+                        <input type="hidden" name="displayedPostsFlag" id="displayedPostsFlag"
+                            value="<%= displayedPosts%>" />
+                        <% if (isLoggedIn == 0) { %>
+                        <div class="col s2">
+                        </div>
+                        <% } %>
+                        <% if (sortMethod == 0) { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                onclick="dateSort(this)">Date</button>
+                        </div>
+                        <% } else { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
+                                onclick="dateSort(this)">Date</button>
+                        </div>
+                        <% } %>
+                        <% if (isLoggedIn == 0) { %>
+                        <div class="col s1">
+                        </div>
+                        <% } %>
+                        <% if (sortMethod == 2) { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                onclick="readSort(this)">Views</button>
+                        </div>
+                        <% } else { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
+                                onclick="readSort(this)">Views</button>
+                        </div>
+                        <% } %>
+                        <% if (isLoggedIn == 0) { %>
+                        <div class="col s1">
+                        </div>
+                        <% } %>
+                        <% if (sortMethod == 1) { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                onclick="commentSort(this)">Comments</button>
+                        </div>
+                        <% } else { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
+                                onclick="commentSort(this)">Comments</button>
+                        </div>
+                        <% } %>
+                        <% if (isLoggedIn != 0) { %>
+                        <% if (isAll == 1) { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                onclick="switchReadFlag(this)">Unread</button>
+                        </div>
+                        <% } else { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
+                                onclick="switchReadFlag(this)">All</button>
+                        </div>
+                        <% } %>
+                        <% if (displayedPosts == 2) { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
+                        </div>
+                        <% } else { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
+                                onclick="switchDisplayedPostsFlagSub(this)">Subscribed</button>
+                        </div>
+                        <% } %>
+                        <% if (displayedPosts == 1) { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue darken-3 waves-effect waves-light btn-large"
+                                onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
+                        </div>
+                        <% } else { %>
+                        <div class="col s2">
+                            <button type="submit" class="blue lighten-3 waves-effect waves-light btn-large"
+                                onclick="switchDisplayedPostsFlagBookmark(this)">Bookmarked</button>
+                        </div>
+                        <% } %>
+                        <% } %>
                         </form>
                     </div>
                 </div>
@@ -176,39 +180,39 @@
                 <div class="z-depth-2 feed-block">
                     <% if (posts) { %>
                     <% for (let i = 0; i < posts.length; i++) { %>
-                        <div class="col s12">
-                            <a href="/read/<%=posts[i].id%>">
-                                <div class="card feed-card">
-                                    <div class="row">
-                                        <div class="col s1">
-                                            <% if (posts[i].isRead) { %>
-                                                <h3>R</h3>
-                                            <% } else { %>
-                                                <h3>U</h3>
-                                            <% } %>
-                                            <div class="feed-divider"></div>
-                                        </div>
-                                        <div class="col s8">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title">
-                                                    <div class="feed-card-title"><%= posts[i].title%></div>
-                                                </span>
-                                                <div class="feed-card-author"><%= posts[i].author%></div>
-                                            </div>
-                                        </div>
-                                        <div class="col s3">
-                                            <div class="card-content grey-text text-lighten-3">
-                                                <span class="card-title" style="text-align: right;">
-                                                    <%= posts[i].date_posted.getDate(); %>
-                                                    <%= posts[i].date_posted.toLocaleString('default', { month: 'long' }); %>
-                                                    <%= posts[i].date_posted.getFullYear(); %> <br />
-                                                    <%= posts[i].date_posted.getHours(); %>:<%= (posts[i].date_posted.getMinutes()<10?'0':'') + posts[i].date_posted.getMinutes(); %>
-                                                </span>
-                                            </div>
+                    <div class="col s12">
+                        <a href="/read/<%=posts[i].id%>">
+                            <div class="card feed-card">
+                                <div class="row">
+                                    <div class="col s1">
+                                        <% if (posts[i].isRead) { %>
+                                        <h3>R</h3>
+                                        <% } else { %>
+                                        <h3>U</h3>
+                                        <% } %>
+                                        <div class="feed-divider"></div>
+                                    </div>
+                                    <div class="col s8">
+                                        <div class="card-content grey-text text-lighten-3">
+                                            <span class="card-title">
+                                                <div class="feed-card-title"><%= posts[i].title%></div>
+                                            </span>
+                                            <div class="feed-card-author"><%= posts[i].author%></div>
                                         </div>
                                     </div>
-                            </a>
-                        </div>
+                                    <div class="col s3">
+                                        <div class="card-content grey-text text-lighten-3">
+                                            <span class="card-title" style="text-align: right;">
+                                                <%= posts[i].date_posted.getDate(); %>
+                                                <%= posts[i].date_posted.toLocaleString('default', { month: 'long' }); %>
+                                                <%= posts[i].date_posted.getFullYear(); %> <br />
+                                                <%= posts[i].date_posted.getHours(); %>:<%= (posts[i].date_posted.getMinutes()<10?'0':'') + posts[i].date_posted.getMinutes(); %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                        </a>
+                    </div>
                     <% } %>
                     <% } %>
                     <ul class="pagination">
@@ -226,12 +230,13 @@
                         <% } %>
                     </ul>
                     <div class="row">
-                            <a class='col s2 offset-s10 btn btn-large waves-effect blue' style="position: relative; right: 10px;" href="/">Home</a>
+                        <a class='col s2 offset-s10 btn btn-large waves-effect blue'
+                            style="position: relative; right: 10px;" href="/">Home</a>
                     </div>
                 </div>
             </div>
             </div>
-            
+
         </center>
         <div class="section"></div>
 

@@ -20,17 +20,16 @@
                 </div>
         </center>
         <div class="container" style="min-width: 95%;  padding: 3vh 0vh 0vh 0vh;">
-            <form class="z-depth-2 row write-card"
-                method="post">
+            <form class="z-depth-2 row write-card" method="post">
                 <div class='row' style="margin-bottom: 5px;">
                     <div class='input-field col s12'>
                         <% if (title != '') { %>
-                                <input class='validate' type='text' name='title' id='title' value='<%= title%>' />
-                                <label for='title'>Create a title</label>
-                            <% } else { %>
-                                <input class='validate' type='text' name='title' id='title' value='<%= posts.title %>'/>
-                                <label for='title'>Create a title</label>
-                        <% } %>                        
+                        <input class='validate' type='text' name='title' id='title' value='<%= title%>' />
+                        <label for='title'>Create a title</label>
+                        <% } else { %>
+                        <input class='validate' type='text' name='title' id='title' value='<%= posts.title %>' />
+                        <label for='title'>Create a title</label>
+                        <% } %>
                         <label class='active' for='title'>Create a title</label>
                     </div>
                 </div>
@@ -43,9 +42,9 @@
                         <div class="z-depth-2">
                             <div id="editor">
                                 <% if (post != '') { %>
-                                        <%- post%>
-                                    <% } else { %>
-                                        <%- posts.body_html %>
+                                <%- post%>
+                                <% } else { %>
+                                <%- posts.body_html %>
                                 <% } %>
                             </div>
                         </div>
@@ -55,41 +54,41 @@
                     <div class="switch col s3">
                         <label>
                             <% if (title == '' && post == '' && errors == undefined && vis == '') { %>
-                                <% if (posts.visibility == 1) { %>
-                                    Private
-                                    <input type="checkbox" name="visibility" checked='checked'>
-                                    <span class="lever"></span>
-                                    Public
-                                <% } else { %>
-                                    Private
-                                    <input type="checkbox" name="visibility">
-                                    <span class="lever"></span>
-                                    Public
-                                <% } %>
+                            <% if (posts.visibility == 1) { %>
+                            Private
+                            <input type="checkbox" name="visibility" checked='checked'>
+                            <span class="lever"></span>
+                            Public
+                            <% } else { %>
+                            Private
+                            <input type="checkbox" name="visibility">
+                            <span class="lever"></span>
+                            Public
+                            <% } %>
                             <% } else if (vis != undefined) { %>
-                                Private
-                                <input type="checkbox" name="visibility" checked='checked'>
-                                <span class="lever"></span>
-                                Public
+                            Private
+                            <input type="checkbox" name="visibility" checked='checked'>
+                            <span class="lever"></span>
+                            Public
                             <% } else  { %>
-                                Private
-                                <input type="checkbox" name="visibility">
-                                <span class="lever"></span>
-                                Public
+                            Private
+                            <input type="checkbox" name="visibility">
+                            <span class="lever"></span>
+                            Public
                             <% } %>
                         </label>
                     </div>
-                    <a class='col s2 offset-s4 btn btn-large waves-effect blue'
-                    style="position: relative; right: 10px;" href="/">Home</a>
+                    <a class='col s2 offset-s4 btn btn-large waves-effect blue' style="position: relative; right: 10px;"
+                        href="/">Home</a>
                     <button type='submit' name='btn_search'
                         class='col s2 offset-s1 btn btn-large waves-effect blue'>Submit</button>
-                        <%if (errors) { %>
-                            <ul>
-                              <% for(var i = 0; i < errors.length; i++) {%>
-                             <li><%= errors[i].msg %></li>
-                             <% } %>
-                            </ul>
+                    <%if (errors) { %>
+                    <ul>
+                        <% for(var i = 0; i < errors.length; i++) {%>
+                        <li><%= errors[i].msg %></li>
                         <% } %>
+                    </ul>
+                    <% } %>
                 </div>
             </form>
         </div>
@@ -103,25 +102,25 @@
                 theme: 'snow'
             });
             var form = document.querySelector('form');
-            form.onsubmit = function() {
-            // Populate hidden form on submit
-            var deltaText = document.querySelector('input[name=deltaText]');
-            var htmlText = document.querySelector('input[name=htmlText]');
-            var stringText = document.querySelector('input[name=stringText]');
+            form.onsubmit = function () {
+                // Populate hidden form on submit
+                var deltaText = document.querySelector('input[name=deltaText]');
+                var htmlText = document.querySelector('input[name=htmlText]');
+                var stringText = document.querySelector('input[name=stringText]');
 
-            
-            //check if quill is empty
-            if (quill.getText().trim().length === 0 && quill.container.firstChild.innerHTML.includes("img") === false) {
-                deltaText.value = '';
-                htmlText.value = '';
-                stringText = '';
-            } else {
-                deltaText.value = JSON.stringify(quill.getContents());
-                htmlText.value = quill.root.innerHTML;
-                stringText.value = quill.getText();
-            }
-            console.log("Submitted", $(form).serialize(), $(form).serializeArray());
-            return true;
+
+                //check if quill is empty
+                if (quill.getText().trim().length === 0 && quill.container.firstChild.innerHTML.includes("img") === false) {
+                    deltaText.value = '';
+                    htmlText.value = '';
+                    stringText = '';
+                } else {
+                    deltaText.value = JSON.stringify(quill.getContents());
+                    htmlText.value = quill.root.innerHTML;
+                    stringText.value = quill.getText();
+                }
+                console.log("Submitted", $(form).serialize(), $(form).serializeArray());
+                return true;
             };
 
         </script>

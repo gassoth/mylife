@@ -6,7 +6,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var sassMiddleware = require('node-sass-middleware');
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
 var profileRouter = require('./routes/profile');
 var feedRouter = require('./routes/feed');
@@ -49,7 +48,7 @@ app.use(sassMiddleware({
   sourceMap: true
 }));
 //app.use(express.static(path.join(__dirname, 'public')));
-app.use( express.static( "public" ) );
+app.use(express.static("public"));
 
 
 //passport config uses simple user/pass auth.  Detailed in passport.js
@@ -60,9 +59,9 @@ require('./passport.js')(passport);
 //is purposely not designed for a production environment. It will 
 //leak memory under most conditions, does not scale past a single process, and is meant for debugging and developing.
 app.use(session({
-    secret: 'stick lick the pick',
-    resave: true,
-    saveUninitialized: false
+  secret: 'stick lick the pick',
+  resave: true,
+  saveUninitialized: false
 }));
 app.use(flash());
 app.use(passport.initialize());
@@ -86,9 +85,9 @@ app.use('/read', readRouter);
 
 //logout route redirects home at logout
 app.get('/logout',
-	function(req, res) {
-	    req.logout();
-	    res.redirect('/');
+  function (req, res) {
+    req.logout();
+    res.redirect('/');
   });
 
 //scheduler to run send email function once a day, and a rule to check emails once an hour
@@ -104,12 +103,12 @@ app.get('/testunread', emailer.getUnread);
 app.get('/testsend', emailer.sendEmail);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

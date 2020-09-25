@@ -31,20 +31,19 @@
             <br />
             <center>
               <div class='row'>
-                <button type='submit' name='btn_login'
-                  class='col s12 btn btn-large waves-effect blue'>Reset</button>
+                <button type='submit' name='btn_login' class='col s12 btn btn-large waves-effect blue'>Reset</button>
               </div>
               <div class="row">
                 <%  if (errors) { %>
                 <ul>
                   <% for(var i = 0; i < errors.length; i++) {%>
-                <li><%= errors[i].msg %></li>
-                <% } %>
+                  <li><%= errors[i].msg %></li>
+                  <% } %>
                 </ul>
-              <% } %>
-              <%if (message) { %>
+                <% } %>
+                <%if (message) { %>
                 <p><%= message %></p>
-              <% } %>
+                <% } %>
               </div>
         </div>
     </center>

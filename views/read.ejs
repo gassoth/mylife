@@ -43,67 +43,67 @@
         <div class="container" style="min-width: 80%; margin-top: -45px; text-align: right;">
             <div class="row">
                 <% if (user != '') { %>
-                    <% if (!bookmark) { %>
-                        <% let bookmarkLink = 'bookmark/' + posts.id; %>
-                        <div class="col s1" style="position:  relative; top: 50px;">
-                            <a href="<%=bookmarkLink%>" class="blue darken-3 waves-effect waves-light btn-large">Bookmark</a>
-                        </div>
-                        <div class="col s1" style="position: relative; top: 50px; left: 50px;">
-                            <% if (user.id == posts.id_account || user.permission > 0) { %>
-                            <% let link = '/write/' + posts.id; %>
-                            <a href="<%=link%>" class="blue darken-3 waves-effect waves-light btn-large">Edit</a>
-                            <% } %>
-                        </div>
-                        <div class="col s1" style="position: relative; top: 50px; left: 45px;">
-                            <% if (user.id == posts.id_account || user.permission > 0) { %>
-                            <% let link = '/write/tags/' + posts.id; %>
-                            <a href="<%=link%>" class="blue darken-3 waves-effect waves-light btn-large">Tags</a>
-                            <% } %>
-                        </div>
-                        <div class="col s1" style="position:  relative; top: 50px; left: 45px;">
-                            <% if (user.id == posts.id_account || user.permission > 0) { %>
-                            <% let delLink = 'delete/' + posts.id; %>
-                            <a href="<%=delLink%>" class="blue darken-3 waves-effect waves-light btn-large"
-                                onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
-                            <% } %>
-                        </div>
-                    <% } else { %>
-                        <% let unbookmarkLink = 'bookmark/remove/' + posts.id; %>
-                        <div class="col s1" style="position:  relative; top: 50px;">
-                            <a href="<%=unbookmarkLink%>"
-                                class="blue darken-3 waves-effect waves-light btn-large">Unbookmark</a>
-                        </div>
-                        <div class="col s1" style="position: relative; top: 50px; left: 70px;">
-                            <% if (user.id == posts.id_account || user.permission > 0) { %>
-                            <% let link = '/write/' + posts.id; %>
-                            <a href="<%=link%>" class="blue darken-3 waves-effect waves-light btn-large">Edit</a>
-                            <% } %>
-                        </div>
-                        <div class="col s1" style="position: relative; top: 50px; left: 65px;">
-                            <% if (user.id == posts.id_account || user.permission > 0) { %>
-                            <% let link = '/write/tags/' + posts.id; %>
-                            <a href="<%=link%>" class="blue darken-3 waves-effect waves-light btn-large">Tags</a>
-                            <% } %>
-                        </div>
-                        <div class="col s1" style="position:  relative; top: 50px; left: 65px;">
-                            <% if (user.id == posts.id_account || user.permission > 0) { %>
-                            <% let delLink = 'delete/' + posts.id; %>
-                            <a href="<%=delLink%>" class="blue darken-3 waves-effect waves-light btn-large"
-                                onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
-                            <% } %>
-                        </div>
+                <% if (!bookmark) { %>
+                <% let bookmarkLink = 'bookmark/' + posts.id; %>
+                <div class="col s1" style="position:  relative; top: 50px;">
+                    <a href="<%=bookmarkLink%>" class="blue darken-3 waves-effect waves-light btn-large">Bookmark</a>
+                </div>
+                <div class="col s1" style="position: relative; top: 50px; left: 50px;">
+                    <% if (user.id == posts.id_account || user.permission > 0) { %>
+                    <% let link = '/write/' + posts.id; %>
+                    <a href="<%=link%>" class="blue darken-3 waves-effect waves-light btn-large">Edit</a>
                     <% } %>
-                    <div class="col s8">
-                        <a href="/profile/<%=posts.id_account %>">
-                            <h1><%=posts.author %></h1>
-                        </a>
-                    </div>
+                </div>
+                <div class="col s1" style="position: relative; top: 50px; left: 45px;">
+                    <% if (user.id == posts.id_account || user.permission > 0) { %>
+                    <% let link = '/write/tags/' + posts.id; %>
+                    <a href="<%=link%>" class="blue darken-3 waves-effect waves-light btn-large">Tags</a>
+                    <% } %>
+                </div>
+                <div class="col s1" style="position:  relative; top: 50px; left: 45px;">
+                    <% if (user.id == posts.id_account || user.permission > 0) { %>
+                    <% let delLink = 'delete/' + posts.id; %>
+                    <a href="<%=delLink%>" class="blue darken-3 waves-effect waves-light btn-large"
+                        onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                    <% } %>
+                </div>
                 <% } else { %>
-                    <div class="col s8 offset-s4">
-                        <a href="/profile/<%=posts.id_account %>">
-                            <h1><%=posts.author %></h1>
-                        </a>
-                    </div>
+                <% let unbookmarkLink = 'bookmark/remove/' + posts.id; %>
+                <div class="col s1" style="position:  relative; top: 50px;">
+                    <a href="<%=unbookmarkLink%>"
+                        class="blue darken-3 waves-effect waves-light btn-large">Unbookmark</a>
+                </div>
+                <div class="col s1" style="position: relative; top: 50px; left: 70px;">
+                    <% if (user.id == posts.id_account || user.permission > 0) { %>
+                    <% let link = '/write/' + posts.id; %>
+                    <a href="<%=link%>" class="blue darken-3 waves-effect waves-light btn-large">Edit</a>
+                    <% } %>
+                </div>
+                <div class="col s1" style="position: relative; top: 50px; left: 65px;">
+                    <% if (user.id == posts.id_account || user.permission > 0) { %>
+                    <% let link = '/write/tags/' + posts.id; %>
+                    <a href="<%=link%>" class="blue darken-3 waves-effect waves-light btn-large">Tags</a>
+                    <% } %>
+                </div>
+                <div class="col s1" style="position:  relative; top: 50px; left: 65px;">
+                    <% if (user.id == posts.id_account || user.permission > 0) { %>
+                    <% let delLink = 'delete/' + posts.id; %>
+                    <a href="<%=delLink%>" class="blue darken-3 waves-effect waves-light btn-large"
+                        onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                    <% } %>
+                </div>
+                <% } %>
+                <div class="col s8">
+                    <a href="/profile/<%=posts.id_account %>">
+                        <h1><%=posts.author %></h1>
+                    </a>
+                </div>
+                <% } else { %>
+                <div class="col s8 offset-s4">
+                    <a href="/profile/<%=posts.id_account %>">
+                        <h1><%=posts.author %></h1>
+                    </a>
+                </div>
                 <% } %>
             </div>
         </div>
