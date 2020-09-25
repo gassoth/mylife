@@ -5,9 +5,9 @@ var async = require('async');
 const { body, validationResult, sanitizeBody } = require('express-validator');
 
 //Controller for getting a blog post
-exports.get_read = function(req, res, next) {
+exports.get_read = function (req, res, next) {
     async.parallel({
-        account: async function(callback) {
+        account: async function (callback) {
             try {
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
@@ -17,7 +17,7 @@ exports.get_read = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-        posts: async function(callback) {
+        posts: async function (callback) {
             try {
                 const current_post = await Post.query().findById(req.params.id);
                 return current_post;
@@ -27,7 +27,7 @@ exports.get_read = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-        comments: async function(callback) {
+        comments: async function (callback) {
             try {
                 const comments = await Comment.query().select('comments.*').where('id_posts', Number(req.params.id));
                 return comments;
@@ -37,7 +37,7 @@ exports.get_read = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-        tags: async function(callback) {
+        tags: async function (callback) {
             try {
                 const queried_tags = await Post.query().select('tags').findById(req.params.id);
                 return queried_tags;
@@ -47,9 +47,9 @@ exports.get_read = function(req, res, next) {
                 return next(updatedErr);
             }
         }
-    }, async function(err, results) {
+    }, async function (err, results) {
         if (err) { return next(err); }
-        if (results.posts==null) { // No results.
+        if (results.posts == null) { // No results.
             var err = new Error('Post not found');
             err.status = 404;
             return next(err);
@@ -80,7 +80,7 @@ exports.get_read = function(req, res, next) {
         } catch (err) {
             var updatedErr = new Error('Reading returned an error.  Please email ohthatemailaddress@gmail.com');
             updatedErr.status = 500
-            return(next(updatedErr));
+            return (next(updatedErr));
         }
 
         let bookmarked = 0;
@@ -100,7 +100,8 @@ exports.get_read = function(req, res, next) {
         } catch (err) {
             var updatedErr = new Error('Bookmarks returned an error.  Please email ohthatemailaddress@gmail.com');
             updatedErr.status = 500
-            return(next(updatedErr));        }
+            return (next(updatedErr));
+        }
         //user should not be able to view a private post.
         try {
             if (results.posts.visibility == 0 && (req.user.id != results.posts.id_account && results.account.permission < 1)) {
@@ -108,13 +109,13 @@ exports.get_read = function(req, res, next) {
                 err.status = 403;
                 return next(err);
             }
-        } catch(err) {
+        } catch (err) {
             var err = new Error('Unauthorized access to private post');
             err.status = 403;
             return next(err);
         }
         // Successful, so render.
-        res.render('read', { posts: results.posts, user: user, comments: results.comments, bookmark: bookmarked, tags: results.tags.tags } );
+        res.render('read', { posts: results.posts, user: user, comments: results.comments, bookmark: bookmarked, tags: results.tags.tags });
     });
 };
 
@@ -132,7 +133,7 @@ exports.post_read = [
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/errors messages.
-            res.redirect('/read/'+req.params.id);
+            res.redirect('/read/' + req.params.id);
             return;
         }
         if (req.user == undefined) {
@@ -154,9 +155,9 @@ exports.post_read = [
 ]
 
 //Controller for confirming delete post
-exports.get_delete_post = function(req, res, next) {
+exports.get_delete_post = function (req, res, next) {
     async.parallel({
-        account: async function(callback) {
+        account: async function (callback) {
             try {
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
@@ -166,7 +167,7 @@ exports.get_delete_post = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-        posts: async function(callback) {
+        posts: async function (callback) {
             try {
                 const current_post = await Post.query().findById(req.params.id);
                 return current_post;
@@ -176,9 +177,9 @@ exports.get_delete_post = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-    }, async function(err, results) {
+    }, async function (err, results) {
         if (err) { return next(err); }
-        if (results.posts==null) { // No results.
+        if (results.posts == null) { // No results.
             var err = new Error('Post not found');
             err.status = 404;
             return next(err);
@@ -196,9 +197,9 @@ exports.get_delete_post = function(req, res, next) {
 };
 
 //Controller for confirming delete comment
-exports.get_delete_comment = function(req, res, next) {
+exports.get_delete_comment = function (req, res, next) {
     async.parallel({
-        account: async function(callback) {
+        account: async function (callback) {
             try {
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
@@ -208,7 +209,7 @@ exports.get_delete_comment = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-        comments: async function(callback) {
+        comments: async function (callback) {
             try {
                 const current_comment = await Comment.query().findById(req.params.id);
                 return current_comment;
@@ -218,9 +219,9 @@ exports.get_delete_comment = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-    }, async function(err, results) {
+    }, async function (err, results) {
         if (err) { return next(err); }
-        if (results.comments==null) { // No results.
+        if (results.comments == null) { // No results.
             var err = new Error('Comment not found');
             err.status = 404;
             return next(err);
@@ -237,9 +238,9 @@ exports.get_delete_comment = function(req, res, next) {
 };
 
 //Controller for confirming bookmark post
-exports.get_bookmark = function(req, res, next) {
+exports.get_bookmark = function (req, res, next) {
     async.parallel({
-        account: async function(callback) {
+        account: async function (callback) {
             try {
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
@@ -249,7 +250,7 @@ exports.get_bookmark = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-        posts: async function(callback) {
+        posts: async function (callback) {
             try {
                 const current_post = await Post.query().findById(req.params.id);
                 return current_post;
@@ -259,9 +260,9 @@ exports.get_bookmark = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-    }, async function(err, results) {
+    }, async function (err, results) {
         if (err) { return next(err); }
-        if (results.posts==null) { // No results.
+        if (results.posts == null) { // No results.
             var err = new Error('Post not found');
             err.status = 404;
             return next(err);
@@ -290,18 +291,18 @@ exports.get_bookmark = function(req, res, next) {
         } catch (err) {
             var updatedErr = new Error('Bookmarks returned an error.  Please email ohthatemailaddress@gmail.com');
             updatedErr.status = 500
-            return(next(updatedErr));
+            return (next(updatedErr));
         }
 
         // Successful, so redirect.
-        res.redirect('/read/'+results.posts.id);
+        res.redirect('/read/' + results.posts.id);
     });
 };
 
 //Controller for confirming unbookmark post
-exports.get_delete_bookmark = function(req, res, next) {
+exports.get_delete_bookmark = function (req, res, next) {
     async.parallel({
-        account: async function(callback) {
+        account: async function (callback) {
             try {
                 const user_profile = await Account.query().findById(req.user.id);
                 return user_profile;
@@ -311,7 +312,7 @@ exports.get_delete_bookmark = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-        posts: async function(callback) {
+        posts: async function (callback) {
             try {
                 const current_post = await Post.query().findById(req.params.id);
                 return current_post;
@@ -321,9 +322,9 @@ exports.get_delete_bookmark = function(req, res, next) {
                 return next(updatedErr);
             }
         },
-    }, async function(err, results) {
+    }, async function (err, results) {
         if (err) { return next(err); }
-        if (results.posts==null) { // No results.
+        if (results.posts == null) { // No results.
             var err = new Error('Post not found');
             err.status = 404;
             return next(err);
@@ -335,14 +336,14 @@ exports.get_delete_bookmark = function(req, res, next) {
                 console.log('NotLoggedIn');
                 res.redirect('/login/');
             }
-            await results.account.$relatedQuery('bookmarks').unrelate().where({id_post: results.posts.id});
+            await results.account.$relatedQuery('bookmarks').unrelate().where({ id_post: results.posts.id });
         } catch (err) {
             var updatedErr = new Error('Bookmarks returned an error.  Please email ohthatemailaddress@gmail.com');
             updatedErr.status = 500
-            return(next(updatedErr));
+            return (next(updatedErr));
         }
 
         // Successful, so delete.
-        res.redirect('/read/'+results.posts.id);
+        res.redirect('/read/' + results.posts.id);
     });
 };

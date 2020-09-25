@@ -2,7 +2,7 @@
 var express = require('express');
 var router = express.Router();
 var profile_controller = require('../controllers/profileController.js');
-var multer  = require('multer');
+var multer = require('multer');
 var Account = require('../db/models/account.js');
 const path = require('path');
 
@@ -14,7 +14,7 @@ var storage = multer.diskStorage({ //multers disk storage settings
         var datetimestamp = Date.now();
         const user = await Account.query().select('generated_username').findById(req.params.id);
         console.log(user);
-        cb(null, user.generated_username+'.'+file.originalname.split('.')[file.originalname.split('.').length - 1]);
+        cb(null, user.generated_username + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1]);
     }
 });
 

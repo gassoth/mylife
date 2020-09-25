@@ -7,7 +7,7 @@ const { convertHtmlToDelta } = require('node-quill-converter');
 const { raw } = require('objection');
 const fs = require('fs');
 const readline = require('readline');
-const {google} = require('googleapis');
+const { google } = require('googleapis');
 const simpleParser = require('mailparser').simpleParser;
 
 // If modifying these scopes, delete token.json.
@@ -23,9 +23,9 @@ const TOKEN_PATH = 'token.json';
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
-  const {client_secret, client_id, redirect_uris} = credentials.installed;
+  const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
-      client_id, client_secret, redirect_uris[0]);
+    client_id, client_secret, redirect_uris[0]);
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
@@ -72,7 +72,7 @@ function getNewToken(oAuth2Client, callback) {
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 function listLabels(auth) {
-  const gmail = google.gmail({version: 'v1', auth});
+  const gmail = google.gmail({ version: 'v1', auth });
   gmail.users.labels.list({
     userId: 'me',
   }, (err, res) => {
@@ -96,7 +96,7 @@ let tzCounter = 7;
 function extractReply(str) {
   var rx = /^.{0,3}:\s/g;
   var arr = rx.exec(str);
-  return arr; 
+  return arr;
 }
 
 //Function to add email to database. Email is the email, parsedEmailObject is extra data from the ticket or from the email.
@@ -106,7 +106,7 @@ async function postMessage(email, parsedEmailObject) {
   if (extractReply(subject) != null) {
     subject = subject.substring(4);
   }
-  
+
   //creates the title and username tags for the post
   let tags = [subject, parsedEmailObject.generated_username];
 
@@ -125,12 +125,12 @@ async function postMessage(email, parsedEmailObject) {
 
   //insert tags
   for (let i = 0; i < tags.length; i++) {
-      const insertedTag = await Posts.query().findById(insertedPost.id).patch({
-          tags: raw('array_append("tags", ?)', [tags[i].toString().toLowerCase()])
-      });
+    const insertedTag = await Posts.query().findById(insertedPost.id).patch({
+      tags: raw('array_append("tags", ?)', [tags[i].toString().toLowerCase()])
+    });
   }
   const finalInsertedPost = await Posts.query().findById(insertedPost.id);
-  return finalInsertedPost; 
+  return finalInsertedPost;
 }
 
 //Function to get the html version of reply email. (Strip out the original email in the html email)
@@ -142,7 +142,7 @@ function getParsedHtmlEmail(parsed, htmlEmail) {
   //Trims whitespace, splits based on '\n' delimiter, gets the first section of that (hopefully the line that say "You replied to this email on xx\yy\zz w.e")
   //then gets the first 20 characters (which are hopefully unique enough that it'll find the correct words).  This will be used
   //to split the html because that is the only part of the html that doesn't have html tags in it.
-  const htmlStringSplitter = htmlString.trim().split("\n")[0].substring(0,20);
+  const htmlStringSplitter = htmlString.trim().split("\n")[0].substring(0, 20);
 
   //Splits the html email based on htmlStringSplitter, gets the first half, and then removes the whitespace and trims the trailing <p> tag.
   const htmlEmailSplit = htmlEmail.split(htmlStringSplitter)[0].trimRight().slice(0, -3);
@@ -172,15 +172,15 @@ async function checkUnreadAgainstTickets(emails) {
     const to = email.to;
     const from = email.from;
     const fromEmail = from.substring(
-      from.lastIndexOf("<")+1,
+      from.lastIndexOf("<") + 1,
       from.lastIndexOf(">")
     );
     const toEmail = to.substring(
-      to.lastIndexOf("<")+1,
+      to.lastIndexOf("<") + 1,
       to.lastIndexOf(">")
     );
     const ticketCode = to.substring(
-      to.lastIndexOf("+")+1,
+      to.lastIndexOf("+") + 1,
       to.lastIndexOf("@")
     );
 
@@ -190,9 +190,9 @@ async function checkUnreadAgainstTickets(emails) {
 
     try {
       //Gets ticket.  If ticket doesn't exist eventually error will occur and console will log it.
-      const ticket = await Tickets.query().select('id','id_account', 'date_created')
-      .where('email', fromEmail)
-      .where('ticket_code', ticketCode);
+      const ticket = await Tickets.query().select('id', 'id_account', 'date_created')
+        .where('email', fromEmail)
+        .where('ticket_code', ticketCode);
       const ticketIdAccount = ticket[0].id_account;
       const ticketDate = ticket[0].date_created;
 
@@ -286,14 +286,14 @@ async function getUnreadFunction(auth) {
 }
 
 //Function that creates an email in the format that gmail api can send.
-exports.makeBody = function(to, from, subject, message) {
+exports.makeBody = function (to, from, subject, message) {
   var str = ["Content-Type: text/plain; charset=\"UTF-8\"\n",
-      "MIME-Version: 1.0\n",
-      "Content-Transfer-Encoding: 7bit\n",
-      "to: ", to, "\n",
-      "from: ", from, "\n",
-      "subject: ", subject, "\n\n",
-      message
+    "MIME-Version: 1.0\n",
+    "Content-Transfer-Encoding: 7bit\n",
+    "to: ", to, "\n",
+    "from: ", from, "\n",
+    "subject: ", subject, "\n\n",
+    message
   ].join('');
 
   var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
@@ -307,17 +307,17 @@ async function sendEmailFunction(gmailObj, email) {
     resource: {
       raw: email
     }
-  }, function(err, response) {
+  }, function (err, response) {
     console.log(err || response);
   });
 }
 
 //Function to create the subject line.  Match function parses a timestamp string and gets the day, month, and year.  It then turns that into a string
 //that can be used as the subject line in the format Month Day Year (Mar 5 2019)
-exports.createSubject = function(dateObject) {
+exports.createSubject = function (dateObject) {
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var parts = dateObject.match(/(\d+)/g);
-  const parsedTime = new Date(parts[0], parts[1]-1, parts[2]);
+  const parsedTime = new Date(parts[0], parts[1] - 1, parts[2]);
   const subject = monthNames[parsedTime.getMonth()] + " " + parsedTime.getDate() + ", " + parsedTime.getFullYear();
   return subject;
 }
@@ -344,15 +344,15 @@ async function emailUsersFunction(auth) {
     return 0;
   }*/
   users = await Account.query().select('email', 'id')
-  .where('email_enabled', 1)
+    .where('email_enabled', 1)
   //Formats a message, creates a ticket with a unique ticket email+ticketCode that can be used to verify a response, and then
   //adds that ticket to the ticket table.  It then calls sendEmailFunction to send the email.
   const message = "How was your day today? Reply to this message with a journal entry and view your entry on the website! "
-    +"If you would like to change the title of the journal post, just change the subject of the email.  Please make sure to not change the reply address!";
+    + "If you would like to change the title of the journal post, just change the subject of the email.  Please make sure to not change the reply address!";
   const time = new Date();
   const subject = exports.createSubject(time.toISOString());
   for (let i = 0; i < users.length; i++) {
-    const ticketCode = [...Array(10)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
+    const ticketCode = [...Array(10)].map(i => (~~(Math.random() * 36)).toString(36)).join('');
     let ticket = {
       email: users[i].email,
       id_account: users[i].id,
@@ -364,9 +364,9 @@ async function emailUsersFunction(auth) {
     var lastWeek = new Date(time.getFullYear(), time.getMonth(), time.getDate() - 7);
     var lastWeekPlus = new Date(time.getFullYear(), time.getMonth(), time.getDate() - 6);
     var lastMonth = new Date(time.getFullYear(), time.getMonth() - 1, time.getDate());
-    var lastMonthPlus = new Date(time.getFullYear(), time.getMonth() - 1, time.getDate()+1);
+    var lastMonthPlus = new Date(time.getFullYear(), time.getMonth() - 1, time.getDate() + 1);
     var lastYear = new Date(time.getFullYear() - 1, time.getMonth(), time.getDate());
-    var lastYearPlus = new Date(time.getFullYear() - 1, time.getMonth(), time.getDate()+1); 
+    var lastYearPlus = new Date(time.getFullYear() - 1, time.getMonth(), time.getDate() + 1);
     const postsLastYear = await Posts.query().select('body', 'id', 'date_posted')
       .whereBetween('date_posted', [lastYear, lastYearPlus])
       .where('id_account', users[i].id);
@@ -396,13 +396,13 @@ async function emailUsersFunction(auth) {
     if (p != 'None') {
       previousMessage = '\n\nDo you remember this message? ' + timePosted + ' you posted this.\n\n' + p.body;
     }
-    previousMessage = previousMessage + '\n\n' + 'Find your posts at localhost:3000/profile/'+users[i].id.toString();
-    
+    previousMessage = previousMessage + '\n\n' + 'Find your posts at localhost:3000/profile/' + users[i].id.toString();
+
     //Sends the final email
     try {
       ticketInsert = await Tickets.query().insert(ticket);
       let replyAddress = 'mylifejournalapp+'.concat(ticketCode).concat('@gmail.com');
-      let email = exports.makeBody(users[i].email, replyAddress, subject, message+previousMessage)
+      let email = exports.makeBody(users[i].email, replyAddress, subject, message + previousMessage)
       let sent = await sendEmailFunction(gmail, email);
     } catch (e) {
       console.log(e);
@@ -418,35 +418,35 @@ async function emailUsersFunction(auth) {
  *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-exports.getLabels = function(req, res, next) {
-    fs.readFile('credentials.json', (err, content) => {
-        if (err) return console.log('Error loading client secret file:', err);
-        // Authorize a client with credentials, then call the Gmail API.
-        authorize(JSON.parse(content), listLabels);
-        res.redirect('/');
-      });
-  }
+exports.getLabels = function (req, res, next) {
+  fs.readFile('credentials.json', (err, content) => {
+    if (err) return console.log('Error loading client secret file:', err);
+    // Authorize a client with credentials, then call the Gmail API.
+    authorize(JSON.parse(content), listLabels);
+    res.redirect('/');
+  });
+}
 
 //Function used to get the unread emails and then set them as read.
-exports.getUnread = function(req, res, next) {
-    fs.readFile('credentials.json', async (err, content) => {
-        if (err) return console.log('Error loading client secret file:', err);
-        // Authorize a client with credentials, then call the Gmail API.
-        const time = new Date().toISOString();
-        console.log('got unread'+time)
-        authorize(JSON.parse(content), getUnreadFunction);
-      });
+exports.getUnread = function (req, res, next) {
+  fs.readFile('credentials.json', async (err, content) => {
+    if (err) return console.log('Error loading client secret file:', err);
+    // Authorize a client with credentials, then call the Gmail API.
+    const time = new Date().toISOString();
+    console.log('got unread' + time)
+    authorize(JSON.parse(content), getUnreadFunction);
+  });
 }
 
 //Function used to send emails
-exports.sendEmail = function(req, res, next) {
-    fs.readFile('credentials.json', async (err, content) => {
-        if (err) return console.log('Error loading client secret file:', err);
-        // Authorize a client with credentials, then call the Gmail API.
-        const time = new Date().toISOString();
-        console.log('sent email'+time);
-        //authorize(JSON.parse(content), emailUsersFunction);
-      });
+exports.sendEmail = function (req, res, next) {
+  fs.readFile('credentials.json', async (err, content) => {
+    if (err) return console.log('Error loading client secret file:', err);
+    // Authorize a client with credentials, then call the Gmail API.
+    const time = new Date().toISOString();
+    console.log('sent email' + time);
+    //authorize(JSON.parse(content), emailUsersFunction);
+  });
 }
 
 //Send the email that contains the special url to reset
@@ -466,10 +466,10 @@ async function emailResetAccount(auth, user, hash) {
 }
 
 //Authenticates server to send email to user
-exports.authResetEmail = function(credentials, user, hash) {
-  const {client_secret, client_id, redirect_uris} = credentials.installed;
+exports.authResetEmail = function (credentials, user, hash) {
+  const { client_secret, client_id, redirect_uris } = credentials.installed;
   const oAuth2Client = new google.auth.OAuth2(
-      client_id, client_secret, redirect_uris[0]);
+    client_id, client_secret, redirect_uris[0]);
 
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {

@@ -13,13 +13,13 @@ exports.get_feed = async (req, res) => {
         //Reset flag will start search on page 1 again, intended if starting a new search/clicking a new filter
         let urlFlags = req.originalUrl.split('?')[1];
         if (urlFlags) {
-            urlFlags = '?'.concat(urlFlags).replace('&reset=1',"");
+            urlFlags = '?'.concat(urlFlags).replace('&reset=1', "");
         } else {
             urlFlags = '';
         }
         let usedPageNum = req.params.pageNum;
         if (req.query.reset) {
-            res.redirect('/feed/1'+urlFlags);
+            res.redirect('/feed/1' + urlFlags);
             return;
         }
 
@@ -67,17 +67,17 @@ exports.get_feed = async (req, res) => {
                 tagSearchQuery.push([]);
             }
             for (let i = 0; i < tagSearchQuery.length; i++) {
-                let queryIds; 
+                let queryIds;
                 if (all == 0) {
                     queryIds = await Post.query().select('posts.id').where('tags', '@>', tagSearchQuery[i])
-                    .leftOuterJoin('read as r', joinBuilder => { 
-                        joinBuilder.on('posts.id', '=', 'r.id_posts')
-                        .andOn('r.id_account', usrId);
-                    })
-                    .whereNull('r.id_posts').map(a => a.id);
-                    } else {
-                        queryIds = await Post.query().where('tags', '@>', tagSearchQuery[i]).select('posts.id').map(a => a.id);
-                    }
+                        .leftOuterJoin('read as r', joinBuilder => {
+                            joinBuilder.on('posts.id', '=', 'r.id_posts')
+                                .andOn('r.id_account', usrId);
+                        })
+                        .whereNull('r.id_posts').map(a => a.id);
+                } else {
+                    queryIds = await Post.query().where('tags', '@>', tagSearchQuery[i]).select('posts.id').map(a => a.id);
+                }
                 queryIds.forEach(item => searchFilteredQueryIdsSet.add(item));
             }
             let searchFilteredQueryIds = Array.from(searchFilteredQueryIdsSet);
@@ -106,16 +106,16 @@ exports.get_feed = async (req, res) => {
                     .count('r.id')
                     .where('visibility', 1)
                     .orWhere(function () {
-                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                        this.where({ 'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
                     })
-                    .orderBy('count', 'desc').page(pageNum-1, 10);
+                    .orderBy('count', 'desc').page(pageNum - 1, 10);
                 let sortNext = await Post.query().findByIds(posts).select('posts.id')
                     .leftOuterJoin('read as r', 'r.id_posts', 'posts.id')
                     .groupBy('posts.id')
                     .count('r.id')
                     .where('visibility', 1)
                     .orWhere(function () {
-                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                        this.where({ 'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
                     })
                     .orderBy('count', 'desc').page(pageNum, 10);
                 //checks whether or not theres a next page
@@ -131,16 +131,16 @@ exports.get_feed = async (req, res) => {
                     .count('c.id')
                     .where('visibility', 1)
                     .orWhere(function () {
-                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                        this.where({ 'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
                     })
-                    .orderBy('count', 'desc').page(pageNum-1, 10);
+                    .orderBy('count', 'desc').page(pageNum - 1, 10);
                 let sortNext = await Post.query().findByIds(posts).select('posts.id')
                     .leftOuterJoin('comments as c', 'c.id_posts', 'posts.id')
                     .groupBy('posts.id')
                     .count('c.id')
                     .where('visibility', 1)
                     .orWhere(function () {
-                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                        this.where({ 'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
                     })
                     .orderBy('count', 'desc').page(pageNum, 10);
                 //checks whether or not theres a next page
@@ -155,16 +155,16 @@ exports.get_feed = async (req, res) => {
                     .findByIds(posts).select('posts.id', 'posts.title', 'posts.date_posted', 'posts.author', 'posts.id_account')
                     .where('visibility', 1)
                     .orWhere(function () {
-                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                        this.where({ 'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
                     })
                     .orderBy('date_posted', 'desc')
-                    .page(pageNum-1, 10);
+                    .page(pageNum - 1, 10);
                 const sortNext = await Post
                     .query().findByIds(posts)
                     .select('posts.id')
                     .where('visibility', 1)
                     .orWhere(function () {
-                        this.where({'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
+                        this.where({ 'visibility': 0, 'posts.id_account': userId }).whereIn('posts.id', posts)
                     })
                     .orderBy('date_posted', 'desc')
                     .page(pageNum, 10);
@@ -242,9 +242,10 @@ exports.get_feed = async (req, res) => {
 
         console.log(allFlag);
         console.log(parsedQuery);
-        res.render('feed', { posts: resultModified, 
-            isNextPage: result[1], 
-            pageNum: usedPageNum, 
+        res.render('feed', {
+            posts: resultModified,
+            isNextPage: result[1],
+            pageNum: usedPageNum,
             sortMethod: sortFlag,
             isAll: allFlag,
             displayedPosts: displayedPostsFlag,
@@ -252,8 +253,8 @@ exports.get_feed = async (req, res) => {
             isLoggedIn: uid,
             urlFlags: urlFlags
         });
-    } catch(err) {
+    } catch (err) {
         console.log(err);
-        return(next(err));
+        return (next(err));
     }
 }
