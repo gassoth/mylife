@@ -9,8 +9,11 @@ exports.get_read = function (req, res, next) {
     async.parallel({
         account: async function (callback) {
             try {
-                const user_profile = await Account.query().findById(req.user.id);
-                return user_profile;
+                if (req.user) {
+                    const user_profile = await Account.query().findById(req.user.id);
+                    return user_profile;
+                }
+                return;
             } catch (err) {
                 var updatedErr = new Error('Either user is not logged in or account is not found');
                 updatedErr.status = 404;
@@ -60,48 +63,51 @@ exports.get_read = function (req, res, next) {
         }
 
         //gets readers for a posts, checks if logged in user is in that list. if not, adds.
-        try {
-            if (user == '') {
-                console.log('NotLoggedIn');
-            }
-            var readers = await results.posts.$relatedQuery('read');
-            var swi = 0;
-            for (let i = 0; i < readers.length; i++) {
-                if (user.id == readers[i].id) {
-                    swi = 1;
-                    break;
+        if (user != '') {
+            try {
+                var readers = await results.posts.$relatedQuery('read');
+                var swi = 0;
+                for (let i = 0; i < readers.length; i++) {
+                    if (user.id == readers[i].id) {
+                        swi = 1;
+                        break;
+                    }
                 }
+                if (swi) {
+                    console.log('UserFound');
+                } else {
+                    await results.account.$relatedQuery('read').relate(results.posts);
+                }
+            } catch (err) {
+                var updatedErr = new Error('Reading returned an error.  Please email ohthatemailaddress@gmail.com');
+                updatedErr.status = 500
+                return (next(updatedErr));
             }
-            if (swi) {
-                console.log('UserFound');
-            } else {
-                await results.account.$relatedQuery('read').relate(results.posts);
-            }
-        } catch (err) {
-            var updatedErr = new Error('Reading returned an error.  Please email ohthatemailaddress@gmail.com');
-            updatedErr.status = 500
-            return (next(updatedErr));
+        } else {
+            console.log('NotLoggedIn');
         }
 
         let bookmarked = 0;
         //gets bookmarks for a posts, checks if logged in user is in that list to determine whether or not to display bookmark or unbookmark
-        try {
-            if (user == '') {
-                console.log('NotLoggedIn');
-            }
-            var bookmarks = await results.posts.$relatedQuery('bookmarks');
-            console.log(bookmarks);
-            for (let i = 0; i < bookmarks.length; i++) {
-                if (user.id == bookmarks[i].id) {
-                    bookmarked = 1;
-                    break;
+        if (user != '') {
+            try {
+                var bookmarks = await results.posts.$relatedQuery('bookmarks');
+                console.log(bookmarks);
+                for (let i = 0; i < bookmarks.length; i++) {
+                    if (user.id == bookmarks[i].id) {
+                        bookmarked = 1;
+                        break;
+                    }
                 }
+            } catch (err) {
+                var updatedErr = new Error('Bookmarks returned an error.  Please email ohthatemailaddress@gmail.com');
+                updatedErr.status = 500
+                return (next(updatedErr));
             }
-        } catch (err) {
-            var updatedErr = new Error('Bookmarks returned an error.  Please email ohthatemailaddress@gmail.com');
-            updatedErr.status = 500
-            return (next(updatedErr));
+        } else {
+            console.log('NotLoggedIn');
         }
+    
         //user should not be able to view a private post.
         try {
             if (results.posts.visibility == 0 && (req.user.id != results.posts.id_account && results.account.permission < 1)) {
@@ -273,6 +279,7 @@ exports.get_bookmark = function (req, res, next) {
             if (!req.user) {
                 console.log('NotLoggedIn');
                 res.redirect('/login/');
+                return;
             }
             var bookmarks = await results.posts.$relatedQuery('bookmarks');
             var swi = 0;
@@ -285,6 +292,7 @@ exports.get_bookmark = function (req, res, next) {
             if (swi) {
                 console.log('User already bookmarked');
                 res.redirect('/');
+                return
             } else {
                 await results.account.$relatedQuery('bookmarks').relate(results.posts);
             }
@@ -335,6 +343,7 @@ exports.get_delete_bookmark = function (req, res, next) {
             if (!req.user) {
                 console.log('NotLoggedIn');
                 res.redirect('/login/');
+                return;
             }
             await results.account.$relatedQuery('bookmarks').unrelate().where({ id_post: results.posts.id });
         } catch (err) {
