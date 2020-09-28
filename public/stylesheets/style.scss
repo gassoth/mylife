@@ -1,11 +1,21 @@
 body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+body {
   padding: 0;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   background: linear-gradient(#e3f2fd, #90caf9);
   background-repeat: no-repeat;
   background-attachment: fixed;
 
-}
+}     
 
 a {
   color: #68b3f2;
@@ -104,7 +114,6 @@ h3 {
 .ql-editor {
   min-height: 45vh;
   background-color: #EEEEEE;
-
 }
 
 .ql-toolbar{
@@ -168,7 +177,7 @@ ul.dropdown-content.select-dropdown li span {
 
 .feed-block{
   display: inline-block; 
-  min-width: 100%; 
+  width: 100%; 
   padding: 3vh 3vh 0vh; 
   border: 1px solid #EEE; 
   background-color: #ffefbd;
@@ -182,6 +191,7 @@ ul.dropdown-content.select-dropdown li span {
 .feed-card-title{
   text-align: left;
   font-size: 2.1em;
+  word-wrap: break-word;
 }
 
 .feed-card-author{
@@ -206,4 +216,9 @@ ul.dropdown-content.select-dropdown li span {
 
 strong {
   font-weight: bold;
+}
+
+.editor-wrapper{
+  min-width: 100%;
+  width: 0;
 }

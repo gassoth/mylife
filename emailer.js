@@ -296,7 +296,7 @@ exports.makeBody = function (to, from, subject, message) {
     message
   ].join('');
 
-  var encodedMail = new Buffer(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
+  var encodedMail = new Buffer.from(str).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
   return encodedMail;
 }
 

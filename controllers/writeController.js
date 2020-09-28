@@ -62,8 +62,9 @@ exports.get_edit = function (req, res, next) {
 exports.post_edit = [
 
     //Validate
+    body('stringText').isLength({ max: 10000 }).trim().withMessage('Exceeds max length'),
     body('htmlText').isLength({ min: 4 }).trim().withMessage('Content required'),
-    body('title').isLength({ min: 1 }).trim().withMessage('Title required'),
+    body('title').isLength({ min: 1, max: 250 }).trim().withMessage('Title required or title too long'),
 
     //sanitize
     sanitizeBody('deltaText'),
@@ -124,8 +125,9 @@ exports.post_edit = [
 exports.post_write = [
 
     //Validate
+    body('stringText').isLength({ max: 10000 }).trim().withMessage('Exceeds max length'),
     body('htmlText').isLength({ min: 4 }).trim().withMessage('Content required'),
-    body('title').isLength({ min: 1 }).trim().withMessage('Title required'),
+    body('title').isLength({ min: 1, max: 250 }).trim().withMessage('Title required or title too long'),
 
     //sanitize
     sanitizeBody('deltaText'),

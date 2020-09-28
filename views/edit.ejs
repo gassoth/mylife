@@ -24,10 +24,10 @@
                 <div class='row' style="margin-bottom: 5px;">
                     <div class='input-field col s12'>
                         <% if (title != '') { %>
-                        <input class='validate' type='text' name='title' id='title' value='<%= title%>' />
+                        <input class='validate' type='text' name='title' id='title' value='<%= title%>'  maxlength="200" />
                         <label for='title'>Create a title</label>
                         <% } else { %>
-                        <input class='validate' type='text' name='title' id='title' value='<%= posts.title %>' />
+                        <input class='validate' type='text' name='title' id='title' value='<%= posts.title %>'  maxlength="200" />
                         <label for='title'>Create a title</label>
                         <% } %>
                         <label class='active' for='title'>Create a title</label>

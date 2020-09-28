@@ -1,6 +1,17 @@
 //login route
 var express = require('express');
 var router = express.Router();
+var bouncer = require ("express-bouncer")(5000, 900000, 5);
+bouncer.whitelist.push("127.0.0.1");
+
+// In case we want to supply our own error (optional)
+bouncer.blocked = function (req, res, next, remaining)
+{
+    var time = remaining/1000;
+    var e = new Error("Too many requests have been made.  Please wait " + time.toString() + " seconds");
+    e.status = 429;
+    return next(e);
+};
 
 //Require login controller modules
 var login_controller = require('../controllers/loginController.js');
@@ -17,7 +28,7 @@ router.get('/create', login_controller.account_create);
 router.post('/create', login_controller.account_create_post);
 
 //Login post
-router.post('/', login_controller.account_login);
+router.post('/', bouncer.block, login_controller.account_login);
 
 //Get reset pw page where you enter email
 router.get('/resetemail', login_controller.get_reset_email);
@@ -30,11 +41,5 @@ router.get('/reset/:ident/:today-:hash', login_controller.get_account_reset);
 
 //Get reset pw page where you actually reset the password
 router.post('/reset/:ident/:today-:hash', login_controller.post_account_reset);
-
-//Get reset pw page when a user is logged in
-router.get('/reset/change_password', login_controller.get_account_change);
-
-//Post reset pw page when a user is logged in
-router.post('/reset/change_password', login_controller.post_account_change);
 
 module.exports = router;

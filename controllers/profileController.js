@@ -3,6 +3,7 @@ var Post = require('../db/models/posts.js');
 var Comment = require('../db/models/comments.js');
 var async = require('async');
 var fs = require('fs');
+var bcrypt = require('bcryptjs');
 const path = require('path');
 const resize = require('../resize');
 const { body, validationResult, sanitizeBody } = require('express-validator');
@@ -49,7 +50,12 @@ exports.get_profile = function (req, res, next) {
         subscribers: async function (callback) {
             try {
                 const user_profile = await Account.query().findById(req.params.id);
-                const subscriber = user_profile.$relatedQuery('subscribed');
+                let subscriber;
+                if (user_profile != undefined) {
+                    subscriber = user_profile.$relatedQuery('subscribed');
+                } else {
+                    subscriber = [];
+                }
                 return subscriber;
             } catch (err) {
                 console.log(err);
@@ -180,11 +186,11 @@ exports.get_profile_posts = function (req, res, next) {
         }
 
         let userId = 0;
-        if (results.account != 0) {
+        if (results.account.length != 0) {
             userId = results.account.id;
         }
         console.log(userId);
-        if (results.posts[0] < 1) { // No results.
+        if (results.posts[0].length < 1) { // No results.
             res.render('profile_none', { id: req.params.id });
             return;
         }
@@ -196,12 +202,12 @@ exports.get_profile_posts = function (req, res, next) {
         }
         //Post authors is not logged in, so only public posts are displayed
         //If no posts found
-        if (results.posts[1] < 1) {//no public posts available 
+        if (results.posts[1].length < 1) {//no public posts available 
             res.render('profile_none', { id: req.params.id });
             return;
         }
         //Else display public posts only
-        const finalPosts = await setRead(results.posts[0], userId);
+        const finalPosts = await setRead(results.posts[1], userId);
         res.render('profile_posts', { posts: finalPosts, isNextPage: results.postsNext[1], pageNum: req.params.pageNum });
     });
 };
@@ -489,9 +495,7 @@ exports.post_profile_settings = [
                 fs.unlinkSync(tempPath);
                 console.log("Image sucessfully uploaded");
             } else {
-                var updatedErr = new Error('File not found');
-                updatedErr.status = 404;
-                return next(updatedErr);
+                console.log('No file found');
             }
             res.redirect('/profile/' + req.params.id);
         }
@@ -521,3 +525,64 @@ exports.check_permission = function (req, res, next) {
     }
     next();
 }
+
+//Get the actual page where you change the password
+exports.get_account_change = function (req, res, next) {
+    res.render('reset', { errors: undefined, message: req.flash('error') });
+};
+
+//Actually reset the users password if it is correct
+exports.post_account_change = [
+
+    //Validate
+    body('password_validate').isLength({ min: 1 }).trim().withMessage('Validation field empty'),
+    body('password').isLength({ min: 8 }).trim().withMessage('Password is too short'),
+    body('password')
+        .custom((value, { req, loc, path }) => {
+            if (value !== req.body.password_validate || req.body.password_validate == '') {
+                // throw error if passwords do not match
+                throw new Error("Passwords don't match");
+            } else {
+                return value;
+            }
+        }),
+    //sanitize
+    sanitizeBody('password').escape(),
+    sanitizeBody('password_validate').escape(),
+
+    async (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // There are errors. Render form again with sanitized values/errors messages.
+            console.log(errors.array());
+            res.render('reset', { errors: errors.array(), message: req.flash('error') });
+            return;
+        } else {
+            try {
+
+                let paramsId = req.params.id;
+                if (req.user.id == paramsId || req.user.permission > 0) {
+                    const resetAccount = await Account.query().select('email')
+                        .findById(paramsId);
+                    if (resetAccount == undefined) {
+                        throw new Error("Account was not found");
+                    }
+                    bcrypt.genSalt(10, function (err, salt) {
+                        bcrypt.hash(req.body.password, salt, async function (err, hash) {
+                            const updatedPassword = await Account.query().findById(paramsId).patch({
+                                password: hash
+                            });
+                            console.log('password changed');
+                            res.redirect('/');
+                        });
+                    });
+                } else {
+                    throw new Error("User ID does not match page ID");
+                }
+                return;
+            } catch (err) {
+                return next(err)
+            }
+        }
+    }
+];

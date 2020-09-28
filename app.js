@@ -93,8 +93,8 @@ app.get('/logout',
 //scheduler to run send email function once a day, and a rule to check emails once an hour
 var ruleCheck = new schedule.RecurrenceRule();
 var ruleSend = new schedule.RecurrenceRule();
-ruleSend.minute = 45;
-ruleCheck.minute = 15;
+ruleSend.minute = 0;
+ruleCheck.minute = 30;
 
 var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);
 var sendEmails = schedule.scheduleJob(ruleSend, emailer.sendEmail);

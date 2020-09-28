@@ -6,6 +6,7 @@ const crypto = require('crypto');
 var Sentencer = require('sentencer');
 const emailer = require('../emailer');
 const fs = require('fs');
+var bouncer = require ("express-bouncer")(500, 900000);
 
 //encode in base 64
 const base64Encode = (data) => {
@@ -213,11 +214,15 @@ exports.account_login = [
             return;
         }
         else {
-            passport.authenticate('local', {
-                successRedirect: '/',
-                failureRedirect: '/login/',
-                failureFlash: true
-            })(req, res, next);
+            passport.authenticate('local', function(err, user, info) {
+                if (err) { return next(err); }
+                if (!user) { return res.redirect('/login/'); }
+                req.logIn(user, function(err) {
+                  if (err) { return next(err); }
+                  bouncer.reset(req);
+                  return res.redirect('/');
+                });
+              })(req, res, next);
         }
     }
 ];
@@ -359,66 +364,6 @@ exports.post_account_reset = [
                 } else {
                     throw new Error("Hash does not match");
                 }
-                return;
-            } catch (err) {
-                return next(err)
-            }
-        }
-    }
-];
-
-//Get the actual page where you change the password
-exports.get_account_change = function (req, res, next) {
-    res.render('reset', { errors: undefined, message: req.flash('error') });
-};
-
-//Actually reset the users password if it is correct
-exports.post_account_change = [
-
-    //Validate
-    body('password_validate').isLength({ min: 1 }).trim().withMessage('Validation field empty'),
-    body('password').isLength({ min: 8 }).trim().withMessage('Password is too short'),
-    body('password')
-        .custom((value, { req, loc, path }) => {
-            if (value !== req.body.password_validate || req.body.password_validate == '') {
-                // throw error if passwords do not match
-                throw new Error("Passwords don't match");
-            } else {
-                return value;
-            }
-        }),
-    //sanitize
-    sanitizeBody('password').escape(),
-    sanitizeBody('password_validate').escape(),
-
-    async (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            // There are errors. Render form again with sanitized values/errors messages.
-            console.log(errors.array());
-            res.render('reset', { errors: errors.array(), message: req.flash('error') });
-            return;
-        } else {
-            try {
-                //Check if user logged in, get logged in user, update their password
-                if (req.user == undefined) {
-                    throw new Error("Not logged in");
-                }
-                let userId = req.user.id;
-                const resetAccount = await Account.query().select('email')
-                    .findById(userId);
-                if (resetAccount == undefined) {
-                    throw new Error("Account was not found");
-                }
-                bcrypt.genSalt(10, function (err, salt) {
-                    bcrypt.hash(req.body.password, salt, async function (err, hash) {
-                        const updatedPassword = await Account.query().findById(userId).patch({
-                            password: hash
-                        });
-                        console.log('password changed');
-                        res.redirect('/');
-                    });
-                });
                 return;
             } catch (err) {
                 return next(err)

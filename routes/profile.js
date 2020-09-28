@@ -57,4 +57,10 @@ router.post('/settings/:id', protectedUpload, profile_controller.post_profile_se
 //Deletes account and all associated posts and comments
 router.get('/settings/:id/delete', profile_controller.get_delete_account);
 
+//Get reset pw page when a user is logged in
+router.get('/reset/:id', profile_controller.check_permission, profile_controller.get_account_change);
+
+//Post reset pw page when a user is logged in
+router.post('/reset/:id', profile_controller.check_permission, profile_controller.post_account_change);
+
 module.exports = router;

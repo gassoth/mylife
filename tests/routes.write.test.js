@@ -137,6 +137,6 @@ describe('Write route endpoints', () => {
     it('should get tags page but fail since not logged in', async () => {
         const res = await request(app)
             .get('/write/tags/1')
-        expect(res.statusCode).toEqual(302);
+        expect(res.statusCode).toEqual(403);
     });
 })

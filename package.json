@@ -9,7 +9,7 @@
     "migrate:reset": "knex --env test migrate:rollback && npm run migrate",
     "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --detectOpenHandles",
     "pretest": "cross-env NODE_ENV=test npm run migrate:reset"
-    },
+  },
   "dependencies": {
     "async": "^3.1.0",
     "bcryptjs": "^2.4.3",
@@ -19,6 +19,7 @@
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
+    "express-bouncer": "^0.2.0",
     "express-session": "^1.17.0",
     "express-validator": "^6.2.0",
     "googleapis": "^39.2.0",

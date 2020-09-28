@@ -43,7 +43,8 @@
             <br />
             <div class='row'>
               <div class="switch col s12">
-                <label>
+                <label class="tooltipped" data-position="top" data-tooltip="If 'send emails' is activated, we will send you a daily email.
+                When you reply to the email, our server will check every hour and post your email privately as your daily journal entry!">
                   Do not send emails
                   <input type="checkbox" name="email_enabled">
                   <span class="lever"></span>
@@ -52,9 +53,10 @@
               </div>
             </div>
             <div class='row'>
-              <div class="input-field col s12">
+              <div class="input-field col s12 tooltipped" data-position="top" data-tooltip="Emails are sent at 6PM per time zone.  If you would like to
+                receive the email at a different time, feel free to choose the correct tz offset to change your desired time.">
                 <select name="timezones" id="timezones" required>
-                  <option value="" disabled selected>Choose your timezone</option>
+                  <option value="" disabled selected>Choose your timezone (tz)</option>
                   <option value="Etc/GMT+12">(GMT-12:00) International Date Line West</option>
                   <option value="Pacific/Midway">(GMT-11:00) Midway Island, Samoa</option>
                   <option value="Pacific/Honolulu">(GMT-10:00) Hawaii</option>
@@ -175,6 +177,10 @@
     document.addEventListener('DOMContentLoaded', function () {
       var elems = document.querySelectorAll('select');
       var instances = M.FormSelect.init(elems);
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('.tooltipped');
+      var instances = M.Tooltip.init(elems);
     });
   </script>
 </body>

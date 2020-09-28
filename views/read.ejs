@@ -10,9 +10,9 @@
 <body>
     <div class="section"></div>
     <main>
-        <div class="container" style="margin-bottom: -60px; min-width: 80%; margin-top: -30px">
+        <div class="container" style="margin-bottom: -60px; min-width: 80%; margin-top: -30px;">
             <div class="row">
-                <div class="col s10">
+                <div class="col s10" style="word-wrap: break-word;">
                     <h1><%=posts.title %></h1>
                 </div>
                 <a class='col s2 btn btn-large waves-effect blue' style="position: relative; top: 55px; right: 15px;"
@@ -22,8 +22,8 @@
         </div>
         <div class="container" style="min-width: 80%;  padding: 3vh 0vh 0vh 0vh;">
             <div class="z-depth-2 row"
-                style="display: inline-block; min-width: 100%; min-height: 70vh; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #ffefbd">
-                <div class="row">
+                style="display: inline-block; min-width: 100%; min-height: 70vh; max-width: 100%; padding: 2vh 2vh 1vh; border: 1px solid #EEE; background-color: #ffefbd">
+                <div class="row" style="word-wrap: break-word;">
                     <%-posts.body_html %>
                     <br>
                     <br>
@@ -111,9 +111,9 @@
         <div class="container" style="margin-bottom: -60px; min-width: 80%; margin-top: -20px">
             <div class="container" style="min-width: 80%;  padding: 3vh 0vh 0vh 0vh;">
                 <div class="z-depth-2 row"
-                    style="display: inline-block; min-width: 100%; padding: 2vh 2vh 4vh; border: 1px solid #EEE; background-color: #ffefbd">
+                    style="display: inline-block; width: 100%; padding: 2vh 2vh 4vh; border: 1px solid #EEE; background-color: #ffefbd">
                     <div class="row">
-                        <div class="col s12">
+                        <div class="col s12" style="word-wrap: break-word;">
                             <div class="row" style="position: relative; left: 10px;">
                                 <a href="/profile/<%=comments[i].id_account %>">
                                     <h3><%= comments[i].author %></h3>
@@ -142,7 +142,7 @@
                         <form class="col s12" method="post">
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <textarea name="comment" id="comment" class="materialize-textarea"
+                                    <textarea name="comment" id="comment" class="materialize-textarea"  maxlength="500"
                                         required></textarea>
                                     <label for="comment">Leave a comment</label>
                                 </div>

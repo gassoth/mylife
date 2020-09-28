@@ -33,7 +33,7 @@ describe('Login Endpoints', () => {
             .get('/login/create')
         expect(res.statusCode).toEqual(200);
     });
-    it('should login user that does not exist', async () => {
+    it('should attempt login user that does not exist', async () => {
         const res = await request(app)
             .post('/login/')
             .send({

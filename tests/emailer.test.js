@@ -26,7 +26,7 @@ describe('Emailer Endpoints', () => {
         "from: ", from, "\n",
         "subject: ", subject, "\n\n",
         message].join('');
-        var encodedMail = new Buffer(emailStr).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
+        var encodedMail = new Buffer.from(emailStr).toString("base64").replace(/\+/g, '-').replace(/\//g, '_');
         expect(b).toEqual(encodedMail)
     })
 })

@@ -130,7 +130,7 @@ exports.get_read = function (req, res, next) {
 exports.post_read = [
 
     //Validate
-    body('comment').trim().isLength({ min: 1 }).withMessage('Content required'),
+    body('comment').trim().isLength({ min: 1, max: 500 }).withMessage('Comment required or comment too long'),
 
     //sanitize
     sanitizeBody('comment'),
