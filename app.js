@@ -13,6 +13,7 @@ var writeRouter = require('./routes/write');
 var readRouter = require('./routes/read');
 const passport = require('passport');
 var session = require('express-session');
+const KnexSessionStore = require('connect-session-knex')(session);
 const flash = require('connect-flash');
 const { Model } = require('objection');
 var schedule = require('node-schedule');
@@ -58,11 +59,22 @@ require('./passport.js')(passport);
 //Warning The default server-side session storage, MemoryStore, 
 //is purposely not designed for a production environment. It will 
 //leak memory under most conditions, does not scale past a single process, and is meant for debugging and developing.
-app.use(session({
-  secret: 'stick lick the pick',
-  resave: true,
-  saveUninitialized: false
-}));
+const store = new KnexSessionStore({
+  knex,
+  tablename: 'sessions', // optional. Defaults to 'sessions'
+});
+
+app.use(
+  session({
+    secret: 'stick lick the pick',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 100000
+    },
+    store,
+  }),
+);
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
