@@ -57,7 +57,7 @@ bugs - potentially not parsing valid emails, but can't replicate rn.  will need 
   -todo - add a page that says bookmarked already error
 //create an error handling page (example 404 page, please try again.) - need test
   //edit post when wrong user redirects without using bookmark causing an error - neet test(i think this is an error page?)
-
+//sessions shows logged in after clicking logged out
 
 
 //backend bugs
@@ -65,7 +65,7 @@ bugs - potentially not parsing valid emails, but can't replicate rn.  will need 
 //sometimes imge upload crashes system
 //scheduler not really working
 //can subscribe multiple times to 1 user
-
+//cant add quote tags as in " "
 
 
 
@@ -74,8 +74,6 @@ bugs - potentially not parsing valid emails, but can't replicate rn.  will need 
         //add link to profile - done, need test
       //update emailer to email every hour, but only email if timezone preference is currently aligned - x
       //map - convert timezone name to an integer, store that int to db.  Counter running, select query will be 'when tz = counter'. x
-
-
 
 
 //list of stretch goals
@@ -112,3 +110,41 @@ unit testing - maybe figure out how to do that + automated testing
 
 add permissions functionality
 -admin feed
+
+//need validation styling and need to figure out maxlength
+
+//emailer double replies
+  "This function does not work for double replies, so improvement for the future
+//is to try to make this function work for double replies or at least check for double replies."
+//authResetemail
+
+feed - //go directly to comment stretch
+
+testrun 1 - new user not logged in 
+  //profile feed displays private posts -- fixed and tested
+
+
+testrun 2 - new user registering and exploring
+//need about section -- fixed and tested
+//need helper text when registering - fixed and tested
+//initial image upload for new user breaks? can't recreate yet
+
+
+testrun 3 - user who wants to create chaos
+//view current timezone - slip
+//some kind of spam filter - slip
+//lots of unhandled promises - priority? slip?
+
+//limit post and comment size - fixed and tested
+//need to handle error when title too long - fixed and tested
+//no word wrap on write box
+//long titles break feed if not wrapped - fixed and tested
+
+testrun 4 - super user
+//says subscribe error when going to user that doesn't exist -foxed and tested
+//admins cant reset other users passwords - fixed tested
+//password attempt limit - fixed
+
+
+
+tutorials, ec2, ebs
