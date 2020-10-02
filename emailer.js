@@ -343,8 +343,7 @@ async function emailUsersFunction(auth) {
     console.log(e);
     return 0;
   }
-  users = await Account.query().select('email', 'id')
-    .where('email_enabled', 1)
+  
   //Formats a message, creates a ticket with a unique ticket email+ticketCode that can be used to verify a response, and then
   //adds that ticket to the ticket table.  It then calls sendEmailFunction to send the email.
   const message = "How was your day today? Reply to this message with a journal entry and view your entry on the website! "
