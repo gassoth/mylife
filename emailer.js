@@ -90,7 +90,7 @@ function listLabels(auth) {
 }
 
 //Initial timezone to send the email to (Starting at US EAST 6PM)
-let tzCounter = 9;
+let tzCounter = 8;
 
 //extracts re: from email subject
 function extractReply(str) {
