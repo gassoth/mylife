@@ -328,7 +328,7 @@ async function emailUsersFunction(auth) {
   //Gets the users that have elected to receive emails.
   const gmail = google.gmail({ version: 'v1', auth });
   let users;
-  /*
+  
   //Gets the users where in their timezone it is 6pm
   try {
     if (tzCounter == 24) {
@@ -342,7 +342,7 @@ async function emailUsersFunction(auth) {
   } catch (e) {
     console.log(e);
     return 0;
-  }*/
+  }
   users = await Account.query().select('email', 'id')
     .where('email_enabled', 1)
   //Formats a message, creates a ticket with a unique ticket email+ticketCode that can be used to verify a response, and then
@@ -445,7 +445,7 @@ exports.sendEmail = function (req, res, next) {
     // Authorize a client with credentials, then call the Gmail API.
     const time = new Date().toISOString();
     console.log('sent email' + time);
-    //authorize(JSON.parse(content), emailUsersFunction);
+    authorize(JSON.parse(content), emailUsersFunction);
   });
 }
 
