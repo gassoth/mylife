@@ -85,7 +85,7 @@ exports.get_profile = function (req, res, next) {
         //Handles check if profile picture is found, if not, then use default
         const imgLocation = searchPicInUploads(convertToUnderscore(results.account.generated_username)).toString();
         let relImgLocation = imgLocation;
-        if (imgLocation != "/images/test.jpg") {
+        if (imgLocation != "/images/user.png") {
             relImgLocation = imgLocation.split('/public')[1];
         }
 
@@ -342,7 +342,7 @@ function searchPicInUploads(filename) {
             return matchedFilePath;
         }
     }
-    return "/images/test.jpg";
+    return "/images/user.png";
 }
 
 //Converts space to underscore so that we don't have %20 in the url
