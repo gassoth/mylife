@@ -62,6 +62,7 @@ bugs - potentially not parsing valid emails, but can't replicate rn.  will need 
 
 //backend bugs
 //image upload weird when uploading long image
+//uploading non image disguised as image crashes system
 //sometimes imge upload crashes system
 //scheduler not really working
 //can subscribe multiple times to 1 user
@@ -148,3 +149,13 @@ testrun 4 - super user
 
 
 tutorials, ec2, ebs
+
+environment vars and urls
+-only urls are password reset urls rn
+
+run in background*
+-install forever and screen*
+database*
+ -install helmet and compression*
+timer
+ -make it so deployment sets time emails sent
