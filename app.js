@@ -17,6 +17,7 @@ const KnexSessionStore = require('connect-session-knex')(session);
 const flash = require('connect-flash');
 const { Model } = require('objection');
 var schedule = require('node-schedule');
+var compression = require('compression');
 
 //Sends daily email and updates email
 const emailer = require('./emailer.js');
@@ -25,6 +26,10 @@ const emailer = require('./emailer.js');
 const Knex = require('knex');
 const knexConfig = require('./knexfile');
 const knex = Knex(knexConfig.development);
+
+//This lazily disables all console.log for production code
+//console.log = function(){};
+
 // Bind all Models to a knex instance. If you only have one database in
 // your server this is all you have to do. For multi database systems, see
 // the Model.bindKnex method.
@@ -38,6 +43,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 //setup the app for logging, sass compilation
+app.use(compression);
+app.use(helmet);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
