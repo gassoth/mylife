@@ -66,7 +66,7 @@ const store = new KnexSessionStore({
 
 app.use(
   session({
-    secret: 'stick lick the pick',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
