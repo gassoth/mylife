@@ -154,8 +154,17 @@ environment vars and urls
 -only urls are password reset urls rn
 
 run in background*
--install forever and screen*
+-install forever*
 database*
- -install helmet and compression*
+ -install compression*
 timer
  -make it so deployment sets time emails sent
+
+
+ assume image is good
+
+setup database and password
+pull git
+install
+set env vars
+setup google token

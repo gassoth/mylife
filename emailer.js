@@ -89,8 +89,17 @@ function listLabels(auth) {
   });
 }
 
-//Initial timezone to send the email to (Starting at US EAST 6PM)
-let tzCounter = 8;
+//Initial timezone to send the email to (Starting at UTC 6PM)
+//tzCounter offset for actual current UTC local time
+function tzCounter() {
+  let curTime = new Date();
+  let offset = 18 - curTime.getHours();
+  let tzCounter = 12 + offset;
+  if (tzCounter > 23) {
+    tzCounter = tzCounter - 24;
+  }
+  return tzCounter
+}
 
 //extracts re: from email subject
 function extractReply(str) {
@@ -331,11 +340,7 @@ async function emailUsersFunction(auth) {
   
   //Gets the users where in their timezone it is 6pm
   try {
-    if (tzCounter == 0) {
-      tzCounter = 23;
-    } else {
-      tzCounter -= 1;
-    }
+    const tzCounter = tzCounter();
     users = await Account.query().select('email', 'id')
       .where('email_enabled', 1)
       .where('tz_preference', tzCounter);
