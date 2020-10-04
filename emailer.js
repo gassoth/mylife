@@ -447,9 +447,10 @@ exports.sendEmail = function (req, res, next) {
   fs.readFile('credentials.json', async (err, content) => {
     if (err) return console.log('Error loading client secret file:', err);
     // Authorize a client with credentials, then call the Gmail API.
-    const time = new Date().toISOString();
-    console.log('sent email' + time);
-    authorize(JSON.parse(content), emailUsersFunction);
+    const time = new Date();
+
+      console.log('sent email' + time.getHours());
+    //authorize(JSON.parse(content), emailUsersFunction);
   });
 }
 

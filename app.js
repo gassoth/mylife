@@ -39,7 +39,6 @@ Model.knex(knex);
 //init app
 var app = express();
 app.use(compression());
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
