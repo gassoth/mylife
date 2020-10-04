@@ -18,6 +18,7 @@ const flash = require('connect-flash');
 const { Model } = require('objection');
 var schedule = require('node-schedule');
 var compression = require('compression');
+var helmet = require('helmet');
 
 //Sends daily email and updates email
 const emailer = require('./emailer.js');
@@ -37,14 +38,13 @@ Model.knex(knex);
 
 //init app
 var app = express();
-
+app.use(compression());
+//app.use(helmet());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 //setup the app for logging, sass compilation
-app.use(compression);
-app.use(helmet);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
