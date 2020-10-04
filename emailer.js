@@ -91,7 +91,7 @@ function listLabels(auth) {
 
 //Initial timezone to send the email to (Starting at UTC 6PM)
 //tzCounter offset for actual current UTC local time
-function tzCounter() {
+function getTzCounter() {
   let curTime = new Date();
   let offset = 18 - curTime.getHours();
   let tzCounter = 12 + offset;
@@ -340,7 +340,7 @@ async function emailUsersFunction(auth) {
   
   //Gets the users where in their timezone it is 6pm
   try {
-    const tzCounter = tzCounter();
+    const tzCounter = getTzCounter();
     users = await Account.query().select('email', 'id')
       .where('email_enabled', 1)
       .where('tz_preference', tzCounter);
