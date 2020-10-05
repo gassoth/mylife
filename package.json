@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "devstart": "cross-env NODE_ENV=dev nodemon ./bin/www",
+    "prodstart": "cross-env NODE_ENV=prod node ./bin/www",
     "migrate": "knex --env test migrate:latest",
     "migrate:reset": "knex --env test migrate:rollback && npm run migrate",
     "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --detectOpenHandles",

@@ -449,8 +449,8 @@ exports.sendEmail = function (req, res, next) {
     // Authorize a client with credentials, then call the Gmail API.
     const time = new Date();
 
-      console.log('sent email' + time.getHours());
-    //authorize(JSON.parse(content), emailUsersFunction);
+    console.log('sent email' + time.getHours());
+    authorize(JSON.parse(content), emailUsersFunction);
   });
 }
 

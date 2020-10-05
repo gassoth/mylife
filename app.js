@@ -26,7 +26,7 @@ const emailer = require('./emailer.js');
 //Used for database stuff.
 const Knex = require('knex');
 const knexConfig = require('./knexfile');
-const knex = Knex(knexConfig.development);
+const knex = Knex(knexConfig.production);
 
 //This lazily disables all console.log for production code
 //console.log = function(){};
@@ -116,9 +116,6 @@ ruleCheck.minute = 30;
 
 var getUnreadEmails = schedule.scheduleJob(ruleCheck, emailer.getUnread);
 var sendEmails = schedule.scheduleJob(ruleSend, emailer.sendEmail);
-
-app.get('/testunread', emailer.getUnread);
-app.get('/testsend', emailer.sendEmail);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
