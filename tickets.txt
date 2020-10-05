@@ -160,11 +160,54 @@ database*
 timer
  -make it so deployment sets time emails sent
 
+Deployment procedures
+setup db
+  sudo -i -u postgres
+  psql
+  ALTER USER postgres PASSWORD 'whatever password';
+  go back home
+  sudo -u postgres createdb mylife-prod
+  sudo -u postgres psql -d mylife-prod to connect
 
- assume image is good
+pull project
+  git clone -b prod-changes https://github.com/gassoth/mylife.git
+  npm install
+  
+env variables
+  export TOKENSECRET="(whatever TOKENSECRET)"
+  export DATABASE_URL="(whatever url)"
+  export SESSION_SECRET="(whatever sesion secret)"
+  export NODE_ENV=production (maybe)
 
-setup database and password
-pull git
-install
-set env vars
-setup google token
+project stuff
+  set knex db to production
+  npx knex migrate:latest
+  npm install forever -g
+  move over 4 home page files and default image file
+  scp -i ../mylife.pem ./public/images/test-book.png ubuntu@ec2-3-137-146-193.us-east-2.compute.amazonaws.com:/home/ubuntu/
+  scp -i ../mylife.pem ./public/images/test-edit.png ubuntu@ec2-3-137-146-193.us-east-2.compute.amazonaws.com:/home/ubuntu/
+  scp -i ../mylife.pem ./public/images/test-lock.png ubuntu@ec2-3-137-146-193.us-east-2.compute.amazonaws.com:/home/ubuntu/
+  scp -i ../mylife.pem ./public/images/test-user.png ubuntu@ec2-3-137-146-193.us-east-2.compute.amazonaws.com:/home/ubuntu/
+  scp -i ../mylife.pem ./public/images/user.png ubuntu@ec2-3-137-146-193.us-east-2.compute.amazonaws.com:/home/ubuntu/
+  move to images folder
+  uncomment the console.log thing in app.js if you want to
+
+get google token
+  move credentials.json over
+  DEBUG=mylife:* npm run devstart
+  go to testsend
+  follow prompts
+
+
+//todo
+push git changes from prod ec2
+DNS stuff + the url
+set env to prod and test that script
+  .env file?
+setup correct security routing
+using rds
+using s3
+using ebs
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04 - adduser?
+
+stretch - helmet
