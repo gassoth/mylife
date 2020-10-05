@@ -141,3 +141,10 @@ interceptor.js
 main.test.txt
 maintest.sh
 app-env
+
+# Do not ignore these so we can pull image files on deployment
+!user.png
+!test-book.png
+!test-edit.png
+!test-lock.png
+!test-user.png
