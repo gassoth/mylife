@@ -400,7 +400,7 @@ async function emailUsersFunction(auth) {
     if (p != 'None') {
       previousMessage = '\n\nDo you remember this message? ' + timePosted + ' you posted this.\n\n' + p.body;
     }
-    previousMessage = previousMessage + '\n\n' + 'Find your posts at localhost:3000/profile/' + users[i].id.toString();
+    previousMessage = previousMessage + '\n\n' + 'Find your posts at https://mylifejournal.net/profile/' + users[i].id.toString();
 
     //Sends the final email
     try {

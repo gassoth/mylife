@@ -271,7 +271,7 @@ exports.post_reset_email = [
                 };
                 const hash = sha256(JSON.stringify(data), process.env.TOKENSECRET);
                 //link user clicks on to reset pass
-                const url = 'localhost:3000/login/reset/' + ident + '/:' + today + "-" + hash;
+                const url = 'https://mylifejournal.net/login/reset/' + ident + '/:' + today + "-" + hash;
                 //Reads credentials and preps to send email to user
                 fs.readFile('credentials.json', async (err, content) => {
                     if (err) return console.log('Error loading client secret file:', err);

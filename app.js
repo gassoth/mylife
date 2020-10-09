@@ -18,6 +18,8 @@ const flash = require('connect-flash');
 const { Model } = require('objection');
 var schedule = require('node-schedule');
 var compression = require('compression');
+const environment = process.env.NODE_ENV || 'development';
+require('dotenv').config()
 //var helmet = require('helmet');
 
 //Sends daily email and updates email
@@ -28,9 +30,10 @@ const Knex = require('knex');
 const knexConfig = require('./knexfile');
 const knex = Knex(knexConfig.production);
 
-//This lazily disables all console.log for production code
-//console.log = function(){};
-
+//This lazily disables all console.log for production code.  Can also disable morgan if you want.
+if (environment == 'production') {
+    console.log = function(){};
+}
 // Bind all Models to a knex instance. If you only have one database in
 // your server this is all you have to do. For multi database systems, see
 // the Model.bindKnex method.
