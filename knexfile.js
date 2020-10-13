@@ -1,3 +1,4 @@
+require('dotenv').config({path: './.env'});
 
 module.exports = {
   development: {
@@ -14,7 +15,7 @@ module.exports = {
 
   test: {
     client: 'pg',
-    connection:'postgres://titopei:password@localhost/mylife_dev_test',
+    connection:'postgres://postgres:***REMOVED***@***REMOVED***:5432/postgres',
     migrations: {
       directory: './db/migrations'
     },
@@ -26,7 +27,13 @@ module.exports = {
 
   production: {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
+      connection: {
+	  port: 5432,
+	  host: process.env.DATABASE_URL,
+	  user: 'postgres',
+	  password: '***REMOVED***',
+	  database: 'postgres'
+      },
     migrations: {
       directory: './db/migrations'
     },
