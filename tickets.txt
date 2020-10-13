@@ -173,7 +173,7 @@ pull project
   git clone -b prod-changes https://github.com/gassoth/mylife.git
   npm install
   
-env variables
+env variables -- instead can just put this in .env
   export TOKENSECRET="(whatever TOKENSECRET)"
   export DATABASE_URL="(whatever url)"
   export SESSION_SECRET="(whatever sesion secret)"
@@ -198,16 +198,67 @@ get google token
   go to testsend
   follow prompts
 
+setup proxy
+  sudo apt-get install nginx
+  sudo emacs /etc/nginx/conf.d/sysmon.conf 
+
+  server {
+    listen 80;
+    server_name mylifejournal.net;
+
+    location / {
+        proxy_set_header   X-Forwarded-For $remote_addr;
+        proxy_set_header   Host $http_host;
+        proxy_pass         http://18.223.175.121:3000/;
+    }
+  }server {
+        server_name 18.223.175.121;
+        add_header X-Frame-Options "SAMEORIGIN";
+
+        return 301 $scheme://mylifejournal.net$request_uri;
+  }
+
+  sudo systemctl restart nginx
+
+certbot
+  sudo snap install --classic certbot
+  sudo ln -s /snap/bin/certbot /usr/bin/certbot
+  sudo certbot --nginx
+  sudo certbot renew --dry-run
 
 //todo
-push git changes from prod ec2
-DNS stuff + the url
+push git changes from prod ec2 -xx
+DNS stuff + the url -xx
 set env to prod and test that script
-  .env file?
+  .env file? -xx
 setup correct security routing
-using rds
+using rds -xx
 using s3
 using ebs
 https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04 - adduser?
 
 stretch - helmet
+canonical name error
+
+
+changes when rds
+rds db
+  require('dotenv').config({path: './.env'});
+        connection: {
+            port: 5432,
+            host: process.env.DATABASE_URL,
+            user: 'postgres',
+            password: '***REMOVED***',
+            database: 'postgres'
+        },
+
+  in knexfile, then in .env, you just put the rds url
+
+
+buckets
+uploading
+
+getting
+  if file exist in bucket - display that file
+  else display generic profile pic
+  

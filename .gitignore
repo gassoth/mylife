@@ -142,6 +142,11 @@ main.test.txt
 maintest.sh
 app-env
 
+# Files I don't want to store on git
+sysmon.conf
+ubuntu@*
+
+
 # Do not ignore these so we can pull image files on deployment
 !user.png
 !test-book.png
