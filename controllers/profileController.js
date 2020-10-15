@@ -8,6 +8,24 @@ const path = require('path');
 const resize = require('../resize');
 const { body, validationResult, sanitizeBody } = require('express-validator');
 
+async function getImage(aws, filename) {
+    var s3 = new aws.S3();
+    const data = s3.getObject(
+        {
+            Bucket: 'mylifejournal-images',
+            Key: filename
+        }
+
+    ).promise();
+    return data;
+}
+
+function encode(data) {
+    let buf = Buffer.from(data);
+    let base64 = buf.toString('base64');
+    return base64
+}
+
 //Controller for a profile
 exports.get_profile = function (req, res, next) {
     async.parallel({
@@ -64,7 +82,7 @@ exports.get_profile = function (req, res, next) {
                 return next(updatedErr);
             }
         }
-    }, function (err, results) {
+    }, async function (err, results) {
         if (err) { return next(err); }
         if (results.account == null) { // No results.
             var err = new Error('Account not found');
@@ -89,6 +107,32 @@ exports.get_profile = function (req, res, next) {
             relImgLocation = imgLocation.split('/public')[1];
         }
 
+        var imgName = 'user.png'
+        var awsObj = req.app.get('aws');
+        let img = await getImage(awsObj, imgName)
+        .then((img) => {
+            let extension = imgName.split('.')[1];
+            let image;
+            if (extension == 'jpg' || extension == 'jpeg') {
+                image = "<img src='data:image/jpeg;base64," + encode(img.Body) + "' " + "style='width:160px;height:160px;'" + "/>";
+            } else if (extension == 'png') {
+                image = "<img src='data:image/png;base64," + encode(img.Body) + "' " + "style='width:160px;height:160px;'" + "/>";
+            } else if (extension == 'gif') {
+                image = "<img src='data:image/gif;base64," + encode(img.Body) + "' " + "style='width:160px;height:160px;'" + "/>";
+            }
+            return image;
+        }).catch(async () => {
+            let defaultImage = await getImage(awsObj, 'user.png');
+            let image = "<img src='data:image/png;base64," + encode(defaultImage.Body) + "' " + "style='width:160px;height:160px;'" + "/>";
+            return image;
+        }).catch((e) => {
+            return e;
+        });
+
+        if (img instanceof Error) {
+            return next(err);
+        }
+
         if (results.posts[0].count != '0') {
             postsCount = results.posts[0].count;
         }
@@ -97,9 +141,9 @@ exports.get_profile = function (req, res, next) {
         }
         // Successful, so render.  Either send in defined user or empty user since gives error if user not found
         if (req.user) {
-            res.render('profile', { account: results.account, user: req.user, postsCount: postsCount, commentsCount: commentsCount, subscribers: subscriberIds, img: relImgLocation });
+            res.render('profile', { account: results.account, user: req.user, postsCount: postsCount, commentsCount: commentsCount, subscribers: subscriberIds, img: img });
         } else {
-            res.render('profile', { account: results.account, user: '', postsCount: postsCount, commentsCount: commentsCount, subscribers: subscriberIds, img: relImgLocation });
+            res.render('profile', { account: results.account, user: '', postsCount: postsCount, commentsCount: commentsCount, subscribers: subscriberIds, img: img });
         }
     });
 };

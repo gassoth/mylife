@@ -261,4 +261,9 @@ uploading
 getting
   if file exist in bucket - display that file
   else display generic profile pic
-  
+
+
+
+
+
+bad gateway when using https

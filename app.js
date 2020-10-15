@@ -19,6 +19,7 @@ const { Model } = require('objection');
 var schedule = require('node-schedule');
 var compression = require('compression');
 const environment = process.env.NODE_ENV || 'development';
+const AWS = require('aws-sdk');
 require('dotenv').config()
 //var helmet = require('helmet');
 
@@ -28,7 +29,7 @@ const emailer = require('./emailer.js');
 //Used for database stuff.
 const Knex = require('knex');
 const knexConfig = require('./knexfile');
-const knex = Knex(knexConfig.production);
+const knex = Knex(knexConfig.development);
 
 //This lazily disables all console.log for production code.  Can also disable morgan if you want.
 if (environment == 'production') {
@@ -45,6 +46,13 @@ app.use(compression());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+//setup aws
+AWS.config.update({
+  accessKeyId: "***REMOVED***",
+  secretAccessKey: "***REMOVED***"
+});
+app.set('aws', AWS);
 
 //setup the app for logging, sass compilation
 app.use(logger('dev'));
