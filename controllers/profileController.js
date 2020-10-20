@@ -7,6 +7,10 @@ var bcrypt = require('bcryptjs');
 const path = require('path');
 const resize = require('../resize');
 const { body, validationResult, sanitizeBody } = require('express-validator');
+const promisify = require('util').promisify;
+
+// Promisify readFile, to make code cleaner and easier.
+const readFile = promisify(fs.readFile);
 
 async function getImage(aws, filename) {
     var s3 = new aws.S3();
@@ -18,6 +22,37 @@ async function getImage(aws, filename) {
 
     ).promise();
     return data;
+}
+
+async function uploadImage(aws, data, filename) {
+    var s3 = new aws.S3();
+    return s3.upload(
+        {
+        Bucket: 'mylifejournal-images',
+        Body: data,
+        Key: filename
+        }
+      ).promise(); 
+}
+
+async function getObjects(aws) {
+    var s3 = new aws.S3();
+    const list = s3.listObjectsV2(
+        {
+            Bucket: 'mylifejournal-images'
+        }
+    ).promise();
+    return list;
+}
+
+async function deleteImage(aws, filename) {
+    var s3 = new aws.S3();
+    return s3.deleteObject(
+        {
+            Bucket: 'mylifejournal-images',
+            Key: filename
+        }
+    ).promise();
 }
 
 function encode(data) {
@@ -100,15 +135,10 @@ exports.get_profile = function (req, res, next) {
         let postsCount = 0;
         let commentsCount = 0;
 
-        //Handles check if profile picture is found, if not, then use default
-        const imgLocation = searchPicInUploads(convertToUnderscore(results.account.generated_username)).toString();
-        let relImgLocation = imgLocation;
-        if (imgLocation != "/images/user.png") {
-            relImgLocation = imgLocation.split('/public')[1];
-        }
+        //Looks for username in aws s3 bucket.  If found, gets that image, else it'll get default image user.png
 
-        var imgName = 'user.png'
         var awsObj = req.app.get('aws');
+        var imgName = await searchPicInUploads(awsObj, convertToUnderscore(results.account.generated_username));
         let img = await getImage(awsObj, imgName)
         .then((img) => {
             let extension = imgName.split('.')[1];
@@ -375,18 +405,33 @@ function deletePictureInUploads(filename) {
     return "File not found"
 }
 
-//Searches for a phrase in uploads folder and gets the path to that file
-function searchPicInUploads(filename) {
-    const dir = path.join(__dirname, "../public/uploads/");
-    var files = fs.readdirSync(dir);
-    for (let i = 0; i < files.length; i++) {
-        let matchedFileName = files[i].split(".")[0];
-        if (matchedFileName === filename) {
-            const matchedFilePath = path.join(dir, files[i]);
-            return matchedFilePath;
+//Searches for a key in s3 bucket and gets that filename
+async function searchPicInUploads(aws, filename) {
+    let objList = await getObjects(aws)
+    .then((objList) => {
+        let pngFile = filename+'.png';
+        let jpegFile = filename+'.jpeg';
+        let jpgFile = filename+'.jpg';
+        let gifFile = filename+'.gif';
+        for (let i = 0; i < objList.Contents.length; i++) {
+            if (objList.Contents[i].Key == pngFile) {
+                return pngFile;
+            }
+            if (objList.Contents[i].Key == jpegFile) {
+                return jpegFile;
+            }
+            if (objList.Contents[i].Key == jpgFile) {
+                return jpgFile;
+            }
+            if (objList.Contents[i].Key == gifFile) {
+                return gifFile;
+            }
         }
-    }
-    return "/images/user.png";
+        return "user.png";
+    }).catch((e) => {
+        return "user.png";
+    });
+    return objList;
 }
 
 //Converts space to underscore so that we don't have %20 in the url
@@ -530,18 +575,37 @@ exports.post_profile_settings = [
                 const tempPath = req.file.path;
                 const targetPath = path.join(__dirname, "../public/uploads/" + convertToUnderscore(req.file.filename));
                 const format = req.file.filename.split(".")[1];
+                var finalImg = fs.createWriteStream(targetPath);
+                resize("./" + tempPath, format, 750, 750).pipe(finalImg);
+                fs.unlinkSync(tempPath);
+
+                //check if pic is in bucket, if so delete and upload, if not just upload
+                var awsObj = req.app.get('aws');
+                var imgName = await searchPicInUploads(awsObj, convertToUnderscore(req.file.filename.split(".")[0]));
+                if (imgName == "user.png") {
+                    const data = await readFile(targetPath);
+                    uploadImage(awsObj, data, convertToUnderscore(req.file.filename))
+                    .then(() => console.log('uploaded!'))
+                    .catch(err => console.error(err));
+                } else {
+                    deleteImage(awsObj, imgName)
+                    .then(() => console.log('deleted!'))
+                    .catch(err => console.error(err));
+                    const data = await readFile(targetPath);
+                    uploadImage(awsObj, data, convertToUnderscore(req.file.filename))
+                    .then(() => console.log('uploaded!'))
+                    .catch(err => console.error(err));
+                }
+
                 let t = deletePictureInUploads(convertToUnderscore(req.file.filename.split(".")[0]));
                 if (t != "Success" && t != "File not found") {
                     return next(t);
                 }
-                var finalImg = fs.createWriteStream(targetPath);
-                resize("./" + tempPath, format, 750, 750).pipe(finalImg);
-                fs.unlinkSync(tempPath);
                 console.log("Image sucessfully uploaded");
             } else {
                 console.log('No file found');
             }
-            res.redirect('/profile/' + req.params.id);
+            res.redirect('/');
         }
     }
 ]

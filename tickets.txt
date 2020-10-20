@@ -267,3 +267,4 @@ getting
 
 
 bad gateway when using https
+does not support over 1000 users when using s3.  easy fix, but no time rn to do
