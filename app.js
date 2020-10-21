@@ -29,7 +29,7 @@ const emailer = require('./emailer.js');
 //Used for database stuff.
 const Knex = require('knex');
 const knexConfig = require('./knexfile');
-const knex = Knex(knexConfig.development);
+const knex = Knex(knexConfig.production);
 
 //This lazily disables all console.log for production code.  Can also disable morgan if you want.
 if (environment == 'production') {
@@ -49,8 +49,8 @@ app.set('view engine', 'ejs');
 
 //setup aws
 AWS.config.update({
-  accessKeyId: "***REMOVED***",
-  secretAccessKey: "***REMOVED***"
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY
 });
 app.set('aws', AWS);
 
