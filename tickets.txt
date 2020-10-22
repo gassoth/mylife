@@ -268,3 +268,73 @@ getting
 
 bad gateway when using https
 does not support over 1000 users when using s3.  easy fix, but no time rn to do
+
+
+
+figure out why it wont upload to s3 when on ec2
+need to clean up local repo since its infected
+
+
+look into procedures/whats needed for ebs, then may have to do env var changes
+env variable changes
+  s3 bucket name
+  db username, port, db name
+other things that aren't automated - google token
+
+
+
+
+Deployment procedures for adv
+//todo - launch ec2 instance within correct security group
+
+pull project
+  git clone -b prod-changes-adv https://github.com/gassoth/mylife.git
+  npm install
+  
+env variables -- instead can just put this in .env
+  export TOKENSECRET="(whatever TOKENSECRET)"
+  export DATABASE_URL="(whatever url)"
+  export SESSION_SECRET="(whatever sesion secret)"
+  export NODE_ENV=production (maybe)
+  AWS_ACCESS_KEY="***REMOVED***"
+SECRET_ACCESS_KEY="***REMOVED***"
+DATABASE_PASSWORD="***REMOVED***"
+
+//todo connect to remote db.  ithink it should be connected tho
+
+project stuff
+  npm install forever -g
+
+get google token
+  move credentials.json over
+  DEBUG=mylife:* npm run devstart
+  go to testsend
+  follow prompts
+
+setup proxy
+  sudo apt-get install nginx
+  sudo emacs /etc/nginx/conf.d/sysmon.conf 
+
+  server {
+    listen 80;
+    server_name mylifejournal.net;
+
+    location / {
+        proxy_set_header   X-Forwarded-For $remote_addr;
+        proxy_set_header   Host $http_host;
+        proxy_pass         http://18.223.175.121:3000/;
+    }
+  }server {
+        server_name 18.223.175.121;
+        add_header X-Frame-Options "SAMEORIGIN";
+
+        return 301 $scheme://mylifejournal.net$request_uri;
+  }
+
+  sudo systemctl restart nginx
+
+certbot
+  sudo snap install --classic certbot
+  sudo ln -s /snap/bin/certbot /usr/bin/certbot
+  sudo certbot --nginx
+  sudo certbot renew --dry-run
