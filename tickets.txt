@@ -261,4 +261,22 @@ uploading
 getting
   if file exist in bucket - display that file
   else display generic profile pic
-  
+
+follow tutorial for s3 credentials, docker tutorial
+
+env variable changes
+  s3 bucket name
+  db username, port, db name
+aws sdk to get google token
+other things that aren't automated - google token
+
+env variables -- instead can just put this in .env
+  export TOKENSECRET="(whatever TOKENSECRET)"
+  export DATABASE_URL="(whatever url)"
+  export SESSION_SECRET="(whatever sesion secret)"
+  export NODE_ENV=production (maybe)
+  AWS_ACCESS_KEY="***REMOVED***"
+SECRET_ACCESS_KEY="***REMOVED***"
+DATABASE_PASSWORD="***REMOVED***"
+
+figure out whats needed for docker
