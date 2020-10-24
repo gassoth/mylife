@@ -153,3 +153,8 @@ ubuntu@*
 !test-edit.png
 !test-lock.png
 !test-user.png
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
